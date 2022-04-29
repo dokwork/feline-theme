@@ -37,7 +37,7 @@ describe('lsp_client_icon', function()
         local icon = { name = 'test', icon = '!' }
 
         -- when:
-        local result = u.lsp_client_icon(client, { test = icon })
+        local result = u.lsp_client_icon({ test = icon }, client)
 
         -- then:
         assert.are.equal(icon, result)
@@ -48,7 +48,7 @@ describe('lsp_client_icon', function()
         local client = { config = { filetypes = { 'other_type', 'test' } } }
 
         -- when:
-        local result = u.lsp_client_icon(client, { test = '!' })
+        local result = u.lsp_client_icon({ test = '!' }, client)
 
         -- then:
         assert.are.same({ name = 'test', icon = '!' }, result)
@@ -63,7 +63,7 @@ describe('lsp_client_icon', function()
         end
         test.use_mocked_table(vim.lsp, 'buf_get_clients', mock, function()
             -- when:
-            local result = u.lsp_client_icon(nil, { test = icon })
+            local result = u.lsp_client_icon({ test = icon })
 
             -- then:
             assert.are.equal(icon, result)
@@ -79,7 +79,7 @@ describe('lsp_client_icon', function()
         end
         test.use_mocked_module('nvim-web-devicons', 'get_icons', mock, function()
             -- when:
-            local result = u.lsp_client_icon(client)
+            local result = u.lsp_client_icon({}, client)
 
             -- then:
             assert.are.equal(icon, result)

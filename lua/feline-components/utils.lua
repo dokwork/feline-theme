@@ -57,10 +57,10 @@ M.lsp_client = function()
     return client
 end
 
----@type fun(client: LspClient, icons: table<string, DevIcon | string>): DevIcon
--- Takes a type of the file from the {client} and tries to take
--- a corresponding icon from the {icons} or 'nvim-web-devicons'. {client} can be
--- omitted. If so, result of the `lsp_client()` will be used.
+---@type fun(icons: table<string, DevIcon | string>?, client: LspClient?): DevIcon
+-- Takes a type of the file from the {client} and tries to take a corresponding icon
+-- from the {icons} or 'nvim-web-devicons'. {client} can be omitted. If so, result of
+-- the `lsp_client()` will be used.
 --
 -- DevIcon example: {
 --    icon = "",
@@ -71,13 +71,18 @@ end
 --
 ---@see require('nvim-web-devicons').get_icons
 --
----@param client LspClient the client to the LSP server. If absent, the first attached client to the current buffer will be used.
----@param icons table<string, DevIcon | string> table with icons for the lsp clients.
+---@param icons table<string, DevIcon | string>? table with icons for the lsp clients.
 --- All string values will be converted to the table `{ icon = VALUE, name = KEY }`,
 --- where VALUE is an original string value, KEY is a corresponded key from the {icons}.
---- If an icon for the client will not be found, then it will be looked in the 'nvim-web-devicons' module (if such module exists).
----@return DevIcon lsp_client_icon icon of the LspClient or `nil` when the `client` is absent or not found.
-M.lsp_client_icon = function(client, icons)
+--- If an icon for the client will not be found, then it will be looked in the 'nvim-web-devicons'
+--- module (if such module exists).
+--
+---@param client LspClient the client to the LSP server. If absent, the first attached client to
+--- the current buffer will be used.
+--
+---@return DevIcon lsp_client_icon icon of the LspClient or `nil` when the `client` is absent
+--- or not found.
+M.lsp_client_icon = function(icons, client)
     local c = client or M.lsp_client()
     if c == nil then
         return nil
@@ -99,7 +104,7 @@ M.lsp_client_icon = function(client, icons)
     all_icons = vim.tbl_deep_extend('keep', all_icons, dev_icons)
 
     -- get an appropriated icon
-    local icon = all_icons.default or '?'
+    local icon = all_icons.default or ''
     for _, ft in ipairs(c.config.filetypes) do
         if all_icons[ft] ~= nil then
             icon = all_icons[ft]
