@@ -7,15 +7,36 @@ local M = {}
 
 ---@type fun(): string
 -- Uses `vim.bo.filetype` to take and return a type of the current file.
+--
 ---@return string file_type the type of the current file.
 M.file_type = function()
     return vim.bo.filetype
 end
 
 ---@type fun(): string
+--
 ---@return string file_name the name with extension of the file from the current buffer.
 M.file_name = function()
     return vim.fn.expand('%:t')
+end
+
+---@type fun(component: FelineComponent): string
+--
+---@param component FelineComponent with properties:
+-- * `readonly_icon: string`  icon which should be used when a file is readonly. Default is ''
+-- * `modified_icon: string`  icon which should be used when a file is modified. Default is '✎'
+--
+---@return string icon of the current state of the file: readonly, modified, none. In last case
+-- an empty string will be returned.
+M.file_status_icon = function(component)
+    if vim.bo.readonly then
+        return component and component.readonly_icon or ''
+    end
+    if vim.bo.modified then
+        return component and component.modified_icon or '✎'
+    end
+
+    return ''
 end
 
 ---@type fun(): string
