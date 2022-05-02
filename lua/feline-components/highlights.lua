@@ -5,10 +5,12 @@ local M = {}
 
 M.vi_mode = function(hls)
     local name = vi_mode.get_mode_highlight_name()
-    return {
-        name = name,
-        fg = hls[name] or vi_mode.get_mode_color(),
-    }
+    return function()
+        return {
+            name = name,
+            fg = hls[name] or vi_mode.get_mode_color(),
+        }
+    end
 end
 
 M.git_status = function(hls)
