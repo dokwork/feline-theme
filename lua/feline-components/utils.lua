@@ -75,15 +75,15 @@ end
 ---@see require('nvim-web-devicons').get_icons
 ---
 ---@param icons table?<string, DevIcon | string> # a table with icons for the lsp clients.
----All string values will be converted to the table `{ icon = VALUE, name = KEY }`,
----where VALUE is an original string value, KEY is a corresponded key from the {icons}.
----If an icon for the client is not found, then it's taken from the 'nvim-web-devicons'
----module (if such module exists).
+---Can be nil or empty. All string values will be converted to the table
+---`{ icon = VALUE, name = KEY }`, where VALUE is an original string value, KEY is
+---a corresponded key from the {icons}. If an icon for the client is not found, then
+---it's taken from the 'nvim-web-devicons' module (if such module exists).
 ---
 ---@param client LspClient the client to the LSP server. If absent, the first attached client to
 ---the current buffer is used.
 ---
----@return DevIcon # icon of the LspClient or `nil` when the `client` is absent
+---@return DevIcon # icon of the LspClient or `nil` when the `client` is absent or not attached.
 ---or not found.
 M.lsp_client_icon = function(icons, client)
     local c = client or M.lsp_client()
@@ -125,7 +125,7 @@ end
 ---rules:
 ---1. All values with equal keys will be taken from the passed component;
 ---2. If the merged component has a property `hl` with a type of function,
----   that function will be invoked with argument `component.colors or {}`
+---   that function will be invoked with argument `component.hls or {}`
 ---   and the result will be assigned back to the property `hl`.
 ---
 ---@param component table # should have a property `component` with a name of
@@ -143,9 +143,9 @@ M.build_component = function(component, lib)
         'Component ' .. component.component .. ' was not found.'
     )
     c = vim.tbl_extend('force', c, component)
-    -- resolve highlight function with custom colors
+    -- resolve highlight function with custom highlights
     if c.hl and type(c.hl) == 'function' then
-        c.hl = c.hl(c.colors or {})
+        c.hl = c.hl(c.hls or {})
     end
     return c
 end

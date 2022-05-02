@@ -112,9 +112,9 @@ describe('build_component', function()
     it('should resolve highlight function', function()
         -- given:
         local component = {
-            hl = function(colors)
+            hl = function(hls)
                 return function()
-                    return colors
+                    return hls
                 end
             end,
         }
@@ -124,7 +124,7 @@ describe('build_component', function()
         -- when:
         local result = u.build_component({
             component = 'test',
-            colors = colors,
+            hls = colors,
         }, lib)
 
         -- then:
