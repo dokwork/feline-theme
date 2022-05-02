@@ -86,3 +86,48 @@ describe('lsp_client_icon', function()
         end)
     end)
 end)
+
+describe('build_component', function()
+    it('should take a component with apropriate name from the library', function()
+        -- given:
+        local lib = { test = { name = 'example' } }
+
+        -- when:
+        local result = u.build_component({ component = 'test' }, lib)
+
+        -- then:
+        assert.are.same({ component = 'test', name = 'example' }, result)
+    end)
+
+    it('should take a component from the module "feline-components.components"', function()
+        -- when:
+        local result = u.build_component({ component = 'file_type' })
+
+        -- then:
+        local expected = require('feline-components.components').file_type
+        expected.component = 'file_type'
+        assert.are.same(expected, result)
+    end)
+
+    it('should resolve highlight function', function()
+        -- given:
+        local component = {
+            hl = function(colors)
+                return function()
+                    return colors
+                end
+            end,
+        }
+        local lib = { test = component }
+        local colors = { green = 'green', black = '#1B1B1B' }
+
+        -- when:
+        local result = u.build_component({
+            component = 'test',
+            colors = colors,
+        }, lib)
+
+        -- then:
+        assert.are.same(colors, result.hl())
+    end)
+end)
