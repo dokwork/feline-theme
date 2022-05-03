@@ -37,7 +37,7 @@ if packer_bootstrap then
     require('packer').sync()
     print('Please, restart nvim through try.sh to use installed plugins.')
 else
-    -- Describe a configuration for test here:
+    -- Configuration for test:
 
     local components = require('feline-components.cosmos').generate()
     print('Components: ' .. vim.inspect(components))

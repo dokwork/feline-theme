@@ -1,19 +1,23 @@
 ---This is an example of statusline configuration
 
+local sep = { str = ' | ', hl = { fg = 'blue' } }
+
 local active_left = {
     { component = 'vi_mode_bar' },
     { component = 'working_directory' },
-    { component = 'relative_file_name' }
+    { component = 'relative_file_name' },
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
 }
 
 local active_middle = {}
 
 local active_right = {
-    { component = 'git_branch' }
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
+    { component = 'git_branch' },
 }
 
 local inactive_left = {
-    { component = 'file_name' },
+    { component = 'relative_file_name' },
 }
 
 local active = { active_left, active_middle, active_right }
