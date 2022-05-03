@@ -1,18 +1,58 @@
+---All functions in this module must take a parameter `hls`
+---and return a highlight according to feline documentation:
+---:h feline-Component-highlight
+---
+---For example:
+---```lua
+---M.example = function(hls)
+---     return { fg = 'red' }
+---end
+---```
+
+---@alias Color string # a name of the color or RGB hex color description
+
+---@alias Highlight table # a description of the highlight according to the |feline-Component-highlight|.
+
 local vi_mode = require('feline.providers.vi_mode')
 local c = require('feline-components.conditions')
 
 local M = {}
 
-M.vi_mode = function(hls)
-    local name = vi_mode.get_mode_highlight_name()
+---@type fun(colors: table<string, Color>): function
+---Creates a function which returns highlight according to the current
+---vi mode.
+---
+---@param colors table<string, Color> # custom colors:
+--- * `bg: string` a name of the color or RGB hex color description. If
+---   it's specified then it will be used as backgroud. If ommited
+---   then final highlight will not have any bg property.
+--- * `vi_mode_name: string` a name of the color or RGB hex color description.
+---   the `vi_mode_name` should be one of the name which could be returned
+---   by the `require('feline.providers.vi_mode').get_mode_highlight_name`.
+M.vi_mode = function(colors)
     return function()
-        return {
+        local name = vi_mode.get_mode_highlight_name()
+        local hl = {
             name = name,
-            fg = hls[name] or vi_mode.get_mode_color(),
+            fg = colors[name] or vi_mode.get_mode_color(),
         }
+        if colors and colors.bg then
+            hl.bg = colors.bg
+        end
+        return hl
     end
 end
 
+---@type fun(hls: table<string, Highlight>): function
+---Creates a function which returns highlight according to the current
+---git status.
+---
+---@param hls table<string, Highlight> # custom highlights with possible properties:
+--- * `inactive: Highlight` a highlight which sould be used when git is not active;
+--- * `changed: Highlight`  a highlight which sould be used when at least one file is changed;
+--- * `commited: Highlight` a highlight which sould be used when no one change exist.
+---
+---@return function # which returns actual highlight according to the current git status.
 M.git_status = function(hls)
     local hls = hls
         or {
