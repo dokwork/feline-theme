@@ -1,6 +1,5 @@
 ---All functions in this module must take a parameter `hls`
----and return a highlight according to feline documentation:
----:h feline-Component-highlight
+---and return a highlight according to the |feline-Component-highlight|
 ---
 ---For example:
 ---```lua
@@ -8,6 +7,7 @@
 ---     return { fg = 'red' }
 ---end
 ---```
+---NOTE: Only colors from the default palette should be used.
 
 ---@alias Color string # a name of the color or RGB hex color description
 
@@ -47,14 +47,13 @@ end
 ---
 ---@return function # which returns actual highlight according to the current git status.
 M.git_status = function(hls)
-    local hls = hls
-        or {
-            inactive = { name = 'FCGitInactive', fg = 'NONE' },
-            changed = { name = 'FCGitChanged', fg = 'orange' },
-            commited = { name = 'FCGitCommited', fg = 'green' },
-        }
+    local hls = vim.tbl_extend('keep', hls, {
+        inactive = { name = 'FCGitInactive', fg = 'white' },
+        changed = { name = 'FCGitChanged', fg = 'yellow' },
+        commited = { name = 'FCGitCommited', fg = 'green' },
+    })
     return function()
-        if c.is_git_workspace() then
+        if not c.is_git_workspace() then
             return hls.inactive
         end
         if c.is_git_changed() then
