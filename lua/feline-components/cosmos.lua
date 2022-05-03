@@ -3,11 +3,14 @@
 local active_left = {
     { component = 'vi_mode_bar' },
     { component = 'working_directory' },
+    { component = 'relative_file_name' }
 }
 
 local active_middle = {}
 
-local active_right = {}
+local active_right = {
+    { component = 'git_branch' }
+}
 
 local inactive_left = {
     { component = 'file_name' },

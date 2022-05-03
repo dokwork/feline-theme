@@ -63,6 +63,11 @@ M.file_type = {
     },
 }
 
+---@type Component
+M.file_name = {
+    provider = 'file_name'
+}
+
 ---The name of the current git branch. This component uses 'tpope/vim-fugitive'
 ---plugin to take info about git workspace.
 ---
