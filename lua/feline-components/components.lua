@@ -93,4 +93,24 @@ M.working_directory = {
     hl = h.vi_mode,
 }
 
+M.diagnostic_errors = {
+    provider = 'diagnostic_errors',
+    hl = 'DiagnosticError'
+}
+
+M.diagnostic_warnings = {
+    provider = 'diagnostic_warnings',
+    hl = 'DiagnosticWarn'
+}
+
+M.diagnostic_info = {
+    provider = 'diagnostic_info',
+    hl = 'DiagnosticInfo'
+}
+
+M.diagnostic_hint = {
+    provider = 'diagnostic_hint',
+    hl = 'DiagnosticHint'
+}
+
 return M

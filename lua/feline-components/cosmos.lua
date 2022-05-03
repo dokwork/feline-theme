@@ -13,7 +13,9 @@ local active_middle = {}
 
 local active_right = {
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
-    { component = 'git_branch' },
+    { component = 'diagnostic_warnings' },
+    { component = 'diagnostic_errors', right_sep = sep },
+    { component = 'git_branch', right_sep = sep },
 }
 
 local inactive_left = {
