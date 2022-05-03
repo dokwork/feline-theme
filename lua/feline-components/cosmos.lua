@@ -2,6 +2,7 @@
 
 local active_left = {
     { component = 'vi_mode_bar' },
+    { component = 'working_directory' },
 }
 
 local active_middle = {}

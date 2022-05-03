@@ -6,14 +6,6 @@ local M = {}
 ---@alias FelineComponent table
 
 ---@type fun(): string
----Uses `vim.bo.filetype` to take and return a type of the current file.
----
----@return string # the type of the current file.
-M.file_type = function()
-    return vim.bo.filetype
-end
-
----@type fun(): string
 ---
 ---@return string # the name with extension of the file from the current buffer.
 M.file_name = function()
@@ -70,6 +62,7 @@ end
 ---
 ---@return string # last `opts.length`  directories of the current working path.
 M.working_path_tail = function(_, opts)
+    local opts = opts or {}
     local full_path = vim.fn.getcwd()
     local count = opts.length or 2
     local sep = '/' -- FIXME: use system separator

@@ -119,15 +119,15 @@ describe('build_component', function()
             end,
         }
         local lib = { test = component }
-        local colors = { green = 'green', black = '#1B1B1B' }
+        local hl = { fg = 'green' }
 
         -- when:
         local result = u.build_component({
             component = 'test',
-            hls = colors,
+            hls = hl,
         }, lib)
 
         -- then:
-        assert.are.same(colors, result.hl())
+        assert.are.same(hl, result.hl())
     end)
 end)

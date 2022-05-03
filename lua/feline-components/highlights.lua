@@ -11,35 +11,28 @@
 
 ---@alias Color string # a name of the color or RGB hex color description
 
----@alias Highlight table # a description of the highlight according to the |feline-Component-highlight|.
+---@alias Highlight string|table|function # a description of the highlight according to the |feline-Component-highlight|.
 
 local vi_mode = require('feline.providers.vi_mode')
 local c = require('feline-components.conditions')
 
 local M = {}
 
----@type fun(colors: table<string, Color>): function
+---@type fun(hls: table<string, Highlight>): function
 ---Creates a function which returns highlight according to the current
 ---vi mode.
 ---
----@param colors table<string, Color> # custom colors:
---- * `bg: string` a name of the color or RGB hex color description. If
----   it's specified then it will be used as backgroud. If ommited
----   then final highlight will not have any bg property.
---- * `vi_mode_name: string` a name of the color or RGB hex color description.
----   the `vi_mode_name` should be one of the name which could be returned
----   by the `require('feline.providers.vi_mode').get_mode_highlight_name`.
-M.vi_mode = function(colors)
+---@param hls table<string, Highlight> # custom highlights for vi modes.
+---The keys of this table are names of the vi mode according to
+---`require('feline.providers.vi_mode').get_mode_highlight_name`.
+M.vi_mode = function(hls)
     return function()
         local name = vi_mode.get_mode_highlight_name()
-        local hl = {
-            name = name,
-            fg = colors[name] or vi_mode.get_mode_color(),
-        }
-        if colors and colors.bg then
-            hl.bg = colors.bg
-        end
-        return hl
+        return hls[name]
+            or {
+                name = name,
+                fg = hls[name] or vi_mode.get_mode_color(),
+            }
     end
 end
 
@@ -56,7 +49,7 @@ end
 M.git_status = function(hls)
     local hls = hls
         or {
-            inactive = { name = 'FCGitInactive', fg = 'bg' },
+            inactive = { name = 'FCGitInactive', fg = 'NONE' },
             changed = { name = 'FCGitChanged', fg = 'orange' },
             commited = { name = 'FCGitCommited', fg = 'green' },
         }
