@@ -75,7 +75,6 @@ M.file_name = {
 M.git_branch = {
     provider = p.fugitive_branch,
     hl = h.git_status,
-    truncate_hide = true,
 }
 
 ---The last N directories of the current working directory path. Count of directories
@@ -92,7 +91,6 @@ M.git_branch = {
 M.working_directory = {
     provider = p.working_path_tail,
     hl = h.vi_mode,
-    truncate_hide = true,
 }
 
 return M
