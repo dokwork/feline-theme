@@ -117,6 +117,12 @@ M.diagnostic_hint = {
     hl = 'DiagnosticHint',
 }
 
+---Returns a list of languages used for spellchecking. If spellchecking is off and component
+---doesn't have an icon, then only string '暈' will be returned. But, if component has an icon, 
+---then it behave as usually: shows a list of langs with icon when spellchecking is on, and it's
+---hide when spellchecking is off.
+---Example: '暈en' for english spellcheck, or just '暈' when spellchecking is off.
+---
 ---@type Component
 M.spellcheck = {
     provider = p.spellcheck,

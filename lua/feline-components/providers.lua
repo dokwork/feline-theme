@@ -102,14 +102,21 @@ M.lsp_client_icon = function(_, opts)
     end
 end
 
----@type fun(): string, string
----@return string # an icon  '暈' and list of languages used to spell check.
----Example: '暈en', or just '暈' when spellchecking is off.
-M.spellcheck = function()
+---@type fun(component): string
+---Returns a list of languages used for spellchecking. If spellchecking is off and component
+---doesn't have an icon, then string '暈' will be returned. But, if component has an icon,
+---an empty string will be returned.
+---Example: '暈en' for english spellcheck, or just '暈' when spellchecking is off.
+---Such behaviour can be used to create a component which will show inactive icon when
+---spellchecking is off, instead of disappear from the statusline at all.
+---
+---@return string # an optional icon '暈' and list of languages used to spell check.
+M.spellcheck = function(component)
     if vim.wo.spell then
-        return ' 暈' .. vim.bo.spelllang
+        local langs = vim.bo.spelllang
+        return not component.icon and ' 暈' .. langs or langs
     else
-        return '暈'
+        return not component.icon and '暈' or ''
     end
 end
 
