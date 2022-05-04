@@ -5,7 +5,7 @@ return {
     grey = '#5c6370',
     green = '#79a15c',
     orange = '#e8a561',
-    purple = '#5d4d7a',
+    purple = '#5931a3',
     magenta = '#c678dd',
     blue = '#61afef',
     red = '#e06c75',

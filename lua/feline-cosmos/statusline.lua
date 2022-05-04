@@ -24,9 +24,9 @@ local active_right = {
     { component = 'diagnostic_warnings' },
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
-    { component = 'spellcheck', hls = { active = { fg = 'purple' } }, right_sep = sep },
     { component = 'lsp_client_icon' },
     { component = 'treesitter_parser', right_sep = sep },
+    { component = 'spellcheck', hls = { active = { fg = 'blue' } }, right_sep = sep },
     { provider = 'position', right_sep = sep },
     { component = 'scroll_bar' },
 }

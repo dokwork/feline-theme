@@ -114,7 +114,7 @@ end
 M.spellcheck = function(component)
     if vim.wo.spell then
         local langs = vim.bo.spelllang
-        return not component.icon and ' 暈' .. langs or langs
+        return not component.icon and '暈' .. langs or langs
     else
         return not component.icon and '暈' or ''
     end
