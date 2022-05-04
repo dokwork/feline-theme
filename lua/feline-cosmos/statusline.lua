@@ -40,7 +40,7 @@ local inactive = { inactive_left }
 
 local M = {
     generate = function()
-        return require('feline-components.utils').build_statusline(active, inactive)
+        return require('feline-cosmos.utils').build_statusline(active, inactive)
     end,
 }
 

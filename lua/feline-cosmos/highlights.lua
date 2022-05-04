@@ -14,8 +14,8 @@
 ---@alias Highlight string|table|function # a description of the highlight according to the |feline-Component-highlight|.
 
 local vi_mode = require('feline.providers.vi_mode')
-local c = require('feline-components.conditions')
-local u = require('feline-components.utils')
+local c = require('feline-cosmos.conditions')
+local u = require('feline-cosmos.utils')
 
 local M = {}
 

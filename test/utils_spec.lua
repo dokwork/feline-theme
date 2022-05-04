@@ -1,5 +1,5 @@
-local test = require('feline-components.test')
-local u = require('feline-components.utils')
+local test = require('feline-cosmos.test')
+local u = require('feline-cosmos.utils')
 
 describe('is_empty', function()
     it('should return true for nil', function()

@@ -1,4 +1,4 @@
-local u = require('feline-components.utils')
+local u = require('feline-cosmos.utils')
 
 vim.cmd('augroup feline_components_git_status')
 vim.cmd('autocmd!')

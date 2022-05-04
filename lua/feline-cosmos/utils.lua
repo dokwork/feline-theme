@@ -125,7 +125,7 @@ end
 ---@type fun(component: table, lib: table): table
 ---Takes a table with property `component` which should have a name of the
 ---component from the {lib}. If a component is not found in the {lib},
----a component is taken from the 'feline-components.components'.
+---a component is taken from the 'feline-cosmos.components'.
 ---Then such component will be merged with passed {component} with following
 ---rules:
 ---1. All values with equal keys will be taken from the passed component;
@@ -142,7 +142,7 @@ end
 ---
 ---@return table # resolved component in term of the feline.
 M.build_component = function(component, lib)
-    local lib = lib or require('feline-components.components')
+    local lib = lib or require('feline-cosmos.components')
     local c = assert(
         lib[component.component],
         'Component ' .. component.component .. ' was not found.'
@@ -156,7 +156,7 @@ M.build_component = function(component, lib)
 end
 
 M.build_statusline = function(active, inactive, lib)
-    local lib = lib or require('feline-components.components')
+    local lib = lib or require('feline-cosmos.components')
     local transform = function(statusline)
         for i, section in ipairs(statusline) do
             for k, c in pairs(section) do

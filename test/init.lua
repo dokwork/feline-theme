@@ -24,7 +24,7 @@ vim.cmd([[packadd packer.nvim]])
 require('packer').startup(function(use)
     use('wbthomason/packer.nvim')
     use({
-        'feline-components',
+        'feline-cosmos',
         requires = {
             'kyazdani42/nvim-web-devicons',
             'famiu/feline.nvim',
@@ -39,7 +39,7 @@ if packer_bootstrap then
 else
     -- Configuration for test:
 
-    local components = require('feline-components.cosmos').generate()
+    local components = require('feline-cosmos.statusline').generate()
     vim.g.components = vim.inspect(components)
     require('feline').setup({
         components = components,
