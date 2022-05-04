@@ -118,7 +118,7 @@ M.diagnostic_hint = {
 }
 
 ---Returns a list of languages used for spellchecking. If spellchecking is off and component
----doesn't have an icon, then only string '暈' will be returned. But, if component has an icon, 
+---doesn't have an icon, then only string '暈' will be returned. But, if component has an icon,
 ---then it behave as usually: shows a list of langs with icon when spellchecking is on, and it's
 ---hide when spellchecking is off.
 ---Example: '暈en' for english spellcheck, or just '暈' when spellchecking is off.
@@ -147,8 +147,13 @@ M.lsp_client_icon = {
 }
 
 M.treesitter_parser = {
-    provider =  '  ',
+    provider = '  ',
     hl = h.treesitter_parser,
+}
+
+M.scroll_bar = {
+    provider = 'scroll_bar',
+    hl = h.vi_mode,
 }
 
 return M

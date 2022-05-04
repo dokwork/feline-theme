@@ -9,7 +9,15 @@ local active_left = {
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
 }
 
-local active_middle = {}
+local active_middle = {
+    {
+        name = 'metal_status',
+        provider = function()
+            return (vim.g['metals_status'] or '')
+        end,
+        hl = { bg = 'NONE' }
+    },
+}
 
 local active_right = {
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
@@ -19,6 +27,8 @@ local active_right = {
     { component = 'spellcheck', right_sep = sep },
     { component = 'lsp_client_icon' },
     { component = 'treesitter_parser', right_sep = sep },
+    { provider = 'position', right_sep = sep },
+    { component = 'scroll_bar' },
 }
 
 local inactive_left = {
