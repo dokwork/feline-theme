@@ -49,7 +49,7 @@ end
 ---@return function # funciton which returns actual highlight according to the current git status.
 M.git_status = function(hls)
     local hls = vim.tbl_extend('keep', hls, {
-        inactive = { name = 'FCGitInactive', fg = 'NONE' },
+        inactive = { name = 'FCGitInactive', fg = 'grey' },
         changed = { name = 'FCGitChanged', fg = 'yellow' },
         commited = { name = 'FCGitCommited', fg = 'green' },
     })
@@ -77,7 +77,7 @@ end
 M.spellcheck = function(hls)
     local hls = vim.tbl_extend('keep', hls, {
         active = { name = 'FCSpellcheckActive', fg = 'fg' },
-        inactive = { name = 'FCSpellcheckInactive', fg = 'NONE' },
+        inactive = { name = 'FCSpellcheckInactive', fg = 'grey' },
     })
     return function()
         if vim.wo.spell then
@@ -91,7 +91,7 @@ end
 ---@type fun(): function
 ---Creates a function which returns highlight according to the first attached lsp client.
 ---The color will be taken from the 'nvim-web-devicons' or 'fg' will be used. If no one
----client is attached, then 'NONE' will be used as foreground color.
+---client is attached, then 'inactive' will be used as foreground color.
 ---
 ---@return function # highlight for the first attached lsp client.
 M.lsp_client = function()
@@ -101,21 +101,22 @@ M.lsp_client = function()
         if u.is_lsp_client_ready(client) then
             return {
                 name = 'FCLspClientIcon' .. (client and client.name or 'Off'),
-                fg = (icon and icon.color) or (icon and 'fg') or 'NONE',
+                fg = (icon and icon.color) or (icon and 'fg') or 'inactive',
             }
         end
-    end
+   end
 end
 
 M.treesitter_parser = function(hls)
     local hls = vim.tbl_extend('keep', hls or {}, {
         active = { name = 'FCTreesitterActive', fg = 'green' },
-        inactive = { name = 'FCTreesitterInactive', fg = 'NONE' },
+        inactive = { name = 'FCTreesitterInactive', fg = 'grey' },
     })
     return function()
+        -- TODO move to conditions
         local ok, _ = pcall(vim.treesitter.get_parser, 0)
         if ok then
-            return hls.acitve
+            return hls.active
         else
             return hls.inactive
         end

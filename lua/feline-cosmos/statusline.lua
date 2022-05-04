@@ -15,7 +15,7 @@ local active_middle = {
         provider = function()
             return (vim.g['metals_status'] or '')
         end,
-        hl = { bg = 'NONE' }
+        hl = { fg = 'inactive', bg = 'NONE' },
     },
 }
 
@@ -24,7 +24,7 @@ local active_right = {
     { component = 'diagnostic_warnings' },
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
-    { component = 'spellcheck', right_sep = sep },
+    { component = 'spellcheck', hls = { active = { fg = 'purple' } }, right_sep = sep },
     { component = 'lsp_client_icon' },
     { component = 'treesitter_parser', right_sep = sep },
     { provider = 'position', right_sep = sep },

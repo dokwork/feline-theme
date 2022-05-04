@@ -40,8 +40,11 @@ else
     -- Configuration for test:
 
     local components = require('feline-cosmos.statusline').generate()
+    local theme = require('feline-cosmos.themes.dark')
     vim.g.components = vim.inspect(components)
     require('feline').setup({
         components = components,
+        theme = theme,
+        vi_mode_colors = theme.vi_mode_colors
     })
 end
