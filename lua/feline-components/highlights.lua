@@ -48,7 +48,7 @@ end
 ---@return function # which returns actual highlight according to the current git status.
 M.git_status = function(hls)
     local hls = vim.tbl_extend('keep', hls, {
-        inactive = { name = 'FCGitInactive', fg = 'white' },
+        inactive = { name = 'FCGitInactive', fg = 'NONE' },
         changed = { name = 'FCGitChanged', fg = 'yellow' },
         commited = { name = 'FCGitCommited', fg = 'green' },
     })
@@ -60,6 +60,20 @@ M.git_status = function(hls)
             return hls.changed
         else
             return hls.commited
+        end
+    end
+end
+
+M.spellcheck = function(hls)
+    local hls = vim.tbl_extend('keep', hls, {
+        active = { name = 'FCSpellcheckActive', fg = 'fg' },
+        inactive = { name = 'FCSpellcheckInactive', fg = 'NONE' },
+    })
+    return function()
+        if vim.wo.spell then
+            return hls.active
+        else
+            return hls.inactive
         end
     end
 end

@@ -113,4 +113,9 @@ M.diagnostic_hint = {
     hl = 'DiagnosticHint'
 }
 
+M.spellcheck = {
+    provider = p.spellcheck,
+    hl = h.spellcheck,
+}
+
 return M

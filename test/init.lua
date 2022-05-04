@@ -40,7 +40,7 @@ else
     -- Configuration for test:
 
     local components = require('feline-components.cosmos').generate()
-    print('Components: ' .. vim.inspect(components))
+    vim.g.components = vim.inspect(components)
     require('feline').setup({
         components = components,
     })

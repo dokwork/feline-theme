@@ -102,15 +102,13 @@ M.lsp_client_icon = function(_, opts)
 end
 
 ---@type fun(): string, string
----Returns a list of languages used to spell check, plus icon '暈'.
----
----@return string # a list of languages used to spell check
----@return string # icon  '暈'
+---@return string # an icon  '暈' and list of languages used to spell check.
+---Example: '暈en', or just '暈' when spellchecking is off.
 M.spellcheck = function()
     if vim.wo.spell then
-        return vim.bo.spelllang, '暈'
+        return ' 暈' .. vim.bo.spelllang
     else
-        return '', '暈'
+        return '暈'
     end
 end
 
