@@ -117,6 +117,11 @@ M.lsp_client_icon = function(icons, client)
     return icon
 end
 
+M.is_lsp_client_ready = function(client)
+    // TODO: add support of the metals
+    return true
+end
+
 ---@type fun(component: table, lib: table): table
 ---Takes a table with property `component` which should have a name of the
 ---component from the {lib}. If a component is not found in the {lib},

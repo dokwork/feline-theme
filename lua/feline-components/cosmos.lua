@@ -17,6 +17,7 @@ local active_right = {
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
     { component = 'spellcheck', right_sep = sep },
+    { component = 'lsp_client_icon', right_sep = sep },
 }
 
 local inactive_left = {

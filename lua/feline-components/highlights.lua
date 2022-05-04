@@ -15,6 +15,7 @@
 
 local vi_mode = require('feline.providers.vi_mode')
 local c = require('feline-components.conditions')
+local u = require('feline-components.utils')
 
 local M = {}
 
@@ -45,7 +46,7 @@ end
 --- * `changed: Highlight`  a highlight which sould be used when at least one file is changed;
 --- * `commited: Highlight` a highlight which sould be used when no one change exist.
 ---
----@return function # which returns actual highlight according to the current git status.
+---@return function # funciton which returns actual highlight according to the current git status.
 M.git_status = function(hls)
     local hls = vim.tbl_extend('keep', hls, {
         inactive = { name = 'FCGitInactive', fg = 'NONE' },
@@ -64,6 +65,15 @@ M.git_status = function(hls)
     end
 end
 
+---@type fun(hls: table<string, Highlight>): function
+---Creates a function which returns highlight according to the current state
+---of the spellchecking.
+---
+---@param hls table<string, Highlight> # custom highlights with possible properties:
+--- * `active: Highlight` a highlight which sould be used when spellcheck is turned on;
+--- * `inactive: Highlight` a highlight which sould be used when spellcheck is turned off;
+---
+---@return function # function which returns actual highlight for spellchecking depending on its state.
 M.spellcheck = function(hls)
     local hls = vim.tbl_extend('keep', hls, {
         active = { name = 'FCSpellcheckActive', fg = 'fg' },
@@ -74,6 +84,25 @@ M.spellcheck = function(hls)
             return hls.active
         else
             return hls.inactive
+        end
+    end
+end
+
+---@type fun(): function
+---Creates a function which returns highlight according to the first attached lsp client.
+---The color will be taken from the 'nvim-web-devicons' or 'fg' will be used. If no one
+---client is attached, then 'NONE' will be used as foreground color.
+---
+---@return function # highlight for the first attached lsp client.
+M.lsp_client = function()
+    return function()
+        local client = u.lsp_client()
+        local icon = u.lsp_client_icon({}, client)
+        if u.is_lsp_client_ready(client) then
+            return {
+                name = 'FCLspClientIcon' .. (client and client.name or 'Off'),
+                fg = (icon and icon.color) or (icon and 'fg') or 'NONE',
+            }
         end
     end
 end

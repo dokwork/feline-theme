@@ -65,7 +65,7 @@ M.file_type = {
 
 ---@type Component
 M.file_name = {
-    provider = 'file_name'
+    provider = 'file_name',
 }
 
 ---The name of the current git branch. This component uses 'tpope/vim-fugitive'
@@ -93,29 +93,51 @@ M.working_directory = {
     hl = h.vi_mode,
 }
 
+---@type Component
 M.diagnostic_errors = {
     provider = 'diagnostic_errors',
-    hl = 'DiagnosticError'
+    hl = 'DiagnosticError',
 }
 
+---@type Component
 M.diagnostic_warnings = {
     provider = 'diagnostic_warnings',
-    hl = 'DiagnosticWarn'
+    hl = 'DiagnosticWarn',
 }
 
+---@type Component
 M.diagnostic_info = {
     provider = 'diagnostic_info',
-    hl = 'DiagnosticInfo'
+    hl = 'DiagnosticInfo',
 }
 
+---@type Component
 M.diagnostic_hint = {
     provider = 'diagnostic_hint',
-    hl = 'DiagnosticHint'
+    hl = 'DiagnosticHint',
 }
 
+---@type Component
 M.spellcheck = {
     provider = p.spellcheck,
     hl = h.spellcheck,
+}
+
+---Returns an icon for the first lsp client attached to the current buffer.
+---Icon will be taken from the `opts.icons` or from the module 'nvim-web-devicons'.
+---If no one client will be found, the `opts.client_off` or 'ﮤ' will be returned.
+---The icon color will be taken from the 'nvim-web-devicons' or 'fg' will be used.
+---If no one client is attached, then 'NONE' will be used as foreground color.
+---
+---@param opts table with properties:
+---* `icons: table?`        an optional table with icons for possible lsp clients.
+---                         Keys are names of the lsp clients in lowercase; Values are icons;
+---* `client_off: string?`  an optional string with icon which means that no one client is
+---                         attached to the current buffer. Default is 'ﮤ';
+---@type Component
+M.lsp_client_icon = {
+    provider = p.lsp_client_icon,
+    hl = h.lsp_client,
 }
 
 return M

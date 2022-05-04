@@ -87,12 +87,13 @@ end
 ---If no one client will be found, the `opts.client_off` or 'ﮤ' will be returned.
 ---
 ---@param opts table with properties:
----* `icons: table?`        is an optional table with icons for possible lsp clients.
+---* `icons: table?`        an optional table with icons for possible lsp clients.
 ---                         Keys are names of the lsp clients in lowercase; Values are icons;
----* `client_off: string?`  is an optional string with icon which means that no one client is
----                         attached to the current buffer;
+---* `client_off: string?`  an optional string with icon which means that no one client is
+---                         attached to the current buffer. Default is 'ﮤ';
 ---@return string lsp_client_icon a string which contains an icon for the lsp client.
 M.lsp_client_icon = function(_, opts)
+    local opts = opts or {}
     local icon = u.lsp_client_icon(opts.icons)
     if icon == nil then
         return opts.client_off or 'ﮤ'
