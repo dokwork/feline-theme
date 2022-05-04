@@ -1,4 +1,4 @@
----This is an example of statusline configuration
+local M = {}
 
 local sep = { str = ' | ', hl = { fg = 'blue' } }
 
@@ -38,10 +38,18 @@ local inactive_left = {
 local active = { active_left, active_middle, active_right }
 local inactive = { inactive_left }
 
-local M = {
-    generate = function()
-        return require('feline-cosmos.utils').build_statusline(active, inactive)
-    end,
-}
+M.generate = function()
+    return require('feline-cosmos.utils').build_statusline(active, inactive)
+end
+
+M.setup = function(theme)
+    local theme = theme or require('feline-cosmos.themes.dark')
+    local components = M.generate()
+    require('feline').setup({
+        components = components,
+        theme = theme,
+        vi_mode_colors = theme.vi_mode_colors,
+    })
+end
 
 return M

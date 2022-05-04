@@ -1,4 +1,4 @@
-# feline-components
+# feline-cosmos
 
 This plugin is an example of my own configuration of the
 [feline.nvim](https://github.com/feline-nvim/feline.nvim). The main idea here
