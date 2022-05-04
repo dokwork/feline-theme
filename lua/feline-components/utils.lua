@@ -118,7 +118,7 @@ M.lsp_client_icon = function(icons, client)
 end
 
 M.is_lsp_client_ready = function(client)
-    // TODO: add support of the metals
+    -- TODO: add support of the metals
     return true
 end
 

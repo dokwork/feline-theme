@@ -146,4 +146,9 @@ M.lsp_client_icon = {
     hl = h.lsp_client,
 }
 
+M.treesitter_parser = {
+    provider =  '  ',
+    hl = h.treesitter_parser,
+}
+
 return M

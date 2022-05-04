@@ -107,4 +107,19 @@ M.lsp_client = function()
     end
 end
 
+M.treesitter = function(hls)
+    local hls = vim.tbl_extend('keep', hls or {}, {
+        active = { name = 'FCTreesitterActive', fg = 'green' },
+        inactive = { name = 'FCTreesitterInactive', fg = 'NONE' },
+    })
+    return function()
+        local ok, _ = pcall(vim.treesitter.get_parser, 0)
+        if ok then
+            return hls.acitve
+        else
+            return hls.inactive
+        end
+    end
+end
+
 return M
