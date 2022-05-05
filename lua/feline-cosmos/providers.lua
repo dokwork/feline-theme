@@ -54,17 +54,17 @@ end
 ---@type fun(_: any, opts: table): string
 ---Cuts the current working path and gets the `opts.length` directories from the end
 ---with prefix ".../". For example: inside the path `/3/2/1` this provider will return
----the string ".../2/1" for length 2. If `opts.length` is more then directories in the path,
+---the string ".../2/1" for depth 2. If `opts.length` is more then directories in the path,
 ---then path will be returned as is.
 ---
 ---@param opts table with properties:
----* `length: number`   it will be used as count of the last directories in the working path. Default is 2.
+---* `depth: number`   it will be used as a count of the last directories in the working path. Default is 2.
 ---
----@return string # last `opts.length`  directories of the current working path.
+---@return string # last `opts.depth` ac count of directories of the current working path.
 M.working_path_tail = function(_, opts)
     local opts = opts or {}
     local full_path = vim.fn.getcwd()
-    local count = opts.length or 2
+    local count = opts.depth or 2
     local sep = '/' -- FIXME: use system separator
     local dirs = vim.split(full_path, sep, { plain = true, trimempty = true })
     local result = '...' .. sep
@@ -135,3 +135,8 @@ M.fugitive_branch = function()
 end
 
 return M
+
+-- TODO:
+-- git_icon provider (?) / spellcheck icon provider (?) / **and** try to use `always_visible` propertie in the components : (I don't like mix a component and its icon in the provider)
+-- length => depth for working directory
+-- move out file status icon (to put it on the rigth side and customize a color(?))
