@@ -40,7 +40,6 @@ M.vi_mode_bar = {
 M.relative_file_name = {
     provider = p.relative_file_name,
     short_provider = p.file_name,
-    icon = i.file_status_icon,
     enabled = c.is_buffer_not_empty,
 }
 
@@ -62,11 +61,6 @@ M.file_type = {
         colored_icon = false,
         case = 'lowercase',
     },
-}
-
----@type Component
-M.file_name = {
-    provider = 'file_name',
 }
 
 ---The name of the current git branch. This component uses 'tpope/vim-fugitive'
@@ -132,30 +126,9 @@ M.spellcheck = {
     icon = i.spellcheck_icon
 }
 
----Returns an icon for the first lsp client attached to the current buffer.
----Icon will be taken from the `opts.icons` or from the module 'nvim-web-devicons'.
----If no one client will be found, the `opts.client_off` or 'ﮤ' will be returned.
----The icon color will be taken from the 'nvim-web-devicons' or 'fg' will be used.
----If no one client is attached, then 'NONE' will be used as foreground color.
----
----@param opts table with properties:
----* `icons: table?`        an optional table with icons for possible lsp clients.
----                         Keys are names of the lsp clients in lowercase; Values are icons;
----* `client_off: string?`  an optional string with icon which means that no one client is
----                         attached to the current buffer. Default is 'ﮤ';
----@type Component
-M.lsp_client_icon = {
-    icon = i.lsp_client_icon,
-}
-
 M.treesitter_parser = {
     provider = '  ',
     hl = h.treesitter_parser,
-}
-
-M.scroll_bar = {
-    provider = 'scroll_bar',
-    hl = h.vi_mode,
 }
 
 return M

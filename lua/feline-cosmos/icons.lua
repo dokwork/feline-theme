@@ -8,25 +8,29 @@ local M = {}
 ---@field hl Highlight
 ---@field always_visible boolean
 
----@type fun(_: any, opts: table, hls: Highlight): string
+---@type fun(_: any, opts: table, hls: Highlight): function
 ---
 ---@param opts table with properties:
----* `readonly_icon: string`  icon which should be used when a file is readonly. Default is ''
----* `modified_icon: string`  icon which should be used when a file is modified. Default is '✎'
+---* `readonly_icon: string`  icon which should be used when a file is readonly. Default is '  ';
+---* `modified_icon: string`  icon which should be used when a file is modified. Default is '  ';
 ---
----@return string # icon of the current state of the file: readonly, modified, none. In last case
----an empty string will be returned.
+---@return function # which returns an icon of the current state of the file: readonly, modified,
+---none. In last case an empty string will be returned.
 M.file_status_icon = function(_, opts, hls)
     local opts = u.merge(opts, {
-        readonly_icon = '',
-        modified_icon = '✎',
+        readonly_icon = '  ',
+        modified_icon = '  ',
     })
-    return {
-        str = (vim.bo.readonly and opts.readonly_icon)
-            or (vim.bo.modified and opts.modified_icon)
-            or '',
-        hl = h.file_status(hls),
-    }
+    local hl = h.file_status(hls)
+    return function()
+        return {
+            str = (vim.bo.readonly and opts.readonly_icon)
+                or (vim.bo.modified and opts.modified_icon)
+                or '',
+            hl = hl,
+            always_visible = true,
+        }
+    end
 end
 
 ---@type fun(_: any, opts: table, hls: table): Icon

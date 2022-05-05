@@ -1,9 +1,13 @@
+local i = require('feline-cosmos.icons')
+local h = require('feline-cosmos.highlights')
+
 local M = {}
 
 local sep = { str = ' | ', hl = { fg = 'blue' } }
 
 local active_left = {
     { component = 'vi_mode_bar' },
+    { icon = i.file_status_icon() },
     { component = 'working_directory' },
     { component = 'relative_file_name' },
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' }, always_visible = true },
@@ -24,11 +28,11 @@ local active_right = {
     { component = 'diagnostic_warnings' },
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
-    { component = 'lsp_client_icon' },
+    { icon = i.lsp_client_icon() }, -- TODO: resolve icons in same way as components
     { component = 'treesitter_parser', right_sep = sep },
     { component = 'spellcheck', hls = { active = { fg = 'blue' } } },
     { provider = 'position', right_sep = sep, left_sep = sep },
-    { component = 'scroll_bar' },
+    { provider = 'scroll_bar', hl = h.vi_mode()  },
 }
 
 local inactive_left = {
