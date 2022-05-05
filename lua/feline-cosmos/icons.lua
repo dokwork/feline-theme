@@ -2,6 +2,7 @@ local h = require('feline-cosmos.highlights')
 local u = require('feline-cosmos.utils')
 
 local M = {}
+-- TODO: add option for padding
 
 ---@class Icon
 ---@field str string
@@ -78,10 +79,19 @@ M.spellcheck_icon = function(_, opts, hls)
 end
 
 M.git_icon = function(_, opts, hls)
-    local opts = u.merge(opts, { icon = '  ' })
+    local opts = u.merge(opts, { icon = ' ' })
     return {
         str = opts.icon,
         hl = h.git_status(hls),
+        always_visible = true,
+    }
+end
+
+M.treesitter_parser_icon = function(_, opts, hls)
+    local opts = u.merge(opts, { icon = '  ' })
+    return {
+        str = opts.icon,
+        hl = h.treesitter_parser(hls),
         always_visible = true,
     }
 end

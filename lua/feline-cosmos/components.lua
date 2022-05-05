@@ -126,9 +126,4 @@ M.spellcheck = {
     icon = i.spellcheck_icon
 }
 
-M.treesitter_parser = {
-    provider = '  ',
-    hl = h.treesitter_parser,
-}
-
 return M

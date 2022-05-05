@@ -4,13 +4,15 @@ local h = require('feline-cosmos.highlights')
 local M = {}
 
 local sep = { str = ' | ', hl = { fg = 'blue' } }
+sep.always_visible = vim.deepcopy(sep)
+sep.always_visible.always_visible = true
 
 local active_left = {
     { component = 'vi_mode_bar' },
     { icon = i.file_status_icon() },
     { component = 'working_directory' },
     { component = 'relative_file_name' },
-    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' }, always_visible = true },
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
 }
 
 local active_middle = {
@@ -24,12 +26,12 @@ local active_middle = {
 }
 
 local active_right = {
-    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' }, always_visible = true },
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
     { component = 'diagnostic_warnings' },
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
     { icon = i.lsp_client_icon() }, -- TODO: resolve icons in same way as components
-    { component = 'treesitter_parser', right_sep = sep },
+    { icon = i.treesitter_parser_icon(), right_sep = sep.always_visible },
     { component = 'spellcheck', hls = { active = { fg = 'blue' } } },
     { provider = 'position', right_sep = sep, left_sep = sep },
     { provider = 'scroll_bar', hl = h.vi_mode()  },
