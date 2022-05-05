@@ -1,4 +1,5 @@
-# feline-cosmos
+# feline-cosmos 
+### ! Work in progress !
 
 This plugin is an extension of the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
 It follows the idea of reusing providers and makes it possible to reuse other main properties 
