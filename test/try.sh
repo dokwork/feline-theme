@@ -9,8 +9,11 @@ cd $(dirname ${BASH_SOURCE[0]})
 export XDG_CONFIG_HOME='/tmp/feline-components/conf'
 export XDG_DATA_HOME='/tmp/feline-components/data'
 
-if [ "$1" == "--reset" ]; then
+ARG=$1
 
+if [ "$ARG" == "--reset" ]; then
+
+  ARG=''
   rm -rf $XDG_DATA_HOME
   rm -rf $XDG_CONFIG_HOME
 
@@ -18,4 +21,4 @@ fi
 
 mkdir -p $XDG_CONFIG_HOME
 mkdir -p $XDG_DATA_HOME
-nvim -u init.lua --cmd 'set rtp='$XDG_DATA_HOME',$VIMRUNTIME,'$XDG_CONFIG_HOME $1
+nvim -u init.lua --cmd 'set rtp='$XDG_DATA_HOME',$VIMRUNTIME,'$XDG_CONFIG_HOME $ARG

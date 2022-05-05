@@ -1,4 +1,5 @@
 local p = require('feline-cosmos.providers')
+local i = require('feline-cosmos.icons')
 local c = require('feline-cosmos.conditions')
 local h = require('feline-cosmos.highlights')
 
@@ -39,7 +40,7 @@ M.vi_mode_bar = {
 M.relative_file_name = {
     provider = p.relative_file_name,
     short_provider = p.file_name,
-    icon = p.file_status_icon,
+    icon = i.file_status_icon,
     enabled = c.is_buffer_not_empty,
 }
 
@@ -74,6 +75,7 @@ M.file_name = {
 ---@type Component
 M.git_branch = {
     provider = p.fugitive_branch,
+    icon = i.git_icon,
     hl = h.git_status,
 }
 
@@ -89,7 +91,7 @@ M.git_branch = {
 ---
 ---@type Component
 M.working_directory = {
-    provider = p.working_path_tail,
+    provider = p.working_path,
     hl = h.vi_mode,
 }
 
@@ -125,8 +127,9 @@ M.diagnostic_hint = {
 ---
 ---@type Component
 M.spellcheck = {
-    provider = p.spellcheck,
+    provider = p.spellcheck_langs,
     hl = h.spellcheck,
+    icon = i.spellcheck_icon
 }
 
 ---Returns an icon for the first lsp client attached to the current buffer.
@@ -142,8 +145,7 @@ M.spellcheck = {
 ---                         attached to the current buffer. Default is 'ﮤ';
 ---@type Component
 M.lsp_client_icon = {
-    provider = p.lsp_client_icon,
-    hl = h.lsp_client,
+    icon = i.lsp_client_icon,
 }
 
 M.treesitter_parser = {

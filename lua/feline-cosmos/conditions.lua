@@ -26,7 +26,8 @@ end
 ---@return boolean is_git_workspace `true` when the file of the current buffer is in git workspace.
 ---@see vim.fn.FugitiveGitDir
 M.is_git_workspace = function()
-    return not u.is_empty(vim.fn.FugitiveGitDir())
+    local ok, dir = pcall(vim.fn.FugitiveGitDir)
+    return ok and (not u.is_empty(dir))
 end
 
 ---@type fun(): boolean

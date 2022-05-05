@@ -6,7 +6,7 @@ local active_left = {
     { component = 'vi_mode_bar' },
     { component = 'working_directory' },
     { component = 'relative_file_name' },
-    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' }, always_visible = true },
 }
 
 local active_middle = {
@@ -20,14 +20,14 @@ local active_middle = {
 }
 
 local active_right = {
-    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
+    { provider = ' ', hl = { fg = 'bg', bg = 'NONE' }, always_visible = true },
     { component = 'diagnostic_warnings' },
     { component = 'diagnostic_errors', right_sep = sep },
     { component = 'git_branch', right_sep = sep },
     { component = 'lsp_client_icon' },
     { component = 'treesitter_parser', right_sep = sep },
-    { component = 'spellcheck', hls = { active = { fg = 'blue' } }, right_sep = sep },
-    { provider = 'position', right_sep = sep },
+    { component = 'spellcheck', hls = { active = { fg = 'blue' } } },
+    { provider = 'position', right_sep = sep, left_sep = sep },
     { component = 'scroll_bar' },
 }
 
@@ -39,7 +39,11 @@ local active = { active_left, active_middle, active_right }
 local inactive = { inactive_left }
 
 M.generate = function()
-    return require('feline-cosmos.utils').build_statusline(active, inactive)
+    return require('feline-cosmos.utils').build_statusline(
+        active,
+        inactive,
+        require('feline-cosmos.components')
+    )
 end
 
 M.setup = function(theme)

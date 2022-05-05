@@ -43,17 +43,6 @@ describe('lsp_client_icon', function()
         assert.are.equal(icon, result)
     end)
 
-    it('should transform string to icon', function()
-        -- given:
-        local client = { config = { filetypes = { 'other_type', 'test' } } }
-
-        -- when:
-        local result = u.lsp_client_icon({ test = '!' }, client)
-
-        -- then:
-        assert.are.same({ name = 'test', icon = '!' }, result)
-    end)
-
     it('should find the icon for the first attached client', function()
         -- given:
         local client = { config = { filetypes = { 'other_type', 'test' } } }
@@ -99,17 +88,7 @@ describe('build_component', function()
         assert.are.same({ component = 'test', name = 'example' }, result)
     end)
 
-    it('should take a component from the module "feline-components.components"', function()
-        -- when:
-        local result = u.build_component({ component = 'file_type' })
-
-        -- then:
-        local expected = require('feline-components.components').file_type
-        expected.component = 'file_type'
-        assert.are.same(expected, result)
-    end)
-
-    it('should resolve highlight function', function()
+    it('should invoke `hl` function on initializing the component', function()
         -- given:
         local component = {
             hl = function(hls)
@@ -129,5 +108,30 @@ describe('build_component', function()
 
         -- then:
         assert.are.same(hl, result.hl())
+    end)
+
+    it('should invoke `icon` function on initializing the component', function()
+        -- given:
+        local component = {
+            icon = function(component, opts, hls)
+                return function()
+                    return { component = component, opts = opts, hls = hls }
+                end
+            end,
+        }
+        local lib = { test = component }
+        local opts = { prop = 'value' }
+        local hls = { fg = 'green' }
+
+        -- when:
+        local result = u.build_component({
+            component = 'test',
+            opts = opts,
+            hls = hls,
+        }, lib).icon()
+
+        -- then:
+        assert.are.same(opts, result.opts)
+        assert.are.same(hls, result.hls)
     end)
 end)
