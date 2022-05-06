@@ -32,20 +32,19 @@ M.relative_file_name = function()
     return name
 end
 
----@type fun(_: any, opts: table): string
----Cuts the current working path and gets the `opts.length` directories from the end
+---@type fun(component: FelineComponent): string
+---Cuts the current working path and gets the `opts.depth` directories from the end
 ---with prefix ".../". For example: inside the path `/3/2/1` this provider will return
----the string ".../2/1" for depth 2. If `opts.length` is more then directories in the path,
+---the string ".../2/1" for depth 2. If `opts.depth` is more then directories in the path,
 ---then path will be returned as is.
 ---
----@param opts table with properties:
----* `depth: number`   it will be used as a count of the last directories in the working path. Default is 2.
+---@param component FelineComponent the current component with properties:
+---* `opts.depth: number`   it will be used as a count of the last directories in the working path. Default is 2.
 ---
 ---@return string # last `opts.depth` ac count of directories of the current working path.
-M.working_path = function(_, opts)
-    local opts = opts or {}
+M.working_path = function(component)
     local full_path = vim.fn.getcwd()
-    local count = opts.depth or 2
+    local count = component.opts and component.opts.depth or 1
     local sep = '/' -- FIXME: use system separator
     local dirs = vim.split(full_path, sep, { plain = true, trimempty = true })
     local result = '...' .. sep

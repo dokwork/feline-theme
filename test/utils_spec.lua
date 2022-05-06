@@ -81,14 +81,34 @@ describe('build_component', function()
         it('should take a component with the specified name from the library', function()
             -- given:
             local lib = {
-                components = { test = { name = 'example' } },
+                components = { test = { provider = 'example' } },
             }
 
             -- when:
             local result = u.build_component({ component = 'test' }, lib)
 
             -- then:
-            assert.are.same({ component = 'test', name = 'example' }, result)
+            assert.are.same({ component = 'test', provider = 'example' }, result)
+        end)
+
+        it('should put the `opts` to the `provider`', function()
+            -- given:
+            local lib = {
+                components = { test = { provider = 'example' } },
+            }
+
+            -- when:
+            local result = u.build_component({ component = 'test', opts = 'args' }, lib)
+
+            -- then:
+            assert.are.same(
+                {
+                    component = 'test',
+                    opts = 'args',
+                    provider = { name = 'example', opts = 'args' },
+                },
+                result
+            )
         end)
 
         it('should take an icon with the specified name from the lib', function()
@@ -108,15 +128,18 @@ describe('build_component', function()
             assert.are.same(lib.icons.test_icon, result.icon)
         end)
 
-        it('should use the string as the icon, when icon with such name is absent in the lib', function()
-            -- when:
-            local result = u.build_component({
-                icon = '!'
-            })
+        it(
+            'should use the string as the icon, when icon with such name is absent in the lib',
+            function()
+                -- when:
+                local result = u.build_component({
+                    icon = '!',
+                })
 
-            -- then:
-            assert.are.same({ icon = '!' }, result)
-        end)
+                -- then:
+                assert.are.same({ icon = '!' }, result)
+            end
+        )
     end)
 
     describe('invoking function to build components', function()

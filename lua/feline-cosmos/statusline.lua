@@ -7,7 +7,7 @@ sep.permanent.always_visible = true
 local active_left = {
     { provider = '▊', hl = 'vi_mode' },
     { icon = 'file_status_icon' },
-    { component = 'working_directory' },
+    { component = 'working_directory', opts = { depth = 2 } },
     { component = 'relative_file_name' },
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
 }

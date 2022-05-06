@@ -9,7 +9,7 @@ local M = {}
 ---@field hl Highlight
 ---@field always_visible boolean
 
----@type fun(_: any, opts: table, hls: Highlight): function
+---@type fun(opts: table, hls: Highlight): function
 ---
 ---@param opts table with properties:
 ---* `readonly_icon: string`  icon which should be used when a file is readonly. Default is '  ';
@@ -17,7 +17,7 @@ local M = {}
 ---
 ---@return function # which returns an icon of the current state of the file: readonly, modified,
 ---none. In last case an empty string will be returned.
-M.file_status_icon = function(_, opts, hls)
+M.file_status_icon = function(opts, hls)
     local opts = u.merge(opts, {
         readonly_icon = '  ',
         modified_icon = '  ',
@@ -34,7 +34,7 @@ M.file_status_icon = function(_, opts, hls)
     end
 end
 
----@type fun(_: any, opts: table, hls: table): Icon
+---@type fun(opts: table, hls: table): Icon
 ---Returns an icon for the first lsp client attached to the current buffer.
 ---Icon will be taken from the `opts.icons` or from the module 'nvim-web-devicons'.
 ---If no one client will be found, the `opts.client_off` or 'ﮤ' will be returned.
@@ -47,7 +47,7 @@ end
 --- * `client_off: string` an optional string with icon which means that no one client is
 ---                        attached to the current buffer. Default is 'ﮤ';
 ---@return string # a string which contains an icon for the lsp client.
-M.lsp_client_icon = function(_, opts, hls)
+M.lsp_client_icon = function(opts, hls)
     local opts = u.merge(opts, { unknown = '?', client_off = 'ﮤ', icons = {} })
     return function()
         local client = u.lsp_client()
@@ -65,11 +65,11 @@ M.lsp_client_icon = function(_, opts, hls)
     end
 end
 
----@type fun(_: any, opts: table, hls: table): Icon
+---@type fun(opts: table, hls: table): Icon
 ---Returns an icon symbolizing state of the spellchecking.
 ---When spellchecking is on, the icon will have `hls.active` color.
 ---When spellchecking is off, the icon will have `hls.inactive` color.
-M.spellcheck_icon = function(_, opts, hls)
+M.spellcheck_icon = function(opts, hls)
     local opts = u.merge(opts, { icon = '暈' })
     return {
         str = opts.icon,
@@ -78,7 +78,7 @@ M.spellcheck_icon = function(_, opts, hls)
     }
 end
 
-M.git_icon = function(_, opts, hls)
+M.git_icon = function(opts, hls)
     local opts = u.merge(opts, { icon = ' ' })
     return {
         str = opts.icon,
@@ -87,7 +87,7 @@ M.git_icon = function(_, opts, hls)
     }
 end
 
-M.treesitter_parser_icon = function(_, opts, hls)
+M.treesitter_parser_icon = function(opts, hls)
     local opts = u.merge(opts, { icon = '  ' })
     return {
         str = opts.icon,

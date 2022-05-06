@@ -42,11 +42,13 @@ M.relative_file_name = {
 ---
 ---@type Component
 M.file_type = {
-    provider = 'file_type',
-    opts = {
-        filetype_icon = true,
-        colored_icon = false,
-        case = 'lowercase',
+    provider = {
+        name = 'file_type',
+        opts = {
+            filetype_icon = true,
+            colored_icon = false,
+            case = 'lowercase',
+        },
     },
 }
 
@@ -110,7 +112,7 @@ M.diagnostic_hint = {
 M.spellcheck = {
     provider = p.spellcheck_langs,
     hl = h.spellcheck,
-    icon = i.spellcheck_icon
+    icon = i.spellcheck_icon,
 }
 
 return M

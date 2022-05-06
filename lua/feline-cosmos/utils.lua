@@ -116,11 +116,15 @@ end
 ---Takes a component from the {lib} according to the name of the {component}.
 ---Then merges both components with rules:
 ---1. All values with equal keys will be taken from the passed {component};
----2. If the merged component has a property `hl` with a type of function,
+---2. If the merged component has a property `opts`, and property `provider`
+---   has a type 'table', `opts` will be injected to the provider. Also, if
+---   the provider has a type 'string', it will be transformed to the table
+---   { name = <that string> }
+---3. If the merged component has a property `hl` with a type of function,
 ---   that function will be invoked with argument `component.hls or {}`
 ---   and the result will be assigned back to the property `hl`.
----3. If the merged component has a property `icon` with a type of function,
----   that function will be invoked with follow arguments: this `component`,
+---4. If the merged component has a property `icon` with a type of function,
+---   that function will be invoked with follow arguments:
 ---   `component.opts` and `component.hls`.
 ---Also, it tries to take an icon and highlight from the {lib}, when they have a
 ---type 'string'. If an icon or hl is not found in the {lib}, it will be used
@@ -144,6 +148,14 @@ M.build_component = function(component, lib)
         or component
     c = vim.tbl_extend('force', c, component)
 
+    -- inject opts
+    if c.opts and type(c.provider) == 'string' then
+        c.provider = { name = c.provider }
+    end
+    if c.opts and type(c.provider) == 'table' then
+        c.provider.opts = c.opts
+    end
+
     -- resolve highlight
     if type(c.hl) == 'string' then
         c.hl = lib.highlights[c.hl] or c.hl
@@ -156,7 +168,7 @@ M.build_component = function(component, lib)
         c.icon = lib.icons[c.icon] or c.icon
     end
     if c.icon and type(c.icon) == 'function' then
-        c.icon = c.icon(c, c.opts or {}, c.hls or {})
+        c.icon = c.icon(c.opts or {}, c.hls or {})
     end
     return c
 end
