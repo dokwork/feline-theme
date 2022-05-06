@@ -2,12 +2,12 @@ return {
     -- colors --
     yellow = '#e8a561',
     cyan = '#56b6c2',
-    grey = '#5c6370',
+    grey = '#abb2bf',
     green = '#79a15c',
-    orange = '#e5c07b',
+    orange = '#ab7f2e',
     purple = '#5931a3',
     magenta = '#c678dd',
-    blue = '#61afef',
+    blue = '#3974a8',
     red = '#e06c75',
     black = '#000000',
     white = '#abb2bf',
@@ -16,8 +16,8 @@ return {
     skyblue = '#7daea3',
 
     -- special colors --
-    fg = '#abb2bf',
-    bg = '#282c34',
-    main = '#61afef',
-    inactive = '#565c69',
+    fg = '#565c69',
+    bg = '#dbdbdb',
+    main = '#565c69',
+    inactive = '#abb2bf',
 }

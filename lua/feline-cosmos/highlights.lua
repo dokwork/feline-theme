@@ -50,7 +50,7 @@ end
 M.git_status = function(hls)
     local hls = u.merge(hls, {
         inactive = { name = 'FCGitInactive', fg = 'grey' },
-        changed = { name = 'FCGitChanged', fg = 'yellow' },
+        changed = { name = 'FCGitChanged', fg = 'orange' },
         commited = { name = 'FCGitCommited', fg = 'green' },
     })
     return function()
@@ -142,7 +142,7 @@ end
 M.file_status = function(hls)
     local hls = u.merge(hls, {
         default = { name = 'FCFileDefault', fg = 'fg' },
-        changed = { name = 'FCFileChanged', fg = 'yellow' },
+        changed = { name = 'FCFileChanged', fg = 'orange' },
         read_only = { name = 'FCFileReadOnly', fg = 'red' },
     })
     return function()
