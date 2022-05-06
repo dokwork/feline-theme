@@ -18,11 +18,12 @@ return {
     -- special colors --
     fg = '#abb2bf',
     bg = '#282c34',
+    main = '#61afef',
     inactive = '#565c69',
 
     -- vi mode colors --
     vi_mode_colors = {
-        NORMAL = 'blue',
+        NORMAL = 'main',
         OP = 'magenta',
         INSERT = 'green',
         VISUAL = 'magenta',

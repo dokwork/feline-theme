@@ -1,6 +1,6 @@
 local M = {}
 
-local sep = { str = ' | ', hl = { fg = 'blue' } }
+local sep = { str = ' | ', hl = { fg = 'main' } }
 sep.permanent = vim.deepcopy(sep)
 sep.permanent.always_visible = true
 
