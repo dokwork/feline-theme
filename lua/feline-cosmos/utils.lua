@@ -122,6 +122,9 @@ end
 ---3. If the merged component has a property `icon` with a type of function,
 ---   that function will be invoked with follow arguments: this `component`,
 ---   `component.opts` and `component.hls`.
+---Also, it tries to take an icon and highlight from the {lib}, when they have a
+---type 'string'. If an icon or hl is not found in the {lib}, it will be used
+---according to the feline rules.
 ---
 ---@param component Component # should have a property `component` with a name of
 ---the component from the library. All other properties will be copied to the
@@ -132,15 +135,25 @@ end
 ---
 ---@return table # resolved component in term of the feline.
 M.build_component = function(component, lib)
-    local lib = lib or { components = {} }
-    local c = assert(
-        lib.components[component.component],
-        'Component ' .. component.component .. ' was not found.'
-    )
+    local lib = M.merge(lib, { components = {}, icons = {}, highlights = {} })
+    local c = component.component
+            and assert(
+                lib.components[component.component],
+                'Component { component = "' .. component.component .. '" } was not found.'
+            )
+        or component
     c = vim.tbl_extend('force', c, component)
-    -- resolve highlight function with custom highlights
+
+    -- resolve highlight
+    if type(c.hl) == 'string' then
+        c.hl = lib.highlights[c.hl] or c.hl
+    end
     if c.hl and type(c.hl) == 'function' then
         c.hl = c.hl(c.hls or {})
+    end
+    -- resolve icon
+    if type(c.icon) == 'string' then
+        c.icon = lib.icons[c.icon] or c.icon
     end
     if c.icon and type(c.icon) == 'function' then
         c.icon = c.icon(c, c.opts or {}, c.hls or {})
@@ -152,9 +165,7 @@ M.build_statusline = function(active, inactive, lib)
     local transform = function(statusline)
         for i, section in ipairs(statusline) do
             for k, c in pairs(section) do
-                if c.component then
-                    statusline[i][k] = M.build_component(c, lib)
-                end
+                statusline[i][k] = M.build_component(c, lib)
             end
         end
         return statusline

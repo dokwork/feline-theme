@@ -25,15 +25,14 @@ local M = {}
 ---
 ---@param hls table<string, Highlight> # custom highlights for vi modes.
 ---The keys of this table are names of the vi mode according to
----`require('feline.providers.vi_mode').get_mode_highlight_name`.
+---`require('feline.providers.vi_mode').get_vim_mode`.
 M.vi_mode = function(hls)
     local hls = hls or {}
     return function()
-        local name = vi_mode.get_mode_highlight_name()
-        return hls[name]
+        return hls[vi_mode.get_vim_mode()]
             or {
-                name = name,
-                fg = hls[name] or vi_mode.get_mode_color(),
+                name = vi_mode.get_mode_highlight_name(),
+                fg = vi_mode.get_mode_color(),
             }
     end
 end

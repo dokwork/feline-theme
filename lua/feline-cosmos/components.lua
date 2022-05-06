@@ -17,19 +17,6 @@ local h = require('feline-cosmos.highlights')
 
 local M = {}
 
----This is a compact indicator of the current vi mode.
----
----Custom properties:
---- * `hls` should have custom highlights for vi modes.
----The keys of this table are names of the vi mode according to
----`'feline.providers.vi_mode'.get_mode_highlight_name`.
----
----@type Component
-M.vi_mode_bar = {
-    provider = '▊',
-    hl = h.vi_mode,
-}
-
 ---The name of the current file relative to the current working directory.
 ---If file is not in the one of subdirectories of the working directory, then its
 ---path will be returned with:

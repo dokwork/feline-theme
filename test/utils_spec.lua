@@ -77,67 +77,110 @@ describe('lsp_client_icon', function()
 end)
 
 describe('build_component', function()
-    it('should take a component with apropriate name from the library', function()
-        -- given:
-        local lib = {
-            components = { test = { name = 'example' } },
-        }
+    describe('taking components by names from the lib', function()
+        it('should take a component with the specified name from the library', function()
+            -- given:
+            local lib = {
+                components = { test = { name = 'example' } },
+            }
 
-        -- when:
-        local result = u.build_component({ component = 'test' }, lib)
+            -- when:
+            local result = u.build_component({ component = 'test' }, lib)
 
-        -- then:
-        assert.are.same({ component = 'test', name = 'example' }, result)
+            -- then:
+            assert.are.same({ component = 'test', name = 'example' }, result)
+        end)
+
+        it('should take an icon with the specified name from the lib', function()
+            -- given:
+            local lib = {
+                components = { test = { provider = 'example' } },
+                icons = { test_icon = { str = '!' } },
+            }
+
+            -- when:
+            local result = u.build_component({
+                component = 'test',
+                icon = 'test_icon',
+            }, lib)
+
+            -- then:
+            assert.are.same(lib.icons.test_icon, result.icon)
+        end)
+
+        it('should use the string as the icon, when icon with such name is absent in the lib', function()
+            -- when:
+            local result = u.build_component({
+                icon = '!'
+            })
+
+            -- then:
+            assert.are.same({ icon = '!' }, result)
+        end)
     end)
 
-    it('should invoke `hl` function on initializing the component', function()
-        -- given:
-        local component = {
-            hl = function(hls)
-                return function()
-                    return hls
-                end
-            end,
-        }
-        local lib = {
-            components = { test = component },
-        }
-        local hl = { fg = 'green' }
+    describe('invoking function to build components', function()
+        it('should invoke `hl` function on initializing the component', function()
+            -- given:
+            local component = {
+                hl = function(hls)
+                    return function()
+                        return hls
+                    end
+                end,
+            }
+            local lib = {
+                components = { test = component },
+            }
+            local args_for_hl = { fg = 'green' }
 
-        -- when:
-        local result = u.build_component({
-            component = 'test',
-            hls = hl,
-        }, lib)
+            -- when:
+            local result = u.build_component({
+                component = 'test',
+                hls = args_for_hl,
+            }, lib)
 
-        -- then:
-        assert.are.same(hl, result.hl())
-    end)
+            -- then:
+            assert.are.same(args_for_hl, result.hl())
+        end)
 
-    it('should invoke `icon` function on initializing the component', function()
-        -- given:
-        local component = {
-            icon = function(component, opts, hls)
-                return function()
-                    return { component = component, opts = opts, hls = hls }
-                end
-            end,
-        }
-        local lib = {
-            components = { test = component }
-        }
-        local opts = { prop = 'value' }
-        local hls = { fg = 'green' }
+        it('should invoke `icon` function on initializing the component', function()
+            -- given:
+            local component = {
+                icon = function(component, opts, hls)
+                    return function()
+                        return { component = component, opts = opts, hls = hls }
+                    end
+                end,
+            }
+            local lib = {
+                components = { test = component },
+            }
+            local opts = { prop = 'value' }
+            local hls = { fg = 'green' }
 
-        -- when:
-        local result = u.build_component({
-            component = 'test',
-            opts = opts,
-            hls = hls,
-        }, lib).icon()
+            -- when:
+            local result = u.build_component({
+                component = 'test',
+                opts = opts,
+                hls = hls,
+            }, lib).icon()
 
-        -- then:
-        assert.are.same(opts, result.opts)
-        assert.are.same(hls, result.hls)
+            -- then:
+            assert.are.same(opts, result.opts)
+            assert.are.same(hls, result.hls)
+        end)
+
+        it('should invoke the icon function when both component and provider are absent', function()
+            -- when:
+            local result = u.build_component({
+                icon = function()
+                    return 'expectation'
+                end,
+            })
+
+            -- then:
+            assert.are.same({ icon = 'expectation' }, result)
+        end)
     end)
 end)
