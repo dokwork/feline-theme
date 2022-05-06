@@ -79,7 +79,9 @@ end)
 describe('build_component', function()
     it('should take a component with apropriate name from the library', function()
         -- given:
-        local lib = { test = { name = 'example' } }
+        local lib = {
+            components = { test = { name = 'example' } },
+        }
 
         -- when:
         local result = u.build_component({ component = 'test' }, lib)
@@ -97,7 +99,9 @@ describe('build_component', function()
                 end
             end,
         }
-        local lib = { test = component }
+        local lib = {
+            components = { test = component },
+        }
         local hl = { fg = 'green' }
 
         -- when:
@@ -119,7 +123,9 @@ describe('build_component', function()
                 end
             end,
         }
-        local lib = { test = component }
+        local lib = {
+            components = { test = component }
+        }
         local opts = { prop = 'value' }
         local hls = { fg = 'green' }
 

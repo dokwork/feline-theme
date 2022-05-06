@@ -107,11 +107,15 @@ M.is_lsp_client_ready = function(client)
     return true
 end
 
----@type fun(component: Component, lib: table): table
----Takes a table with property `component` which should have a name of the
----component from the {lib}. Then such component will be merged with passed 
----{component} with following rules:
----1. All values with equal keys will be taken from the passed component;
+---@class Library # library of the reusable components.
+---@field components table<string, Component>
+---@field highlights table<string, Highlight>
+---@field icons      table<string, Icon>
+
+---@type fun(component: Component, lib: Library): table
+---Takes a component from the {lib} according to the name of the {component}.
+---Then merges both components with rules:
+---1. All values with equal keys will be taken from the passed {component};
 ---2. If the merged component has a property `hl` with a type of function,
 ---   that function will be invoked with argument `component.hls or {}`
 ---   and the result will be assigned back to the property `hl`.
@@ -124,13 +128,13 @@ end
 ---found component. Exceptions are properties `hl` and `icon`.
 ---TODO explain exceptions
 ---
----@param lib table? # library with predefined components.
+---@param lib Library # library with reusable components.
 ---
 ---@return table # resolved component in term of the feline.
 M.build_component = function(component, lib)
-    local lib = lib or {}
+    local lib = lib or { components = {} }
     local c = assert(
-        lib[component.component],
+        lib.components[component.component],
         'Component ' .. component.component .. ' was not found.'
     )
     c = vim.tbl_extend('force', c, component)
