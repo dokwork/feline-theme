@@ -1,6 +1,7 @@
 # feline-cosmos 
 ### ! Work in progress !
 
+![light_example](light_example.png)
 ![dark_example](dark_example.png)
 
 This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
