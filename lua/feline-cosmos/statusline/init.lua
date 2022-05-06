@@ -2,7 +2,7 @@ local feline = require('feline')
 
 local M = {}
 
-local sep = { str = ' | ', hl = { fg = 'main' } }
+local sep = { str = ' | ', hl = { fg = 'blue' } }
 sep.permanent = vim.deepcopy(sep)
 sep.permanent.always_visible = true
 
@@ -20,7 +20,7 @@ local active_middle = {
         provider = function()
             return (vim.g['metals_status'] or '')
         end,
-        hl = { fg = 'inactive', bg = 'NONE' },
+        hl = { fg = 'grey', bg = 'NONE' },
     },
 }
 

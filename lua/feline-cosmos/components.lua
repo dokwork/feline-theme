@@ -30,28 +30,6 @@ M.relative_file_name = {
     enabled = c.is_buffer_not_empty,
 }
 
----The type of the current file. This component uses default provider 'file_type',
----but with different default opts:
----```lua
----{
----    filetype_icon = true,
----    colored_icon = false,
----    case = 'lowercase',
----}
----```
----
----@type Component
-M.file_type = {
-    provider = {
-        name = 'file_type',
-        opts = {
-            filetype_icon = true,
-            colored_icon = false,
-            case = 'lowercase',
-        },
-    },
-}
-
 ---The name of the current git branch. This component uses 'tpope/vim-fugitive'
 ---plugin to take info about git workspace.
 ---
@@ -78,30 +56,6 @@ M.working_directory = {
     hl = h.vi_mode,
 }
 
----@type Component
-M.diagnostic_errors = {
-    provider = 'diagnostic_errors',
-    hl = 'DiagnosticError',
-}
-
----@type Component
-M.diagnostic_warnings = {
-    provider = 'diagnostic_warnings',
-    hl = 'DiagnosticWarn',
-}
-
----@type Component
-M.diagnostic_info = {
-    provider = 'diagnostic_info',
-    hl = 'DiagnosticInfo',
-}
-
----@type Component
-M.diagnostic_hint = {
-    provider = 'diagnostic_hint',
-    hl = 'DiagnosticHint',
-}
-
 ---Returns a list of languages used for spellchecking. If spellchecking is off and component
 ---doesn't have an icon, then only string '暈' will be returned. But, if component has an icon,
 ---then it behave as usually: shows a list of langs with icon when spellchecking is on, and it's
@@ -113,6 +67,30 @@ M.spellcheck = {
     provider = p.spellcheck_langs,
     hl = h.spellcheck,
     icon = i.spellcheck_icon,
+}
+
+---@type Component
+M.diagnostic_errors = {
+    provider = 'diagnostic_errors',
+    hl = { fg = 'red' },
+}
+
+---@type Component
+M.diagnostic_warnings = {
+    provider = 'diagnostic_warnings',
+    hl = { fg = 'orange' },
+}
+
+---@type Component
+M.diagnostic_info = {
+    provider = 'diagnostic_info',
+    hl = { fg = 'blue' },
+}
+
+---@type Component
+M.diagnostic_hint = {
+    provider = 'diagnostic_hint',
+    hl = { fg = 'purple' },
 }
 
 return M

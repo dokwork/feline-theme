@@ -100,7 +100,7 @@ end
 ---
 ---@return function # highlight for the first attached lsp client.
 M.lsp_client = function(hls)
-    local hls = u.merge(hls, { default = 'fg', inactive = 'inactive' })
+    local hls = u.merge(hls, { default = 'fg', inactive = 'grey' })
     return function()
         local client = u.lsp_client()
         local icon = u.lsp_client_icon({}, client)

@@ -1,5 +1,6 @@
 return {
-    -- colors --
+    fg = '#565c69',
+    bg = '#dbdbdb',
     yellow = '#e8a561',
     cyan = '#56b6c2',
     grey = '#abb2bf',
@@ -14,10 +15,4 @@ return {
     oceanblue = '#45707a',
     violet = '#d3869b',
     skyblue = '#7daea3',
-
-    -- special colors --
-    fg = '#565c69',
-    bg = '#dbdbdb',
-    main = '#565c69',
-    inactive = '#abb2bf',
 }
