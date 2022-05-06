@@ -8,6 +8,7 @@ M.setup = function(config)
         highlights = u.merge(config.custom_higlights, require('feline-cosmos.highlights')),
         icons = u.merge(config.custom_icons, require('feline-cosmos.icons')),
     })
+    config.custom_providers = u.merge(config.custom_providers, require('feline-cosmos.providers'))
     require('feline').setup(config)
 end
 
