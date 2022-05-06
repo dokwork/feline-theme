@@ -39,7 +39,7 @@ local inactive_left = {
 }
 
 M.setup = function(theme)
-    local theme = theme or require('feline-cosmos.themes.dark')
+    local theme = theme or require('feline-cosmos.statusline.themes.dark')
     require('feline-cosmos').setup({
         theme = theme,
         vi_mode_colors = theme.vi_mode_colors,
