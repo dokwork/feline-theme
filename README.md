@@ -1,5 +1,4 @@
 # feline-cosmos 
-### ! Work in progress !
 
 ![light_example](light_example.png)
 ![dark_example](dark_example.png)
@@ -54,6 +53,25 @@ require('feline-cosmos').setup {
 }
 ```
 
+## How to install
+
+With [packer.nvim](https://github.com/wbthomason/packer.nvim/):
+
+```lua
+use({
+    'dokwork/feline-cosmos',
+    requires = {
+        'kyazdani42/nvim-web-devicons',
+        'famiu/feline.nvim',
+        'tpope/vim-fugitive', -- used for git components
+    },
+    -- optionally, you can setup preconfigured statusline:
+    config = function()
+        require('feline-cosmos.statusline').setup()
+    end,
+})
+```
+
 ## Motivation
 
 I'm glad to use the [feline.nvim](https://github.com/feline-nvim/feline.nvim) plugin. This is a very
@@ -63,3 +81,7 @@ implementation of components and their composition. Also, I think that not only 
 being reusable, but icons and highlights too. Of course, resolving providers, icons, highlights, or
 whole components has a performance penalty. But first, the penalty is not so big, and second, I'm
 ready to sacrifice performance for the sake of clarity.
+
+## TODO
+
+ - Add more documentation
