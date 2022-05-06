@@ -1,6 +1,6 @@
 local u = require('feline-cosmos.utils')
 
-vim.cmd('augroup feline_components_git_status')
+vim.cmd('augroup feline_cosmos_git_status')
 vim.cmd('autocmd!')
 vim.cmd(
     'autocmd BufEnter,FocusGained,BufWritePost * let b:git_status = systemlist("git status --porcelain")'
@@ -34,7 +34,7 @@ end
 -- Checks the status of files whithin the current git workspace using `git status --poreclain`.
 ---@return boolean is_git_changed `true` if one of the files in the current git workspace was changed.
 M.is_git_changed = function()
-    return (vim.b.git_status and next(vim.b.git_status)) ~= nil
+    return vim.b.git_status and next(vim.b.git_status)
 end
 
 return M
