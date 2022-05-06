@@ -1,7 +1,9 @@
 # feline-cosmos 
 ### ! Work in progress !
 
-This plugin is an extension of the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
+![dark_example](dark_example.png)
+
+This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
 It follows the idea of reusing providers and makes it possible to reuse other main properties 
 of components, such as highlighting or icons. More over, with `feline-cosmos` you can reuse 
 the whole component.
@@ -19,7 +21,7 @@ return {
 
   file = {
     provider = 'file_info', -- default provider from the feline
-    hl = 'file_status' -- highlight depends on the current state of the file (readonly, modified or not)
+    hl = 'file_status' -- highlight depends on the current state of the file (readonly, modified or nothing)
   }
 }
 ```
@@ -36,7 +38,7 @@ return {
     { component = 'file' }
   },
   inactive = {
-    -- on inactive window we want always show file info in the grey color
+    -- in an inactive window we want always to show a file_info in grey
     { component = 'file', hl = { fg = 'grey' } }
   }
 }
@@ -53,13 +55,10 @@ require('feline-cosmos').setup {
 
 ## Motivation
 
-I'm glad to use the [feline.nvim](https://github.com/feline-nvim/feline.nvim) plugin. 
-This is a very powerful and useful plugin for configuring the vim statusline.
-But for my taste, the final configuration usually looks a little bit cumbersome
-and messy. I prefer to separate an implementation of components and their
-composition. Also, I think that not only providers deserve being reusable, but icons and
-highlights too. Of course, resolving providers, icons, highlights, or whole components has
-a penalty. But first, the penalty is not so big, and second, I'm ready to sacrifice the 
-performance for the sake of clarity.
-
-Nevertheless, this plugin is more a proof of concept of such idea, than the final solution.
+I'm glad to use the [feline.nvim](https://github.com/feline-nvim/feline.nvim) plugin. This is a very
+powerful and useful plugin for configuring the neovim statusline. But for my taste, the final
+configuration usually looks a little bit cumbersome and messy. I prefer to separate an
+implementation of components and their composition. Also, I think that not only providers deserve
+being reusable, but icons and highlights too. Of course, resolving providers, icons, highlights, or
+whole components has a performance penalty. But first, the penalty is not so big, and second, I'm
+ready to sacrifice performance for the sake of clarity.
