@@ -14,15 +14,7 @@ local active_left = {
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
 }
 
-local active_middle = {
-    {
-        name = 'metal_status',
-        provider = function()
-            return (vim.g['metals_status'] or '')
-        end,
-        hl = { fg = 'grey', bg = 'NONE' },
-    },
-}
+local active_middle = {}
 
 local active_right = {
     { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },

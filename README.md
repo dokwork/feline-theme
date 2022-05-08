@@ -5,7 +5,7 @@
 
 This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
 It follows the idea of reusing providers and makes it possible to reuse other main properties 
-of components, such as highlighting or icons. More over, with `feline-cosmos` you can reuse 
+of components, such as highlighting or icons. Moreover, with `feline-cosmos` you can reuse 
 the whole component.
 
 For example, assume you have a script, where all your components are described:
@@ -75,13 +75,26 @@ use({
 ## Motivation
 
 I'm glad to use the [feline.nvim](https://github.com/feline-nvim/feline.nvim) plugin. This is a very
-powerful and useful plugin for configuring the neovim statusline. But for my taste, the final
+powerful and useful plugin for configuring the neovim status line. But for my taste, the final
 configuration usually looks a little bit cumbersome and messy. I prefer to separate an
-implementation of components and their composition. Also, I think that not only providers deserve
-being reusable, but icons and highlights too. Of course, resolving providers, icons, highlights, or
-whole components has a performance penalty. But first, the penalty is not so big, and second, I'm
-ready to sacrifice performance for the sake of clarity.
+implementation of the components and their composition. Also, I think that not only providers deserve
+being reusable, but icons and highlights too. 
+
+For example, `feline` has the provider of the git branch. That provider can also return an icon
+depending on the state of the current git working directory. But how about highlighting, which can
+depend on the git state too? Unfortunately, you have to specified it additionally and can't inherit
+it. So, my idea is being able to share between users reusable libraries of the components or their
+properties, such as providers, icons, or highlights, and apply the most interesting or helpful of
+them to your own configuration. Or share a complete status line configuration with customization,
+instead of copy-past it from the different sources.
+
+Of course, resolving providers, icons, highlights, or whole components has a performance penalty.
+But first, the penalty is not significant, and second, I'm ready to sacrifice a little performance
+for the sake of clarity. Finally, this project is more the proof of concept, instead of the final
+solution, and currently **is under develop**.
+
 
 ## TODO
 
  - Add more documentation
+
