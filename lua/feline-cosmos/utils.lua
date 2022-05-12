@@ -125,7 +125,7 @@ end
 ---   and the result will be assigned back to the property `hl`.
 ---4. If the merged component has a property `icon` with a type of function,
 ---   that function will be invoked with follow arguments:
----   `component.opts` and `component.hls`.
+---   `component.icon_opts` and `component.icon_hls`.
 ---Also, it tries to take an icon and highlight from the {lib}, when they have a
 ---type 'string'. If an icon or hl is not found in the {lib}, it will be used
 ---according to the feline rules.
@@ -163,13 +163,15 @@ M.build_component = function(component, lib)
     if c.hl and type(c.hl) == 'function' then
         c.hl = c.hl(c.hls or {})
     end
+
     -- resolve icon
     if type(c.icon) == 'string' then
         c.icon = lib.icons[c.icon] or c.icon
     end
     if c.icon and type(c.icon) == 'function' then
-        c.icon = c.icon(c.opts or {}, c.hls or {})
+        c.icon = c.icon(c.icon_opts or {}, c.icon_hls or {})
     end
+
     return c
 end
 
