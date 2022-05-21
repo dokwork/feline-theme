@@ -40,16 +40,41 @@ M.select_theme = function()
     end
 end
 
-M.setup = function(theme)
-    local dark = theme or require('feline-cosmos.statusline.themes.dark')
-    local light = theme or require('feline-cosmos.statusline.themes.light')
+local function patch(t1, t2)
+    for k, v in pairs(t2) do
+        if type(t1[k]) == 'table' and type(v) == 'table' then
+            patch(t1[k], v)
+        else
+            t1[k] = v
+        end
+    end
+end
 
-    require('feline-cosmos').setup({
+M.setup = function(customization, themes)
+    local dark = themes and themes.dark or require('feline-cosmos.statusline.themes.dark')
+    local light = themes and themes.light or require('feline-cosmos.statusline.themes.light')
+
+    local statusline = {
+        active = { left = active_left, middle = active_middle, right = active_right },
+        inactive = { left = inactive_left },
+    }
+
+    patch(statusline, customization or {})
+
+    local config = require('feline-cosmos').setup({
         theme = dark,
         vi_mode_colors = require('feline-cosmos.statusline.themes.vi_mode_colors'),
         components = {
-            active = { active_left, active_middle, active_right },
-            inactive = { inactive_left },
+            active = {
+                statusline.active.left,
+                statusline.active.middle,
+                statusline.active.right,
+            },
+            inactive = {
+                statusline.inactive.left,
+                statusline.inactive.middle,
+                statusline.inactive.right,
+            },
         },
     })
 
@@ -62,6 +87,8 @@ M.setup = function(theme)
         autocmd!
         autocmd ColorScheme * lua require('feline-cosmos.statusline').select_theme()
     augroup END]])
+
+    return config
 end
 
 return M

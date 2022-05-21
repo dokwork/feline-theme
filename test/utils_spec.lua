@@ -40,7 +40,7 @@ describe('lsp_client_icon', function()
         local result = u.lsp_client_icon({ test = icon }, client)
 
         -- then:
-        assert.are.equal(icon, result)
+        assert.are.same(icon, result)
     end)
 
     it('should find the icon for the first attached client', function()
@@ -55,7 +55,7 @@ describe('lsp_client_icon', function()
             local result = u.lsp_client_icon({ test = icon })
 
             -- then:
-            assert.are.equal(icon, result)
+            assert.are.same(icon, result)
         end)
     end)
 
@@ -71,7 +71,7 @@ describe('lsp_client_icon', function()
             local result = u.lsp_client_icon({}, client)
 
             -- then:
-            assert.are.equal(icon, result)
+            assert.are.same(icon, result)
         end)
     end)
 end)

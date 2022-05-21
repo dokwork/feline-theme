@@ -146,7 +146,7 @@ M.build_component = function(component, lib)
                 'Component { component = "' .. component.component .. '" } was not found.'
             )
         or component
-    c = vim.tbl_extend('force', c, component)
+    c = M.merge(c, component)
 
     -- inject opts
     if c.opts and type(c.provider) == 'string' then
