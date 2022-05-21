@@ -26,14 +26,6 @@ M.is_empty = function(x)
     return false
 end
 
----@type fun(t:any):boolean
----Checks do the argument have a type 'table'.
----
----@return boolean true when the argument has a type 'table'.
-M.is_table = function(t)
-    return type(t) == 'table'
-end
-
 ---@type fun(t1: table, t2: table): table
 ---The same as `vim.extend('keep', t1 or {}, t2 or {})`
 M.merge = function(t1, t2)
@@ -107,6 +99,17 @@ M.is_lsp_client_ready = function(client)
     return true
 end
 
+M.remove_nil = function(t)
+    for k, v in pairs(t) do
+        if v == 'nil' then
+            t[k] = nil
+        elseif type(v) == 'table' then
+            t[k] = M.remove_nil(v)
+        end
+    end
+    return t
+end
+
 ---@class Library # library of the reusable components.
 ---@field components table<string, Component>
 ---@field highlights table<string, Highlight>
@@ -114,16 +117,19 @@ end
 
 ---@type fun(component: Component, lib: Library): table
 ---Takes a component from the {lib} according to the name of the {component}.
----Then merges both components with rules:
+---Then merges both components with follow rules:
 ---1. All values with equal keys will be taken from the passed {component};
----2. If the merged component has a property `opts`, and property `provider`
+---2. If the merged component has a property with string value "nil", that property
+---   will be removed. This is recursive rule, that means this rule will be
+---   applied to all nested tables in the component.
+---3. If the merged component has a property `opts`, and property `provider`
 ---   has a type 'table', `opts` will be injected to the provider. Also, if
 ---   the provider has a type 'string', it will be transformed to the table
 ---   { name = <that string> }
----3. If the merged component has a property `hl` with a type of function,
+---4. If the merged component has a property `hl` with a type of function,
 ---   that function will be invoked with argument `component.hls or {}`
 ---   and the result will be assigned back to the property `hl`.
----4. If the merged component has a property `icon` with a type of function,
+---5. If the merged component has a property `icon` with a type of function,
 ---   that function will be invoked with follow arguments:
 ---   `component.icon_opts` and `component.icon_hls`.
 ---Also, it tries to take an icon and highlight from the {lib}, when they have a
@@ -133,7 +139,6 @@ end
 ---@param component Component # should have a property `component` with a name of
 ---the component from the library. All other properties will be copied to the
 ---found component. Exceptions are properties `hl` and `icon`.
----TODO explain exceptions
 ---
 ---@param lib Library # library with reusable components.
 ---
@@ -146,7 +151,7 @@ M.build_component = function(component, lib)
                 'Component { component = "' .. component.component .. '" } was not found.'
             )
         or component
-    c = M.merge(c, component)
+    c = vim.tbl_deep_extend('force', c or {}, component or {})
 
     -- inject opts
     if c.opts and type(c.provider) == 'string' then
@@ -172,7 +177,8 @@ M.build_component = function(component, lib)
         c.icon = c.icon(c.icon_opts or {}, c.icon_hls or {})
     end
 
-    return c
+    -- apply removing properties marked as 'nil'
+    return M.remove_nil(c)
 end
 
 M.build_statusline = function(active, inactive, lib)
