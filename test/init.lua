@@ -24,7 +24,7 @@ vim.cmd([[packadd packer.nvim]])
 require('packer').startup(function(use)
     use('wbthomason/packer.nvim')
     use({
-        'feline-cosmos',
+        'compline',
         requires = {
             'kyazdani42/nvim-web-devicons',
             'famiu/feline.nvim',
@@ -38,7 +38,7 @@ if packer_bootstrap then
     print('Please, restart nvim through try.sh to use installed plugins.')
 else
     -- Configuration for test:
-    local config = require('feline-cosmos.cosmosline').setup({
+    local config = require('compline.cosmosline').setup({
         active = { left = { [1] = { provider = 'test' } } },
     })
     vim.pretty_print(config)

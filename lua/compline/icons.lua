@@ -1,5 +1,5 @@
-local h = require('feline-cosmos.highlights')
-local u = require('feline-cosmos.utils')
+local h = require('compline.highlights')
+local u = require('compline.utils')
 
 local M = {}
 -- TODO: add option for padding
