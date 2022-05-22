@@ -1,7 +1,7 @@
-local p = require('feline-cosmos.providers')
-local i = require('feline-cosmos.icons')
-local c = require('feline-cosmos.conditions')
-local h = require('feline-cosmos.highlights')
+local p = require('compline.providers')
+local i = require('compline.icons')
+local c = require('compline.conditions')
+local h = require('compline.highlights')
 
 ---@class FelineComponent # see complete description here: |feline-components|
 ---@field name string

@@ -1,5 +1,5 @@
-local c = require('feline-cosmos.conditions')
-local u = require('feline-cosmos.utils')
+local c = require('compline.conditions')
+local u = require('compline.utils')
 
 local M = {}
 

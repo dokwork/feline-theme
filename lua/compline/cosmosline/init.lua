@@ -51,8 +51,8 @@ local function patch(t1, t2)
 end
 
 M.setup = function(customization, themes)
-    local dark = themes and themes.dark or require('feline-cosmos.cosmosline.themes.dark')
-    local light = themes and themes.light or require('feline-cosmos.cosmosline.themes.light')
+    local dark = themes and themes.dark or require('compline.cosmosline.themes.dark')
+    local light = themes and themes.light or require('compline.cosmosline.themes.light')
 
     local statusline = {
         active = { left = active_left, middle = active_middle, right = active_right },
@@ -61,9 +61,9 @@ M.setup = function(customization, themes)
 
     patch(statusline, customization or {})
 
-    local config = require('feline-cosmos').setup({
+    local config = require('compline').setup({
         theme = dark,
-        vi_mode_colors = require('feline-cosmos.cosmosline.themes.vi_mode_colors'),
+        vi_mode_colors = require('compline.cosmosline.themes.vi_mode_colors'),
         components = {
             active = {
                 statusline.active.left,
@@ -85,7 +85,7 @@ M.setup = function(customization, themes)
 
     vim.cmd([[augroup cosmos_themes
         autocmd!
-        autocmd ColorScheme * lua require('feline-cosmos.cosmosline').select_theme()
+        autocmd ColorScheme * lua require('compline.cosmosline').select_theme()
     augroup END]])
 
     return config

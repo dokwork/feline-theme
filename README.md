@@ -1,12 +1,12 @@
-# feline-cosmos 
+# Components line 
 
 ![light_example](light_example.png)
 ![dark_example](dark_example.png)
 
 This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
 It follows the idea of reusing providers and makes it possible to reuse other main properties 
-of components, such as highlighting or icons. Moreover, with `feline-cosmos` you can reuse 
-the whole component or whole statusline!
+of components, such as highlighting or icons. Moreover, with `compline` you can reuse 
+the whole component or the whole statusline!
 
 For example, assume you have a lua script, where all your components are described:
 
@@ -47,7 +47,7 @@ return {
 And finally, set up your status line:
 
 ```lua
-require('feline-cosmos').setup {
+require('compline').setup {
   components = require('my_statusline'),
   custom_components = require('my_components')
 }
@@ -61,7 +61,7 @@ With [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 
 ```lua
 use({
-    'dokwork/feline-cosmos',
+    'dokwork/compline',
     requires = {
         'kyazdani42/nvim-web-devicons',
         'famiu/feline.nvim',
@@ -69,7 +69,7 @@ use({
     },
     -- optionally, you can setup preconfigured statusline:
     config = function()
-        require('feline-cosmos.cosmosline').setup()
+        require('compline.cosmosline').setup()
     end,
 })
 ```

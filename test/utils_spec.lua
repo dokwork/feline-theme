@@ -1,5 +1,5 @@
-local test = require('feline-cosmos.test')
-local u = require('feline-cosmos.utils')
+local test = require('compline.test')
+local u = require('compline.utils')
 
 describe('is_empty', function()
     it('should return true for nil', function()
