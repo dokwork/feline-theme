@@ -1,4 +1,5 @@
 local feline = require('feline')
+local feline_themes = require('feline.themes')
 
 local M = {}
 
@@ -78,8 +79,9 @@ M.setup = function(customization, themes)
         },
     })
 
-    feline.add_theme('cosmos-dark', dark)
-    feline.add_theme('cosmos-light', light)
+
+    feline_themes['cosmos-dark'] = dark
+    feline_themes['cosmos-light'] = light
 
     M.select_theme()
 
