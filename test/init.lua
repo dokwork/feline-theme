@@ -38,6 +38,8 @@ if packer_bootstrap then
     print('Please, restart nvim through try.sh to use installed plugins.')
 else
     -- Configuration for test:
-
-    require('feline-cosmos.statusline').setup()
+    local config = require('feline-cosmos.cosmosline').setup({
+        active = { left = { [1] = { provider = 'test' } } },
+    })
+    vim.pretty_print(config)
 end

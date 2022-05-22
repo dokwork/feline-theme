@@ -10,6 +10,8 @@ M.setup = function(config)
     })
     config.custom_providers = u.merge(config.custom_providers, require('feline-cosmos.providers'))
     require('feline').setup(config)
+
+    return config
 end
 
 return M

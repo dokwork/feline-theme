@@ -6,9 +6,9 @@
 This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
 It follows the idea of reusing providers and makes it possible to reuse other main properties 
 of components, such as highlighting or icons. Moreover, with `feline-cosmos` you can reuse 
-the whole component.
+the whole component or whole statusline!
 
-For example, assume you have a script, where all your components are described:
+For example, assume you have a lua script, where all your components are described:
 
 ```lua
 -- my_components.lua
@@ -53,6 +53,8 @@ require('feline-cosmos').setup {
 }
 ```
 
+More details you can find here: [Guide.md](Guide.md).
+
 ## How to install
 
 With [packer.nvim](https://github.com/wbthomason/packer.nvim/):
@@ -67,7 +69,7 @@ use({
     },
     -- optionally, you can setup preconfigured statusline:
     config = function()
-        require('feline-cosmos.statusline').setup()
+        require('feline-cosmos.cosmosline').setup()
     end,
 })
 ```
