@@ -90,10 +90,8 @@ properties, such as providers, icons, or highlights, and apply the most interest
 them to your own configuration. Or share a complete status line configuration with customization,
 instead of copy-past it from the different sources.
 
-Of course, resolving providers, icons, highlights, or whole components has a performance penalty.
-But first, the penalty is not significant, and second, I'm ready to sacrifice a little performance
-for the sake of clarity. Finally, this project is more the proof of concept, instead of the final
-solution, and currently **is under develop**.
+This project is more the proof of concept, instead of the final solution, and currently **is under
+develop**.
 
 
 ## TODO
