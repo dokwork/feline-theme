@@ -3,17 +3,6 @@ local i = require('compline.icons')
 local c = require('compline.conditions')
 local h = require('compline.highlights')
 
----@class FelineComponent # see complete description here: |feline-components|
----@field name string
----@field provider string|table|function
----@field opts any
----@field hl Highlight
----@field icon string|table|function
----@field enabled boolean
-
----@class Component : FelineComponent
----@field component string # a name of the existing component which will be used as a prototype.
----@field hls table<string, Highlight> # custom highlights for the component.
 
 local M = {}
 

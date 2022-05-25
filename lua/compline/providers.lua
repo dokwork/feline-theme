@@ -3,7 +3,6 @@ local u = require('compline.utils')
 
 local M = {}
 
----@alias FelineComponent table
 
 ---@type fun(): string
 ---

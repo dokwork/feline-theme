@@ -4,11 +4,6 @@ local u = require('compline.utils')
 local M = {}
 -- TODO: add option for padding
 
----@class Icon
----@field str string
----@field hl Highlight
----@field always_visible boolean
-
 ---@type fun(opts: table, hls: Highlight): function
 ---
 ---@param opts table with properties:

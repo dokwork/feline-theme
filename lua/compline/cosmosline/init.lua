@@ -79,16 +79,16 @@ M.setup = function(customization, themes)
         },
     })
 
-
     feline_themes['cosmos-dark'] = dark
     feline_themes['cosmos-light'] = light
 
     M.select_theme()
 
-    vim.cmd([[augroup cosmos_themes
-        autocmd!
-        autocmd ColorScheme * lua require('compline.cosmosline').select_theme()
-    augroup END]])
+    local group = vim.api.nvim_create_augroup('cosmos_themes', { clear = true })
+    vim.api.nvim_create_autocmd(
+        'ColorScheme',
+        { pattern = '*', callback = M.select_theme, group = group }
+    )
 
     return config
 end

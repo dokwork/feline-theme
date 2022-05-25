@@ -1,9 +1,5 @@
 local M = {}
 
----@alias LspClient table #an object which returns from the `vim.lsp.client()`.
-
----@alias DevIcon table #an object which returns from the 'nvim-web-devicons' module.
-
 ---@type fun(x: any): boolean
 ---Checks is an argument {x} is empty.
 ---
@@ -109,11 +105,6 @@ M.remove_nil = function(t)
     end
     return t
 end
-
----@class Library # library of the reusable components.
----@field components table<string, Component>
----@field highlights table<string, Highlight>
----@field icons      table<string, Icon>
 
 ---@type fun(component: Component, lib: Library): table
 ---Takes a component from the {lib} according to the name of the {component}.
