@@ -32,14 +32,18 @@ as the original `feline` plugin:
 ```lua
 -- my_statusline.lua
 
-return {
-  active = {
+require('compline.statusline').new('myline', {
+  active_components = {
     { component = 'progress' },
     { component = 'file' }
   },
-  inactive = {
+  inactive_components = {
     -- in an inactive window we want always to show a file_info in grey
     { component = 'file', hl = { fg = 'grey' } }
+  },
+  -- you should specify a table where used components are declared:
+  lib = {
+    components = require('my_components')
   }
 }
 ```
@@ -47,10 +51,7 @@ return {
 And finally, set up your status line:
 
 ```lua
-require('compline').setup {
-  components = require('my_statusline'),
-  custom_components = require('my_components')
-}
+require('my_statusline'):setup()
 ```
 
 More details you can find here: [Guide.md](Guide.md).
@@ -69,7 +70,7 @@ use({
     },
     -- optionally, you can setup preconfigured statusline:
     config = function()
-        require('compline.cosmosline').setup()
+        require('compline.cosmosline'):setup()
     end,
 })
 ```
