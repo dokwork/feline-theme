@@ -9,10 +9,14 @@ local Statusline = {
     lib = {},
 }
 
-function Statusline:new( customization)
+---@fun(name: string, customization: Statusline): Statusline
+function Statusline:new(name, customization)
+    assert(type(name) == 'string', 'Statusline must have an uniq name.')
+
     local x = customization or {}
     setmetatable(x, self)
     self.__index = self
+    x.name = name
     return x
 end
 
@@ -21,11 +25,13 @@ end
 ---tries to take 'light' or 'dark' theme according to the current
 ---`vim.o.background` value.
 function Statusline:select_theme()
+    local s = self.name .. '_'
     local feline_themes = require('feline.themes')
-    local theme = self.themes and self.themes[vim.g.colors_name]
-    theme = theme or (self.themes and self.themes[vim.o.background])
-    if theme and feline_themes[theme] then
-        feline.use_theme(theme)
+    if vim.g.colors_name and feline_themes[s .. vim.g.colors_name] then
+        return feline.use_theme(s .. vim.g.colors_name)
+    end
+    if vim.o.background and feline_themes[s .. vim.o.background] then
+        return feline.use_theme(s .. vim.o.background)
     end
 end
 
@@ -38,22 +44,26 @@ function Statusline:setup()
         self.lib
     )
     config.custom_providers = self.lib.providers
-
-    local feline_themes = require('feline.themes')
-    for k, v in self.themes do
-        feline_themes[k] = v
-    end
+    config.vi_mode_colors = self.vi_mode_colors
 
     feline.setup(config)
+
+    local feline_themes = require('feline.themes')
+    for k, v in pairs(self.themes) do
+        feline_themes[self.name .. '_' .. k] = v
+    end
 
     self:select_theme()
 
     -- change the theme on every changes colorscheme or background
     local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })
-    vim.api.nvim_create_autocmd(
-        'ColorScheme',
-        { pattern = '*', group = group, callback = function() self:select_theme() end }
-    )
+    vim.api.nvim_create_autocmd('ColorScheme', {
+        pattern = '*',
+        group = group,
+        callback = function()
+            self:select_theme()
+        end,
+    })
 
     return config
 end

@@ -20,9 +20,8 @@
 ---@class FelineComponent # see complete description here: |feline-components|
 ---@field name string
 ---@field provider Provider
----@field opts any
 ---@field hl Highlight
----@field icon string|Icon|function
+---@field icon Icon
 ---@field enabled boolean
 
 ---@class FelineSetup # see |feline-setup-function|
@@ -48,6 +47,7 @@
 ---@field icons      table<string, Icon>
 
 ---@class Statusline
+---@field name                  string
 ---@field active_components     Section[]               list of sections with components for an active window.
 ---@field inactive_components   Section[]               list of sections with components for an inactive window.
 ---@field themes                table<string, Theme>    table with existed temes.
