@@ -2,8 +2,9 @@ local u = require('compline.utils')
 local feline = require('feline')
 
 local Statusline = {
-    active_components = {},
-    inactive_components = {},
+    -- user should be able to not specify components in some case at all
+    active_components = nil,
+    inactive_components = nil,
     themes = {},
     vi_mode_colors = {},
     lib = {},
@@ -35,14 +36,17 @@ function Statusline:select_theme()
     end
 end
 
+function Statusline:build_components()
+    return {
+        active = u.build_statusline(self.active_components, self.lib),
+        inactive = u.build_statusline(self.inactive_components, self.lib),
+    }
+end
+
 ---@return FelineSetup # table which were used to setup feline.
 function Statusline:setup()
     local config = {}
-    config.components = u.build_statusline(
-        self.active_components,
-        self.inactive_components,
-        self.lib
-    )
+    config.components = self:build_components()
     config.custom_providers = self.lib.providers
     config.vi_mode_colors = self.vi_mode_colors
 

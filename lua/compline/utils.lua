@@ -103,10 +103,10 @@ M.remove_nil = function(t)
             t[k] = M.remove_nil(v)
         end
     end
-    return t
+    return (not M.is_empty(t)) and t or nil
 end
 
----@type fun(component: Component, lib: Library): table
+---@type fun(component: Component, lib: Library): FelineComponent
 ---Takes a component from the {lib} according to the name of the {component}.
 ---Then merges both components with follow rules:
 ---1. All values with equal keys will be taken from the passed {component};
@@ -133,7 +133,7 @@ end
 ---
 ---@param lib Library # library with reusable components.
 ---
----@return table # resolved component in term of the feline.
+---@return FelineComponent # resolved component in term of the feline.
 M.build_component = function(component, lib)
     local lib = M.merge(lib, { components = {}, icons = {}, highlights = {} })
     local c = component.component
@@ -172,20 +172,21 @@ M.build_component = function(component, lib)
     return M.remove_nil(c)
 end
 
-M.build_statusline = function(active, inactive, lib)
-    local transform = function(statusline)
-        for i, section in ipairs(statusline) do
+---@fun(section: Section[], lib: Library): FelineSection[]
+M.build_statusline = function(line, lib)
+    if line == 'nil' or not line then
+        return nil
+    end
+    for i, section in ipairs(line) do
+        if line[i] == 'nil' then
+            line[i] = nil
+        else
             for k, c in pairs(section) do
-                statusline[i][k] = M.build_component(c, lib)
+                line[i][k] = line[i][k] ~= 'nil' and M.build_component(c, lib) or nil
             end
         end
-        return statusline
     end
-
-    return {
-        active = transform(active),
-        inactive = transform(inactive),
-    }
+    return line
 end
 
 return M

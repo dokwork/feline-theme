@@ -45,13 +45,22 @@ require('compline.statusline').new('myline', {
   lib = {
     components = require('my_components')
   }
-}
+})
 ```
 
 And finally, set up your status line:
 
 ```lua
 require('my_statusline'):setup()
+```
+
+Or much better, you can override existed statusline to reuse liked one:
+
+```lua
+require('compline.cosmosline'):new('my_personal_cosmosline', {
+  -- do not change statusline for inactive window
+  inactive_components = nil
+}):setup()
 ```
 
 More details you can find here: [Guide.md](Guide.md).
