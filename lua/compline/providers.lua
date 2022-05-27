@@ -3,7 +3,6 @@ local u = require('compline.utils')
 
 local M = {}
 
-
 ---@type fun(): string
 ---
 ---@return string # the name with extension of the file from the current buffer.

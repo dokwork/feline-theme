@@ -43,7 +43,9 @@ else
     -- })
     -- vim.pretty_print(config)
 
-    require('compline.statusline'):new('test', {
-        active_components = { { { provider = 'test' } } }
-    }):setup()
+    require('compline.statusline')
+        :new('test', {
+            active_components = { { { provider = 'test' } } },
+        })
+        :setup()
 end

@@ -9,7 +9,6 @@
 ---```
 ---NOTE: Only colors from the default palette should be used.
 
-
 local vi_mode = require('feline.providers.vi_mode')
 local c = require('compline.conditions')
 local u = require('compline.utils')

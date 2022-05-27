@@ -3,7 +3,6 @@ local i = require('compline.icons')
 local c = require('compline.conditions')
 local h = require('compline.highlights')
 
-
 local M = {}
 
 ---The name of the current file relative to the current working directory.
