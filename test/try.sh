@@ -19,6 +19,12 @@ if [ "$ARG" == "--reset" ]; then
 
 fi
 
+if [ "$ARG" == "--cosmosline" ]; then
+  
+  ARG=''
+  export COSMOSLINE="1"
+fi
+
 mkdir -p $XDG_CONFIG_HOME
 mkdir -p $XDG_DATA_HOME
 nvim -u init.lua --cmd 'set rtp='$XDG_DATA_HOME',$VIMRUNTIME,'$XDG_CONFIG_HOME $ARG

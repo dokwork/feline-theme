@@ -8,7 +8,8 @@
 
 ---@alias Color string # a name of the color or RGB hex color description
 
----@alias Highlight string|table|function # a description of the highlight according to the |feline-Component-highlight|.
+---@alias Highlight string|table|function # similar to the highlight from the Feline, but function
+--- can take a table as an argument.
 
 ---@alias Provider string|table|function
 
@@ -20,7 +21,7 @@
 ---@class FelineComponent # see complete description here: |feline-components|
 ---@field name string
 ---@field provider Provider
----@field hl Highlight
+---@field hl string|table|function # a description of the highlight according to the |feline-Component-highlight|
 ---@field icon Icon
 ---@field enabled boolean
 

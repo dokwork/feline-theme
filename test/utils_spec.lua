@@ -214,10 +214,8 @@ describe('build_component', function()
             components = {
                 test = {
                     hl = function(hls)
-                        return function()
-                            -- just returrn an argument to check it later
-                            return hls
-                        end
+                        -- just returrn an argument to check it later
+                        return hls
                     end,
                 },
             },

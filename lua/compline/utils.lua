@@ -132,7 +132,9 @@ end
 ---   the provider has a type 'string', it will be transformed to the table
 ---   { name = <that string> } and `opts` will be injected.
 ---4. If the merged component has a property `hl` with a type of function,
----   that function will be invoked with argument `component.hls or {}`
+---   that function will be wrapped by a new one function without arguments in
+---   purpose of compatibility with Feline. Original function will be invoked
+---   inside the new proxy function with argument `component.hls or {}`
 ---   and the result will be assigned back to the property `hl`.
 ---5. If the merged component has a property `icon` with a type of function,
 ---   that function will be invoked with follow arguments:
@@ -171,7 +173,11 @@ M.build_component = function(component, lib)
         c.hl = lib.highlights[c.hl] or c.hl
     end
     if c.hl and type(c.hl) == 'function' then
-        c.hl = c.hl(c.hls or {})
+        local hlf = c.hl
+        -- to make a component compatible with Feline
+        c.hl = function()
+            return hlf(c.hls or {})
+        end
     end
 
     -- resolve icon
