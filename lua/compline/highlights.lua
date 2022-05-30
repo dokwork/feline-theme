@@ -9,10 +9,6 @@
 ---```
 ---NOTE: Only colors from the default palette should be used.
 
----@alias Color string # a name of the color or RGB hex color description
-
----@alias Highlight string|table|function # a description of the highlight according to the |feline-Component-highlight|.
-
 local vi_mode = require('feline.providers.vi_mode')
 local c = require('compline.conditions')
 local u = require('compline.utils')

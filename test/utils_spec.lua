@@ -195,6 +195,19 @@ describe('build_component', function()
         assert.are.same({ component = 'test', icon = { str = '!' } }, result)
     end)
 
+    it('should return nil in case of empty component', function()
+        -- given:
+        local component = {
+            provider = 'nil',
+        }
+
+        -- when:
+        local result = u.build_component(component)
+
+        -- then:
+        assert.are.equal(nil, result)
+    end)
+
     it('should invoke `hl` function on initializing a component', function()
         -- given:
         local lib = {

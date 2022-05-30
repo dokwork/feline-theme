@@ -3,8 +3,6 @@ local u = require('compline.utils')
 
 local M = {}
 
----@alias FelineComponent table
-
 ---@type fun(): string
 ---
 ---@return string # the name with extension of the file from the current buffer.
