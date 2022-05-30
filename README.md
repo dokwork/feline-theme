@@ -54,12 +54,12 @@ And finally, set up your status line:
 require('my_statusline'):setup()
 ```
 
-Or much better, you can override existed statusline to reuse liked one:
+Or much better, you can override existed statusline to reuse a liked one:
 
 ```lua
 require('compline.cosmosline'):new('my_personal_cosmosline', {
   -- do not change statusline for inactive window
-  inactive_components = nil
+  inactive_components = 'nil'
 }):setup()
 ```
 
