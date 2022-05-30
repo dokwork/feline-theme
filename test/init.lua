@@ -38,14 +38,17 @@ if packer_bootstrap then
     print('Please, restart nvim through try.sh to use installed plugins.')
 else
     -- Configuration for test:
-    -- local config = require('compline.cosmosline'):setup({
-    --     active = { left = { [1] = { provider = 'test' } } },
-    -- })
-    -- vim.pretty_print(config)
-
-    require('compline.statusline')
-        :new('test', {
-            active_components = { { { provider = 'test' } } },
+    if vim.env.COSMOSLINE then
+        ---@diagnostic disable-next-line: unused-local
+        local config = require('compline.cosmosline'):setup({
+            active = { left = { [1] = { provider = 'test' } } },
         })
-        :setup()
+        -- vim.pretty_print(config)
+    else
+        require('compline.statusline')
+            :new('test', {
+                active_components = { { { provider = 'test' } } },
+            })
+            :setup()
+    end
 end

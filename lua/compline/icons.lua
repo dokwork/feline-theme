@@ -4,29 +4,27 @@ local u = require('compline.utils')
 local M = {}
 -- TODO: add option for padding
 
----@type fun(opts: table, hls: Highlight): function
+---@type fun(opts: table, hls: Highlight): Icon
 ---
 ---@param opts table with properties:
 ---* `readonly_icon: string`  icon which should be used when a file is readonly. Default is '  ';
 ---* `modified_icon: string`  icon which should be used when a file is modified. Default is '  ';
 ---
----@return function # which returns an icon of the current state of the file: readonly, modified,
----none. In last case an empty string will be returned.
+---@return Icon # an icon of the current state of the file: readonly, modified, none.
+---In last case an empty string will be returned.
 M.file_status_icon = function(opts, hls)
     local opts = u.merge(opts, {
         readonly_icon = '  ',
         modified_icon = '  ',
     })
     local hl = h.file_status(hls)
-    return function()
-        return {
-            str = (vim.bo.readonly and opts.readonly_icon)
-                or (vim.bo.modified and opts.modified_icon)
-                or '',
-            hl = hl,
-            always_visible = true,
-        }
-    end
+    return {
+        str = (vim.bo.readonly and opts.readonly_icon)
+            or (vim.bo.modified and opts.modified_icon)
+            or '',
+        hl = hl,
+        always_visible = true,
+    }
 end
 
 ---@type fun(opts: table, hls: table): Icon
@@ -44,20 +42,18 @@ end
 ---@return string # a string which contains an icon for the lsp client.
 M.lsp_client_icon = function(opts, hls)
     local opts = u.merge(opts, { unknown = '?', client_off = 'ﮤ', icons = {} })
-    return function()
-        local client = u.lsp_client()
-        local icon
-        if client then
-            icon = u.lsp_client_icon(opts.icons, client)
-        else
-            icon = { icon = opts.client_off }
-        end
-        return {
-            str = icon and icon.icon or opts.unknown,
-            hl = h.lsp_client(hls),
-            always_visible = true,
-        }
+    local client = u.lsp_client()
+    local icon
+    if client then
+        icon = u.lsp_client_icon(opts.icons, client)
+    else
+        icon = { icon = opts.client_off }
     end
+    return {
+        str = icon and icon.icon or opts.unknown,
+        hl = h.lsp_client(hls),
+        always_visible = true,
+    }
 end
 
 ---@type fun(opts: table, hls: table): Icon
