@@ -95,6 +95,8 @@ M.is_lsp_client_ready = function(client)
     return true
 end
 
+---@type fun(t: table): table
+---Replace all string values with 'nil' by the `nil` to remove the pair from the table.
 M.remove_nil = function(t)
     for k, v in pairs(t) do
         if v == 'nil' then
@@ -104,6 +106,15 @@ M.remove_nil = function(t)
         end
     end
     return (not M.is_empty(t)) and t or nil
+end
+
+M.lazy_load = function(module_name)
+    local module = {}
+    setmetatable(module, module)
+    module.__index = function(_, k)
+        return require(module_name)[k]
+    end
+    return module
 end
 
 ---@type fun(component: Component, lib: Library): FelineComponent

@@ -1,5 +1,5 @@
 local u = require('compline.utils')
-local feline = require('feline')
+local feline = u.lazy_load('feline')
 
 local Statusline = {
     -- user should be able to not specify components in some case at all
