@@ -8,8 +8,8 @@
 
 ---@alias Color string # a name of the color or RGB hex color description
 
----@alias Highlight string|table|function # similar to the highlight from the Feline, but function
---- can take a table as an argument.
+---@alias Highlight string|table|function # similar to the highlight from the Feline, but a function
+---can take a table as an argument.
 
 ---@alias Provider string|table|function
 

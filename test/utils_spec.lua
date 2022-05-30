@@ -232,16 +232,27 @@ describe('build_component', function()
         assert.are.same({ fg = 'green' }, result.hl())
     end)
 
+    it('should create component when only icon is specified', function()
+        -- given:
+        local component = {
+            icon = 'expectation',
+        }
+
+        -- when:
+        local result = u.build_component(component)
+
+        -- then:
+        assert.are.same({ icon = 'expectation' }, result)
+    end)
+
     it('should invoke `icon` function on initializing a component', function()
         -- given:
         local lib = {
             components = {
                 test = {
                     icon = function(opts, hls)
-                        return function()
-                            -- just return arguments to check them later
-                            return { opts = opts, hls = hls }
-                        end
+                        -- just return arguments to check them later
+                        return { opts = opts, hls = hls }
                     end,
                 },
             },
@@ -260,20 +271,5 @@ describe('build_component', function()
         -- then:
         assert.are.same(opts, result.opts)
         assert.are.same(hls, result.hls)
-    end)
-
-    it('should invoke the icon function when both component and provider are absent', function()
-        -- given:
-        local component = {
-            icon = function()
-                return 'expectation'
-            end,
-        }
-
-        -- when:
-        local result = u.build_component(component)
-
-        -- then:
-        assert.are.same({ icon = 'expectation' }, result)
     end)
 end)

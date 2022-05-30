@@ -134,11 +134,12 @@ end
 ---4. If the merged component has a property `hl` with a type of function,
 ---   that function will be wrapped by a new one function without arguments in
 ---   purpose of compatibility with Feline. Original function will be invoked
----   inside the new proxy function with argument `component.hls or {}`
+---   inside the new proxy function with argument `component.hls`
 ---   and the result will be assigned back to the property `hl`.
 ---5. If the merged component has a property `icon` with a type of function,
----   that function will be invoked with follow arguments:
----   `component.icon_opts` and `component.icon_hls` and result will be assigned back.
+---   that function will be wrapped by a new one. Original function will be invoked
+---   with follow arguments:
+---   `component.icon_opts` and `component.icon_hls` inside the proxy function.
 ---Also, it tries to take an icon and highlight from the {lib}, when they have a
 ---type 'string'. If an icon or hl is not found in the {lib}, it will be used
 ---according to the Feline rules.
@@ -176,7 +177,7 @@ M.build_component = function(component, lib)
         local hlf = c.hl
         -- to make a component compatible with Feline
         c.hl = function()
-            return hlf(c.hls or {})
+            return hlf(c.hls)
         end
     end
 
@@ -185,7 +186,11 @@ M.build_component = function(component, lib)
         c.icon = lib.icons[c.icon] or c.icon
     end
     if c.icon and type(c.icon) == 'function' then
-        c.icon = c.icon(c.icon_opts or {}, c.icon_hls or {})
+        local iconf = c.icon
+        -- to make a component compatible with Feline
+        c.icon = function()
+            return iconf(c.icon_opts, c.icon_hls)
+        end
     end
 
     -- apply removing properties marked as 'nil'
