@@ -120,7 +120,7 @@ M.lazy_load = function(module_name)
     return module
 end
 
----@type fun(component: Component, lib: Library): FelineComponent
+---@type fun(component: Component, lib: Library, hl: Highlight): FelineComponent
 ---Takes a component from the {lib} according to the name of the {component}.
 ---Then merges both components with follow rules:
 ---1. All values with equal keys will be taken from the passed {component};
@@ -150,13 +150,15 @@ end
 ---
 ---@param lib Library # library with reusable components.
 ---
+---@param hl Highlight # default highlight for the section where this component from.
+---
 ---@return FelineComponent # resolved component in term of the feline.
-M.build_component = function(component, lib)
+M.build_component = function(component, lib, hl)
     local lib = M.merge(lib, { components = {}, icons = {}, highlights = {} })
     local c = component.component
             and assert(
                 lib.components[component.component],
-                'Component { component = "' .. component.component .. '" } was not found.'
+                'Component "' .. component.component .. '" was not found.'
             )
         or component
     c = vim.tbl_deep_extend('force', c or {}, component or {})
@@ -170,6 +172,10 @@ M.build_component = function(component, lib)
     end
 
     -- resolve highlight
+    if c.hl == nil then
+        -- use hl from a theme
+        c.hl = hl
+    end
     if type(c.hl) == 'string' then
         c.hl = lib.highlights[c.hl] or c.hl
     end
@@ -177,6 +183,7 @@ M.build_component = function(component, lib)
         local hlf = c.hl
         -- to make a component compatible with Feline
         c.hl = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             return hlf(c.hls)
         end
     end
@@ -189,6 +196,7 @@ M.build_component = function(component, lib)
         local iconf = c.icon
         -- to make a component compatible with Feline
         c.icon = function()
+            ---@diagnostic disable-next-line: redundant-parameter
             return iconf(c.icon_opts, c.icon_hls)
         end
     end
@@ -197,23 +205,33 @@ M.build_component = function(component, lib)
     return M.remove_nil(c)
 end
 
----@fun(line: Section[], lib: Library): FelineSection[]
+---@fun(line: Line, lib: Library, theme: Theme): FelineSection[]
 ---Transforms every component from the {line} to its Feline representation.
 ---@see `build_component`
-M.build_statusline = function(line, lib)
+M.build_line = function(line, lib, theme)
     if line == 'nil' or not line then
         return nil
     end
-    for i, section in ipairs(line) do
-        if line[i] == 'nil' then
-            line[i] = nil
-        else
-            for k, c in pairs(section) do
-                line[i][k] = line[i][k] ~= 'nil' and M.build_component(c, lib) or nil
+    local result = {}
+    local i = 0
+    for _, side in pairs({ 'left', 'middle', 'right' }) do
+        local sections = line[side]
+        sections = sections ~= 'nil' and sections or {}
+        i = i + 1
+        result[i] = {}
+        table.sort(sections)
+        local j = 0
+        for char, section in pairs(sections) do
+            if section ~= 'nil' then
+                j = j + 1
+                for _, component in ipairs(section) do
+                    local hl = theme and vim.tbl_get(theme, 'sections', side, char)
+                    result[i][j] = M.build_component(component, lib, hl)
+                end
             end
         end
     end
-    return line
+    return result
 end
 
 return M

@@ -3,16 +3,14 @@ local feline = u.lazy_load('feline')
 
 local Statusline = {
     -- user should be able to not specify components in some case at all
-    active_components = nil,
-    inactive_components = nil,
-    themes = {},
-    vi_mode_colors = {},
+    active = nil,
+    inactive = nil,
     lib = {},
 }
 
 ---@fun(name: string, customization: Statusline): Statusline
 function Statusline:new(name, customization)
-    assert(type(name) == 'string', 'Statusline must have an uniq name.')
+    assert(type(name) == 'string', 'Statusline must have a name.')
 
     local x = customization or {}
     setmetatable(x, self)
@@ -21,25 +19,25 @@ function Statusline:new(name, customization)
     return x
 end
 
----Takes a theme from the `self.themes` with the same key as a name
----of the current colorscheme. If no theme is found, this method will
----tries to take 'light' or 'dark' theme according to the current
----`vim.o.background` value.
 function Statusline:select_theme()
-    local s = self.name .. '_'
     local feline_themes = require('feline.themes')
-    if vim.g.colors_name and feline_themes[s .. vim.g.colors_name] then
-        return feline.use_theme(s .. vim.g.colors_name)
-    end
-    if vim.o.background and feline_themes[s .. vim.o.background] then
-        return feline.use_theme(s .. vim.o.background)
+    local background = vim.o.background or 'dark'
+    local theme = string.format("%s_%s_%s", self.name, vim.g.colors_name, background)
+    local default = string.format("%s_%s_%s", self.name, 'default', background)
+
+    theme = feline_themes[theme] or feline_themes[default]
+    if theme then
+        feline.use_theme(theme)
+        return
     end
 end
 
 function Statusline:build_components()
+    self.theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
+
     return {
-        active = u.build_statusline(self.active_components, self.lib),
-        inactive = u.build_statusline(self.inactive_components, self.lib),
+        active = u.build_line(self.active, self.lib, self.theme),
+        inactive = u.build_line(self.inactive, self.lib, self.theme),
     }
 end
 
@@ -48,16 +46,18 @@ function Statusline:setup()
     local config = {}
     config.components = self:build_components()
     config.custom_providers = self.lib.providers
-    config.vi_mode_colors = self.vi_mode_colors
+    config.vi_mode_colors = self.theme.vi_mode
 
     feline.setup(config)
 
     local feline_themes = require('feline.themes')
-    for k, v in pairs(self.themes) do
-        feline_themes[self.name .. '_' .. k] = v
+    for theme_name, theme in pairs(self.themes) do
+        feline_themes[self.name .. '_' .. theme_name .. '_dark'] = theme.dark
+        feline_themes[self.name .. '_' .. theme_name .. '_light'] = theme.light
     end
 
     self:select_theme()
+
 
     -- change the theme on every changes colorscheme or background
     local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })

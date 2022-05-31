@@ -232,6 +232,19 @@ describe('build_component', function()
         assert.are.same({ fg = 'green' }, result.hl())
     end)
 
+    it("should use `hl` from the arguments when component doesn't have it", function()
+        -- given:
+        local lib = {}
+        local hl = { fg = 'white', bg = 'black' }
+        local component = { provider = 'test' }
+
+        -- when:
+        local result = u.build_component(component, lib, hl)
+
+        -- then:
+        assert.are.same({ provider = 'test', hl = hl }, result)
+    end)
+
     it('should create component when only icon is specified', function()
         -- given:
         local component = {

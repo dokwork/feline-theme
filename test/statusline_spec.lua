@@ -4,11 +4,13 @@ describe('Creating a new statusline', function()
     it('should build expected components', function()
         -- given:
         local statusline = Statusline:new('test', {
-            active_components = {
+            active = {
                 -- single section --
-                {
-                    -- with single component --
-                    { provider = 'test' },
+                left = {
+                    a = {
+                        -- with single component --
+                        { provider = 'test' },
+                    },
                 },
             },
         })
@@ -22,6 +24,8 @@ describe('Creating a new statusline', function()
                 {
                     { provider = 'test' },
                 },
+                {},
+                {}
             },
         }
         assert.are.same(expected, result)
@@ -30,11 +34,13 @@ end)
 
 describe('Extending an existing statusline', function()
     local existed_statusline = Statusline:new('existed', {
-        active_components = {
+        active = {
             -- single section --
-            {
-                -- with single component --
-                { provider = 'test' },
+            left = {
+                a = {
+                    -- with single component --
+                    { provider = 'test' },
+                },
             },
         },
     })
@@ -42,9 +48,11 @@ describe('Extending an existing statusline', function()
     it('should override the component', function()
         -- given:
         local new_statusline = existed_statusline:new('new', {
-            active_components = {
-                {
-                    { provider = 'new' },
+            active = {
+                left = {
+                    a = {
+                        { provider = 'new' },
+                    },
                 },
             },
         })
@@ -58,6 +66,8 @@ describe('Extending an existing statusline', function()
                 {
                     { provider = 'new' },
                 },
+                {},
+                {},
             },
         }
         assert.are.same(expected, result, vim.inspect(result))
@@ -66,9 +76,11 @@ describe('Extending an existing statusline', function()
     it('should remove the component', function()
         -- given:
         local new_statusline = existed_statusline:new('new', {
-            active_components = {
-                {
-                    { provider = 'nil' },
+            active = {
+                left = {
+                    a = {
+                        { provider = 'nil' },
+                    },
                 },
             },
         })
@@ -80,6 +92,8 @@ describe('Extending an existing statusline', function()
         local expected = {
             active = {
                 {},
+                {},
+                {},
             },
         }
         assert.are.same(expected, result, vim.inspect(result))
@@ -88,10 +102,12 @@ describe('Extending an existing statusline', function()
     it('should remove active components and add inactive', function()
         -- given:
         local new_statusline = existed_statusline:new('new', {
-            active_components = 'nil',
-            inactive_components = {
-                {
-                    { provider = 'new' },
+            active = 'nil',
+            inactive = {
+                right = {
+                    a = {
+                        { provider = 'new' },
+                    },
                 },
             },
         })
@@ -102,6 +118,8 @@ describe('Extending an existing statusline', function()
         -- then:
         local expected = {
             inactive = {
+                {},
+                {},
                 {
                     { provider = 'new' },
                 },
