@@ -13,6 +13,22 @@ describe('is_empty', function()
     end)
 end)
 
+describe('iterate with sorted keys', function()
+    it("should iterate over table's keys in order", function()
+        -- given:
+        local t = { a = 3, c = 1, b = 2 }
+        local result = {}
+
+        -- when:
+        for k, v in u.sorted_by_keys(t) do
+            result[k] = v
+        end
+
+        -- then:
+        assert.are.same({ a = 3, b = 2, c = 1 }, result)
+    end)
+end)
+
 describe('lsp_client', function()
     it('should return the first attached to the current buffer client', function()
         -- given:

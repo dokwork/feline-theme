@@ -12,7 +12,7 @@ local Statusline = {
 function Statusline:new(name, customization)
     assert(type(name) == 'string', 'Statusline must have a name.')
 
-    local x = customization or {}
+    local x = vim.tbl_deep_extend('force', self, customization or {})
     setmetatable(x, self)
     self.__index = self
     x.name = name

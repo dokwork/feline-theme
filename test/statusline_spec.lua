@@ -1,15 +1,17 @@
 local Statusline = require('compline.statusline')
 
 describe('Creating a new statusline', function()
-    it('should build expected components', function()
+    it('should build sort sections and zones', function()
         -- given:
         local statusline = Statusline:new('test', {
             active = {
-                -- single section --
                 left = {
+                    b = {
+                        { provider = 'b' },
+                        { provider = 'c' },
+                    },
                     a = {
-                        -- with single component --
-                        { provider = 'test' },
+                        { provider = 'a' },
                     },
                 },
             },
@@ -22,13 +24,20 @@ describe('Creating a new statusline', function()
         local expected = {
             active = {
                 {
-                    { provider = 'test' },
+                    { provider = 'a' },
+                    { provider = 'b' },
+                    { provider = 'c' },
                 },
                 {},
-                {}
+                {},
             },
         }
-        assert.are.same(expected, result)
+        local msg = string.format(
+            'Expected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
     end)
 end)
 

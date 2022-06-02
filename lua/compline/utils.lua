@@ -28,6 +28,20 @@ M.merge = function(t1, t2)
     return vim.tbl_extend('keep', t1 or {}, t2 or {})
 end
 
+M.sorted_by_keys = function(t, f)
+    local index = {}
+    for k in pairs(t) do
+        table.insert(index, k)
+    end
+    table.sort(index, f)
+    local i = 0
+    return function()
+        i = i + 1
+        local k = index[i]
+        return k, t[k]
+    end
+end
+
 ---@type fun():LspClient
 ---
 ---@return LspClient the first attached to the current buffer lsp client.
@@ -219,12 +233,11 @@ M.build_line = function(line, lib, theme)
         sections = sections ~= 'nil' and sections or {}
         i = i + 1
         result[i] = {}
-        table.sort(sections)
         local j = 0
-        for char, section in pairs(sections) do
+        for char, section in M.sorted_by_keys(sections) do
             if section ~= 'nil' then
-                j = j + 1
                 for _, component in ipairs(section) do
+                    j = j + 1
                     local hl = theme and vim.tbl_get(theme, 'sections', side, char)
                     result[i][j] = M.build_component(component, lib, hl)
                 end

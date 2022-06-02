@@ -40,9 +40,11 @@ else
     -- Configuration for test:
     if vim.env.COSMOSLINE then
         ---@diagnostic disable-next-line: unused-local
-        local config = require('compline.cosmosline'):setup({
-            active = { left = { [1] = { provider = 'test' } } },
-        })
+        local config = require('compline.cosmosline')
+            :new('my_line', {
+                active = { left = { a = { [1] = { provider = 'test' } } } },
+            })
+            :setup()
         -- vim.pretty_print(config)
     else
         require('compline.statusline')
