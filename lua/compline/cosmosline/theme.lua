@@ -67,5 +67,5 @@ return {
         oceanblue = '#45707a',
         violet = '#d3869b',
         skyblue = '#7daea3',
-    }
+    },
 }

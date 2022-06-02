@@ -22,8 +22,8 @@ end
 function Statusline:select_theme()
     local feline_themes = require('feline.themes')
     local background = vim.o.background or 'dark'
-    local theme = string.format("%s_%s_%s", self.name, vim.g.colors_name, background)
-    local default = string.format("%s_%s_%s", self.name, 'default', background)
+    local theme = string.format('%s_%s_%s', self.name, vim.g.colors_name, background)
+    local default = string.format('%s_%s_%s', self.name, 'default', background)
 
     theme = feline_themes[theme] or feline_themes[default]
     if theme then
@@ -57,7 +57,6 @@ function Statusline:setup()
     end
 
     self:select_theme()
-
 
     -- change the theme on every changes colorscheme or background
     local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })
