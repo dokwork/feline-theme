@@ -1,6 +1,6 @@
 local Statusline = require('compline.statusline')
 
-describe('Creating a new statusline', function()
+describe('Building componentns', function()
     it('should build components and sections in correct order', function()
         -- given:
         local statusline = Statusline:new('test', {
@@ -28,7 +28,7 @@ describe('Creating a new statusline', function()
             },
         }
         local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
+            '\nExpected:\n%s\nActual:\n%s',
             vim.inspect(expected),
             vim.inspect(result)
         )
@@ -63,7 +63,7 @@ describe('Creating a new statusline', function()
             },
         }
         local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
+            '\nExpected:\n%s\nActual:\n%s',
             vim.inspect(expected),
             vim.inspect(result)
         )
@@ -71,211 +71,211 @@ describe('Creating a new statusline', function()
     end)
 end)
 
-describe('Resolving theme', function()
-    it('should add hl to components from the theme', function()
-        -- given:
-        local components = {
-            some_component = { provider = 'example' },
-        }
-        local theme = {
-            active = {
-                left = {
-                    a = { fg = 'black', bg = 'white' },
-                },
+it('should add hl to components from the theme', function()
+    -- given:
+    local components = {
+        some_component = { provider = 'example' },
+    }
+    local theme = {
+        active = {
+            left = {
+                a = { fg = 'black', bg = 'white' },
             },
-        }
-        local statusline = Statusline:new('test', {
-            active = {
-                left = {
-                    a = { 'some_component' },
-                },
+        },
+    }
+    local statusline = Statusline:new('test', {
+        active = {
+            left = {
+                a = { 'some_component' },
             },
-            components = components,
-            themes = {
-                default = theme,
-            },
-        })
+        },
+        components = components,
+        themes = {
+            default = theme,
+        },
+    })
 
-        -- when:
-        local result = statusline:build_components()
+    -- when:
+    local result = statusline:build_components()
 
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'example', { fg = 'black', bg = 'white' } },
-                },
-                {},
-                {},
+    -- then:
+    local expected = {
+        active = {
+            {
+                { provider = 'example', hl = { fg = 'black', bg = 'white' } },
             },
-        }
-        local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
+            {},
+            {},
+        },
+    }
+    local msg = string.format(
+        '\nExpected:\n%s\nActual:\n%s',
+        vim.inspect(expected),
+        vim.inspect(result)
+    )
+    assert.are.same(expected, result, msg)
+end)
 
-    it("should use hl from a component when it's specified", function()
-        -- given:
-        local components = {
-            some_component = { provider = 'example', hl = { fg = 'red' } },
-        }
-        local theme = {
-            active = {
-                left = {
-                    a = { fg = 'black', bg = 'white' },
-                },
+it("should use hl from a component when it's specified", function()
+    -- given:
+    local components = {
+        some_component = { provider = 'example', hl = { fg = 'red' } },
+    }
+    local theme = {
+        active = {
+            left = {
+                a = { fg = 'black', bg = 'white' },
             },
-        }
-        local statusline = Statusline:new('test', {
-            active = {
-                left = {
-                    a = { 'some_component' },
-                },
+        },
+    }
+    local statusline = Statusline:new('test', {
+        active = {
+            left = {
+                a = { 'some_component' },
             },
-            components = components,
-            themes = {
-                default = theme,
-            },
-        })
+        },
+        components = components,
+        themes = {
+            default = theme,
+        },
+    })
 
-        -- when:
-        local result = statusline:build_components()
+    -- when:
+    local result = statusline:build_components()
 
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'example', hl = { fg = 'red' } },
-                },
-                {},
-                {},
+    -- then:
+    local expected = {
+        active = {
+            {
+                { provider = 'example', hl = { fg = 'red' } },
             },
-        }
-        local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
+            {},
+            {},
+        },
+    }
+    local msg = string.format(
+        '\nExpected:\n%s\nActual:\n%s',
+        vim.inspect(expected),
+        vim.inspect(result)
+    )
+    assert.are.same(expected, result, msg)
+end)
 
-    it('should create components for zones separators', function()
-        -- given:
-        local theme = {
-            active = {
-                separators = { left = '>', right = '<' },
-            },
-        }
-        local statusline = Statusline:new('test', {
-            themes = {
-                default = theme,
-            },
-        })
+it('should create components for zones separators', function()
+    -- given:
+    local theme = {
+        active = {
+            separators = { left = '>', right = '<' },
+        },
+    }
+    local statusline = Statusline:new('test', {
+        active = {},
+        themes = {
+            default = theme,
+        },
+    })
 
-        -- when:
-        local result = statusline:build_components()
+    -- when:
+    local result = statusline:build_components()
 
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = '>' },
-                },
-                {},
-                {
-                    { provider = '<' },
-                },
+    -- then:
+    local expected = {
+        active = {
+            {
+                { provider = '>' },
             },
-        }
-        local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
+            {},
+            {
+                { provider = '<' },
+            },
+        },
+    }
+    local msg = string.format(
+        '\nExpected:\n%s\nActual:\n%s',
+        vim.inspect(expected),
+        vim.inspect(result)
+    )
+    assert.are.same(expected, result, msg)
+end)
 
-    it('should add hl for zones separators', function()
-        -- given:
-        local theme = {
-            active = {
-                left = {
-                    separators = { left = '>', right = { '<', hl = 'red' } },
-                },
-            },
-        }
-        local statusline = Statusline:new('test', {
-            themes = {
-                default = theme,
-            },
-        })
+it('should add hl for zones separators', function()
+    -- given:
+    local theme = {
+        active = {
+            separators = { left = '>', right = { '<', hl = 'red' } },
+        },
+    }
+    local statusline = Statusline:new('test', {
+        active = {},
+        themes = {
+            default = theme,
+        },
+    })
 
-        -- when:
-        local result = statusline:build_components()
+    -- when:
+    local result = statusline:build_components()
 
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = '>', hl = 'red' },
-                },
-                {},
-                {
-                    { provider = '<', hl = 'green' },
-                },
+    -- then:
+    local expected = {
+        active = {
+            {
+                { provider = '>' },
             },
-        }
-        local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
+            {},
+            {
+                { provider = '<', hl = 'red' },
+            },
+        },
+    }
+    local msg = string.format(
+        '\nExpected:\n%s\nActual:\n%s',
+        vim.inspect(expected),
+        vim.inspect(result)
+    )
+    assert.are.same(expected, result, msg)
+end)
 
-    it('should add components as sections separators', function()
-        -- given:
-        local theme = {
-            active = {
-                left = {
-                    separators = { left = { '<' }, right = { '>', hl = 'green' } },
-                },
+it('should add components as sections separators', function()
+    -- given:
+    local theme = {
+        active = {
+            left = {
+                separators = { left = { '<' }, right = { '>', hl = 'green' } },
             },
-        }
-        local statusline = Statusline:new('test', {
-            themes = {
-                default = theme,
-            },
-            active = {
+        },
+    }
+    local statusline = Statusline:new('test', {
+        themes = {
+            default = theme,
+        },
+        active = {
+            left = {
                 a = { 'component' },
             },
-        })
+        },
+    })
 
-        -- when:
-        local result = statusline:build_components()
+    -- when:
+    local result = statusline:build_components()
 
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = '<' },
-                    { provider = 'component' },
-                    { provider = '>', hl = 'green' },
-                },
-                {},
-                {},
+    -- then:
+    local expected = {
+        active = {
+            {
+                { provider = '<' },
+                { provider = 'component' },
+                { provider = '>', hl = 'green' },
             },
-        }
-        local msg = string.format(
-            'Expected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
+            {},
+            {},
+        },
+    }
+    local msg = string.format(
+        '\nExpected:\n%s\nActual:\n%s',
+        vim.inspect(expected),
+        vim.inspect(result)
+    )
+    assert.are.same(expected, result, msg)
 end)
 
 describe('Extending an existing statusline', function()
@@ -283,16 +283,17 @@ describe('Extending an existing statusline', function()
         active = {
             left = {
                 a = { 'component 1', 'component 2' },
+                b = { 'component 3' },
             },
         },
     })
 
-    it('should override the component', function()
+    it('should override the section', function()
         -- given:
         local new_statusline = existed_statusline:new('new', {
             active = {
                 left = {
-                    a = { [2] = 'new' },
+                    a = { 'component 1', 'new' },
                 },
             },
         })
@@ -306,20 +307,27 @@ describe('Extending an existing statusline', function()
                 {
                     { provider = 'component 1' },
                     { provider = 'new' },
+                    { provider = 'component 3' },
                 },
                 {},
                 {},
             },
         }
-        assert.are.same(expected, result, vim.inspect(result))
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
     end)
 
-    it('should remove the component', function()
+    it('should remove the section', function()
         -- given:
         local new_statusline = existed_statusline:new('new', {
             active = {
                 left = {
-                    a = { [1] = 'nil' },
+                    a = 'nil',
+                    b = 'nil'
                 },
             },
         })
@@ -330,14 +338,17 @@ describe('Extending an existing statusline', function()
         -- then:
         local expected = {
             active = {
-                {
-                    { provider = 'component 2' },
-                },
+                {},
                 {},
                 {},
             },
         }
-        assert.are.same(expected, result, vim.inspect(result))
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
     end)
 
     it('should remove active components and add inactive', function()
@@ -364,6 +375,11 @@ describe('Extending an existing statusline', function()
                 },
             },
         }
-        assert.are.same(expected, result, vim.inspect(result))
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
     end)
 end)
