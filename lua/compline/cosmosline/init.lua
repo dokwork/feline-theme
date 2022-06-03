@@ -1,52 +1,32 @@
-local sep = { str = ' | ', hl = { fg = 'blue' } }
-sep.permanent = vim.deepcopy(sep)
-sep.permanent.always_visible = true
+local u = require('compline.utils')
+local h = require('compline.highlights')
+
+local sep = { provider = ' | ', hl = h.vi_mode }
 
 local Cosmosline = require('compline.statusline'):new('cosmosline', {
     active = {
         left = {
-            a = {
-                { provider = '▊', hl = 'vi_mode' },
-                { icon = 'file_status_icon' },
-                { component = 'working_directory', opts = { depth = 2 } },
-            },
-            b = {
-                { component = 'relative_file_name' },
-                { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
-            },
+            a = { '▊', 'file_status_icon', 'working_directory' },
+            b = { 'relative_file_name' },
         },
         right = {
-            a = {
-                { provider = ' ', hl = { fg = 'bg', bg = 'NONE' } },
-                { component = 'diagnostic_warnings' },
-                { component = 'diagnostic_errors', right_sep = sep },
-                { component = 'git_branch', right_sep = sep },
-                { icon = 'lsp_client_icon' },
-                { icon = 'treesitter_parser_icon', right_sep = sep.permanent },
-                { component = 'spellcheck' },
-                { provider = 'position', right_sep = sep, left_sep = sep },
-            },
-            b = {
-                { provider = 'scroll_bar', hl = 'vi_mode' },
-            },
+            a = { 'diagnostic_warnings', 'diagnostic_errors' },
+            b = { 'git_branch' },
+            c = { 'lsp_client_icon', 'treesitter_parser_icon' },
+            d = { 'spellcheck' },
+            e = { 'position' },
+            f = { 'scroll_bar' },
         },
     },
     inactive = {
         left = {
-            a = {
-                { component = 'relative_file_name' },
-            },
+            a = { 'relative_file_name' },
         },
     },
     themes = {
         default = require('compline.cosmosline.theme'),
     },
-    lib = {
-        components = require('compline.components'),
-        providers = require('compline.providers'),
-        highlights = require('compline.highlights'),
-        icons = require('compline.icons'),
-    },
+    components = u.merge(require('compline.components'), { ['|'] = sep }),
 })
 
 return Cosmosline

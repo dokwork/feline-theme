@@ -1,16 +1,28 @@
+local h = require('compline.highlights')
+
 return {
-    sections = {
+    active = {
+        separators = { left = ' ', right = ' ' },
         left = {
-            a = 'vi_mode',
+            a = h.vi_mode,
             b = { fg = 'fg', bg = 'bg' },
         },
         middle = {
             a = { fg = 'bg', bg = 'NONE' },
         },
         right = {
+            separators = { right = { '|', hl = 'blue' } },
             a = { fg = 'fg', bg = 'bg' },
-            b = 'vi_mode',
+            b = { fg = 'fg', bg = 'bg' },
+            c = { fg = 'fg', bg = 'bg' },
+            d = { fg = 'fg', bg = 'bg' },
+            e = { fg = 'fg', bg = 'bg' },
+            f = h.vi_mode,
         },
+    },
+
+    inactive = {
+        left = { a = { fg = 'fg', bg = 'bg' } },
     },
 
     vi_mode = {
