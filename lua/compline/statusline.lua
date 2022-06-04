@@ -40,7 +40,7 @@ local get_sep = function(theme, state_name, zone, side)
     elseif type(sep) == 'string' then
         return { provider = sep }
     elseif type(sep) == 'table' then
-        return { provider = sep[1], hl = sep.hl }
+        return sep
     else
         return error(
             string.format(

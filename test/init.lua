@@ -42,9 +42,10 @@ else
         ---@diagnostic disable-next-line: unused-local
         local config = require('compline.cosmosline')
             :new('my_line', {
-                active = { left = { a = { [1] = { provider = 'test' } } } },
+                active = { left = { a = { [1] = 'test' } } },
             })
-            :setup()
+        vim.pretty_print(config:build_components())
+        config:setup()
         -- vim.pretty_print(config)
     else
         require('compline.statusline')

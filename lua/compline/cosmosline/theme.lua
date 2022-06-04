@@ -11,7 +11,7 @@ return {
             a = { fg = 'bg', bg = 'NONE' },
         },
         right = {
-            separators = { right = { '|', hl = 'blue' } },
+            separators = { right = { '|', hl = { fg = 'blue'  } } },
             a = { fg = 'fg', bg = 'bg' },
             b = { fg = 'fg', bg = 'bg' },
             c = { fg = 'fg', bg = 'bg' },
