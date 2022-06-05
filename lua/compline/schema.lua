@@ -208,9 +208,6 @@ M.validate = function(object, schema, path)
         assert(object == type_schema, wrong_value(type_schema, object, path .. tostring(object)))
         return true
     end
-    if typ == 'opt' then
-        return object == nil or M.validate(object, type_schema, path .. ' opt ')
-    end
     if typ == 'any' then
         return true
     end
