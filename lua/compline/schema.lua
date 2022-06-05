@@ -1,25 +1,25 @@
 local M = {}
 
 -- const = <any not reserved string> | { const = <any not reserved string> }
--- type = 'string' | 'number' | 'boolean' | 'function' | 'table' | 'any' | 'nil' | const
+-- type = 'string' | 'number' | 'boolean' | 'function' | 'any' | 'nil' | const
 --      | { list = type }
 --      | { oneof = [ type ] }
 --      | { table = { keys = type, values = type } | [ { key = const, value = type} ] }
 
 M.list = function()
     return {
-        table = { { key = 'list', value = M.type } },
+        table = { key = 'list', value = M.type },
     }
 end
 
 M.oneof = function()
     return {
-        table = { { key = 'oneof', value = { table = { keys = 'number', values = M.type } } } },
+        table = { key = 'oneof', value = { table = { keys = 'number', values = M.type } } },
     }
 end
 
 M.const = function()
-    return { oneof = { 'string', { table = { { key = 'const', value = 'string' } } } } }
+    return { oneof = { 'string', { table = { key = 'const', value = 'string' } } } }
 end
 
 -- stylua: ignore start
@@ -28,8 +28,8 @@ M.table = function()
         table = {
             { key = 'table', value = {
                 oneof = {
-                    { table = { { key = 'keys', value = M.type }, { key = 'values', value = M.type } } },
-                    { list = { table = { { key = 'key', value = M.const },  { key = 'value', value = M.type } } } },
+                    { table = { { key = 'key', value = M.type }, { key = 'value', value = M.type } } },
+                    { list = { table = { { key = 'key', value = M.type },  { key = 'value', value = M.type } } } },
                 } }
             }
         }
@@ -37,35 +37,41 @@ M.table = function()
 end
 -- stylua: ignore end
 
-M.type = function()
+M.primirives = function()
     return {
-        oneof = {
-            'boolean',
-            'string',
-            'number',
-            'function',
-            'nil',
-            'any',
-            M.list(),
-            M.table(),
-            M.const(),
-            M.oneof(),
-        },
+        'boolean',
+        'string',
+        'number',
+        'function',
+        'nil',
+        'any',
+    }
+end
+
+M.type = function()
+    local oneof = M.primirives()
+    table.insert(oneof, M.list())
+    table.insert(oneof, M.table())
+    table.insert(oneof, M.const())
+    table.insert(oneof, M.oneof())
+
+    return {
+        oneof = oneof,
     }
 end
 
 local function wrong_type(expected, obj, path)
     return string.format(
-        'Path: %s <- !!! Wrong type. Expected <%s>, but actual was <%s>.',
+        'Path: `%s` <- !!! Wrong type. Expected <%s>, but actual was <%s>.',
         path,
-        expected,
+        vim.inspect(expected),
         type(obj)
     )
 end
 
 local function wrong_value(expected, actual, path)
     return string.format(
-        'Path: %s <- !!! Wrong value %s. Expected %s.',
+        'Path: `%s` <- !!! Wrong value "%s". Expected "%s".',
         path,
         tostring(actual),
         tostring(expected)
@@ -74,10 +80,27 @@ end
 
 local function wrong_oneof(value, options, path)
     return string.format(
-        'Path: %s <- !!! Wrong oneof value %s. Expected values %s.',
+        'Path: `%s` <- !!! Wrong oneof value: %s. Expected values %s.',
         path,
-        tostring(value),
+        vim.inspect(value),
         vim.inspect(options)
+    )
+end
+
+local function wrong_kv_types(kv_types, path)
+    return string.format(
+        'Path: `%s` <- !!! Wrong description of the key or value in %s.',
+        path,
+        vim.inspect(kv_types)
+    )
+end
+
+local function wrong_schema(typ, type_schema, path)
+    return string.format(
+        "Path: `%s` <- !!! Wrong type of the %s's schema. Expected table, but was %s",
+        path,
+        typ,
+        type(type_schema)
     )
 end
 
@@ -89,10 +112,11 @@ local function type_name(typ)
         local typ = next(typ)
         return typ
     end
-    error('Wrong type of the key: ' .. type(typ))
+    error('Unsupported type ' .. vim.inspect(typ))
 end
 
 local function validate_list(list, el_type, path)
+    assert(type(list) == 'table', wrong_type('table', list, path))
     for i, el in ipairs(list) do
         M.validate(el, el_type, string.format('%s[%d] = ', path, i))
     end
@@ -101,6 +125,7 @@ end
 
 local function validate_oneof(value, options, path)
     for _, opt in ipairs(options) do
+        local path = path .. '?' .. type_name(opt)
         if M.call_validate(value, opt, path) then
             return true
         end
@@ -111,45 +136,69 @@ end
 local function validate_table(table, kv_schema, path)
     assert(type(table) == 'table', wrong_type('table', table, path))
     local path = path or ''
-    if kv_schema.keys and kv_schema.values then
-        for k, v in pairs(table) do
-            path = path .. '<'
-            M.validate(k, kv_schema.keys, path)
 
-            path = path .. type_name(kv_schema.keys) .. ':'
-            M.validate(v, kv_schema.values, path)
+    local function validate_keys_type(tbl, kv_types)
+        assert(kv_types.key and kv_types.value, wrong_kv_types(kv_types, path))
+
+        for k, v in pairs(tbl) do
+            local path = path .. '<'
+            M.validate(k, kv_types.key, path)
+
+            path = path .. type_name(kv_types.key) .. ':'
+            M.validate(v, kv_types.value, path)
             path = path .. '>'
         end
+    end
+
+    if kv_schema.key or kv_schema.value then
+        validate_keys_type(table, kv_schema)
     else
+        local t = vim.tbl_extend('keep', {}, table)
         for _, kv in ipairs(kv_schema) do
-            if table[kv.key] then
-                M.validate(table[kv.key], kv.value, path .. '.' .. kv.key)
+            if M.is_const(kv.key) then
+                -- all keys in tables are optional.
+                -- absent expected keys should be skiped
+                if t[kv.key] then
+                    M.validate(t[kv.key], kv.value, path .. '.' .. kv.key)
+                    -- already validated field should not be validated again
+                    t[kv.key] = nil
+                end
+            else
+                validate_keys_type(t, kv)
             end
         end
     end
     return true
 end
 
+M.is_const = function(object)
+    if type(object) == 'string' and not vim.tbl_contains(M.primirives(), object) then
+        return true
+    end
+    if type(object) == 'table' then
+        return object[1] == 'const'
+    end
+end
+
 M.validate = function(object, schema, path)
     local path = path or ''
     local typ, type_schema
-    if type(schema) == 'table' then
+    if type(schema) == 'function' then
+        return M.validate(object, schema(), path)
+    elseif type(schema) == 'table' then
         typ, type_schema = next(schema)
+    elseif M.is_const(schema) then
+        typ = 'const'
+        type_schema = schema
     else
         typ = schema
     end
     if typ == 'table' then
-        assert(
-            type(type_schema) == 'table',
-            'Wrong type of the table schema: ' .. type(type_schema)
-        )
+        assert(type(type_schema) == 'table', wrong_schema('table', type_schema, path))
         return validate_table(object, type_schema, path .. 'table')
     end
     if typ == 'oneof' then
-        assert(
-            type(type_schema) == 'table',
-            'Wrong type of the oneof schema: ' .. type(type_schema)
-        )
+        assert(type(type_schema) == 'table', wrong_schema('oneof', type_schema, path))
         return validate_oneof(object, type_schema, path .. 'oneof')
     end
     if typ == 'list' then
@@ -159,12 +208,15 @@ M.validate = function(object, schema, path)
         assert(object == type_schema, wrong_value(type_schema, object, path .. tostring(object)))
         return true
     end
+    if typ == 'opt' then
+        return object == nil or M.validate(object, type_schema, path .. ' opt ')
+    end
     if typ == 'any' then
         return true
     end
     return assert(
         type(object) == typ or object == typ,
-        wrong_type(typ, object, path .. tostring(object))
+        wrong_type(typ, object, path .. vim.inspect(object))
     )
 end
 
@@ -178,7 +230,12 @@ M.highlight = {
     oneof = {
         'string',
         'function',
-        { table = { { key = 'fg', value = M.color }, { key = 'bg', value = M.color } } },
+        {
+            table = {
+                { key = 'fg', value = M.color },
+                { key = 'bg', value = M.color },
+            },
+        },
     },
 }
 
@@ -189,21 +246,25 @@ M.component = {
     },
 }
 
-M.separator = { {
+M.separator = { oneof = {
     'string',
-    { table = { { key = 'hl', value = M.highlight } } },
+    M.component,
 } }
 
-M.zone = {
+M.section = {
     table = {
         {
             key = 'separators',
             value = {
                 table = {
-                    { key = 'left', value = M.component },
-                    { key = 'right', value = M.component },
+                    { key = 'left', value = M.separator },
+                    { key = 'right', value = M.separator },
                 },
             },
+        },
+        {
+            key = 'string',
+            value = { list = 'string' },
         },
     },
 }
