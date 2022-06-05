@@ -29,6 +29,7 @@ describe('iterate with sorted keys', function()
     end)
 end)
 
+
 describe('lsp_client', function()
     it('should return the first attached to the current buffer client', function()
         -- given:

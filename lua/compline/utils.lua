@@ -134,32 +134,7 @@ M.lazy_load = function(module_name)
     return module
 end
 
----@fun(line: Line, lib: Library, theme: Theme): FelineSection[]
----Transforms every component from the {line} to its Feline representation.
----@see `build_component`
-M.build_line = function(line, lib, theme)
-    if line == 'nil' or not line then
-        return nil
-    end
-    local result = {}
-    local i = 0
-    for _, side in pairs({ 'left', 'middle', 'right' }) do
-        local sections = line[side]
-        sections = sections ~= 'nil' and sections or {}
-        i = i + 1
-        result[i] = {}
-        local j = 0
-        for char, section in M.sorted_by_keys(sections) do
-            if section ~= 'nil' then
-                for _, component in ipairs(section) do
-                    j = j + 1
-                    local hl = theme and vim.tbl_get(theme, 'sections', side, char)
-                    result[i][j] = M.build_component(component, lib, hl)
-                end
-            end
-        end
-    end
-    return result
+M.validate_theme = function(theme)
 end
 
 return M

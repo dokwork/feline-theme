@@ -1,6 +1,7 @@
 local h = require('compline.highlights')
 
 return {
+
     active = {
         separators = { left = ' ', right = ' ' },
         left = {
