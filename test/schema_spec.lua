@@ -142,6 +142,20 @@ describe('validation the schema', function()
             assert(s.call_validate({ b = true }, schema))
         end)
 
+        it('should be failed for missed required keys', function()
+            -- given:
+            local schema = {
+                table = {
+                    { key = 'a', value = 'number', required = true },
+                    { key = 'b', value = 'boolean', required = true },
+                },
+            }
+
+            -- then:
+            assert(not s.call_validate({ a = 1 }, schema))
+            assert(not s.call_validate({ b = true }, schema))
+        end)
+
         it('should support mix of const and other types', function()
             -- given:
             local schema = {

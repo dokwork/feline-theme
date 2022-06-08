@@ -156,9 +156,10 @@ local function validate_table(table, kv_schema, path)
         local t = vim.tbl_extend('keep', {}, table)
         for _, kv in ipairs(kv_schema) do
             if M.is_const(kv.key) then
-                -- all keys in tables are optional.
-                -- absent expected keys should be skiped
-                if t[kv.key] then
+                -- all keys in tables are optional by default.
+                -- absent expected keys should be skiped,
+                -- but only if they are not reqired
+                if t[kv.key] or kv.required then
                     M.validate(t[kv.key], kv.value, path .. '.' .. kv.key)
                     -- already validated field should not be validated again
                     t[kv.key] = nil
@@ -243,10 +244,49 @@ M.component = {
     },
 }
 
-M.separator = { oneof = {
+M.theme_separator = { oneof = {
     'string',
     M.component,
 } }
+
+M.theme_separators = {
+    key = 'separators',
+    value = {
+        table = {
+            { key = 'left', value = M.separator },
+            { key = 'right', value = M.separator },
+        },
+    },
+}
+
+M.theme_zone = {
+    table = {
+        M.theme_separators,
+        {
+            key = 'string',
+            value = { list = M.highlight },
+        },
+    },
+}
+
+M.theme_line = {
+    table = {
+        M.theme_separators,
+        { key = { oneof = { 'left, middle', 'right' } }, value = M.theme_zone },
+    },
+}
+
+M.theme_colors = {
+    table = { key = 'string', value = M.color },
+}
+
+M.theme = {
+    table = {
+        { key = { oneof = { 'active', 'inactive' } }, value = M.theme_line },
+        { key = 'dark', value = M.theme_colors, requered = true },
+        { key = 'light', value = M.theme_colors, requered = true },
+    },
+}
 
 M.section = {
     table = {
