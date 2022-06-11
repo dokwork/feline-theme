@@ -280,28 +280,53 @@ M.theme_colors = {
     table = { key = 'string', value = M.color },
 }
 
-M.theme = {
+M.theme_vi_mode = {
     table = {
-        { key = { oneof = { 'active', 'inactive' } }, value = M.theme_line },
-        { key = 'dark', value = M.theme_colors, requered = true },
-        { key = 'light', value = M.theme_colors, requered = true },
+        key = { oneof = { 'NORMAL', 'OP', 'INSERT', 'VISUAL', 'LINES', 'BLOCK', 'REPLACE' } },
+        value = 'string',
     },
 }
 
-M.section = {
+M.theme = {
+    table = {
+        { key = { oneof = { 'active', 'inactive' } }, value = M.theme_line },
+        { key = 'dark', value = M.theme_colors, required = true },
+        { key = 'light', value = M.theme_colors, required = true },
+        { key = 'vi_mode', value = M.theme_vi_mode, reqired = true },
+    },
+}
+
+M.section = { list = 'string' }
+
+M.zone = {
+    table = {
+        key = 'string',
+        value = M.section,
+    },
+}
+
+M.line = {
+    table = {
+        key = { onneof = { 'left', 'middle', 'right' } },
+        value = M.zone,
+    },
+}
+
+M.statusline = {
     table = {
         {
-            key = 'separators',
+            key = { oneof = { 'active', 'inactive' } },
+            value = M.line,
+        },
+        {
+            key = 'themes',
             value = {
-                table = {
-                    { key = 'left', value = M.separator },
-                    { key = 'right', value = M.separator },
-                },
+                table = { { key = 'default', M.theme }, { key = 'string', value = M.theme } },
             },
         },
         {
-            key = 'string',
-            value = { list = 'string' },
+            key = ' components',
+            value = { table = { key = 'string', value = M.component } },
         },
     },
 }
