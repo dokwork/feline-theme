@@ -106,6 +106,28 @@ describe('validation the schema', function()
             assert(not s.call_validate({ c = 'c' }, schema))
         end)
 
+        it('should check other key options if oneof failed', function()
+            -- given:
+            local schema = { table = {
+                { key = { oneof = { 'a', 'b' } }, value = 'string' },
+                { key = 'string', value = 'boolean' }
+            } }
+
+            -- them:
+            assert(s.call_validate({ c = true }, schema))
+        end)
+
+        it('should not be passed when required oneof not passed', function()
+            -- given:
+            local schema = { table = {
+                { key = { oneof = { 'a', 'b' } }, value = 'string', required = true },
+                { key = 'string', value = 'boolean' }
+            } }
+
+            -- them:
+            assert(not s.call_validate({ c = true }, schema))
+        end)
+
         it('should support oneof as a type of values', function()
             -- given:
             local schema = { table = { key = 'string', value = { oneof = { 'a', 'b' } } } }
@@ -128,17 +150,16 @@ describe('validation the schema', function()
             assert(not s.call_validate({ a = 1, b = 1 }, schema))
         end)
 
-        it('should be passed for missed keys', function()
+        it('should be passed for missed optional keys', function()
             -- given:
             local schema = {
                 table = {
                     { key = 'a', value = 'number' },
-                    { key = 'b', value = 'boolean' },
+                    { key = 'b', value = 'boolean', required = true  },
                 },
             }
 
             -- then:
-            assert(s.call_validate({ a = 1 }, schema))
             assert(s.call_validate({ b = true }, schema))
         end)
 
@@ -146,14 +167,13 @@ describe('validation the schema', function()
             -- given:
             local schema = {
                 table = {
-                    { key = 'a', value = 'number', required = true },
+                    { key = 'a', value = 'number'},
                     { key = 'b', value = 'boolean', required = true },
                 },
             }
 
             -- then:
             assert(not s.call_validate({ a = 1 }, schema))
-            assert(not s.call_validate({ b = true }, schema))
         end)
 
         it('should support mix of const and other types', function()

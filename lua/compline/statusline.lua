@@ -31,6 +31,14 @@ function Statusline:select_theme()
     end
 end
 
+function Statusline:validate()
+    local ok, schema = pcall(require, 'compline.schema')
+    if not ok then
+        error('To validate statusline schema, "compline.schema" module should be installed.')
+    end
+    schema.validate(self, schema.statusline)
+end
+
 local get_sep = function(theme, state_name, zone, side)
     local sep = side and vim.tbl_get(theme, state_name, zone, 'separators', side)
         or vim.tbl_get(theme, state_name, 'separators', zone)

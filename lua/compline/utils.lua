@@ -134,7 +134,4 @@ M.lazy_load = function(module_name)
     return module
 end
 
-M.validate_theme = function(theme)
-end
-
 return M

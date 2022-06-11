@@ -133,43 +133,70 @@ local function validate_oneof(value, options, path)
     error(wrong_oneof(value, options, path))
 end
 
-local function validate_table(table, kv_schema, path)
-    assert(type(table) == 'table', wrong_type('table', table, path))
+local function validate_table(tbl, kv_schema, path)
+    assert(type(tbl) == 'table', wrong_type('table', tbl, path))
     local path = path or ''
 
-    local function validate_keys_type(tbl, kv_types)
-        assert(kv_types.key and kv_types.value, wrong_kv_types(kv_types, path))
-
-        for k, v in pairs(tbl) do
-            local path = path .. '<'
-            M.validate(k, kv_types.key, path)
-
-            path = path .. type_name(kv_types.key) .. ':'
-            M.validate(v, kv_types.value, path)
-            path = path .. '>'
-        end
-    end
-
-    if kv_schema.key or kv_schema.value then
-        validate_keys_type(table, kv_schema)
-    else
-        local t = vim.tbl_extend('keep', {}, table)
-        for _, kv in ipairs(kv_schema) do
-            if M.is_const(kv.key) then
-                -- all keys in tables are optional by default.
-                -- absent expected keys should be skiped,
-                -- but only if they are not reqired
-                if t[kv.key] or kv.required then
-                    M.validate(t[kv.key], kv.value, path .. '.' .. kv.key)
-                    -- already validated field should not be validated again
-                    t[kv.key] = nil
-                end
+    local function split_list(list)
+        local required = {}
+        local optional = {}
+        for _, v in ipairs(list) do
+            if type(v) == 'table' and v.required then
+                table.insert(required, v)
             else
-                validate_keys_type(t, kv)
+                table.insert(optional, v)
             end
         end
+        return required, optional
     end
-    return true
+
+    local function validate_single_option(unvalidated_tbl, kv_types, is_strict)
+        assert(kv_types.key and kv_types.value, wrong_kv_types(kv_types, path))
+
+        for k, v in pairs(unvalidated_tbl) do
+            local path = path .. '<'
+            local ok, result = M.call_validate(k, kv_types.key, path)
+
+            if ok then
+                path = path .. type_name(kv_types.key) .. ':'
+                M.validate(v, kv_types.value, path)
+                path = path .. '>'
+                -- remove validated key
+                unvalidated_tbl[k] = nil
+                -- constant can bbe checked only once
+                if M.is_const(kv_types.key) then
+                    return true
+                end
+            elseif is_strict then
+                error(result)
+            end
+        end
+
+        return true
+    end
+
+    local function validate_required_keys(unvalidated_tbl, kv_schemas)
+        for _, kv_schema in ipairs(kv_schemas) do
+            validate_single_option(unvalidated_tbl, kv_schema, true)
+        end
+        return true
+    end
+
+    local function validate_optional_keys(unvalidated_tbl, kv_schemas)
+        for _, kv_schema in ipairs(kv_schemas) do
+            validate_single_option(unvalidated_tbl, kv_schema)
+        end
+        return true
+    end
+
+    local unvalidated_tbl = vim.tbl_extend('error', {}, tbl) -- this instance will be changed on validation
+    if kv_schema.key and kv_schema.value then
+        return validate_single_option(unvalidated_tbl, kv_schema, true)
+    else
+        local required, optional = split_list(kv_schema)
+        return validate_required_keys(unvalidated_tbl, required)
+            and validate_optional_keys(unvalidated_tbl, optional)
+    end
 end
 
 M.is_const = function(object)
@@ -181,43 +208,50 @@ M.is_const = function(object)
     end
 end
 
+---@type fun(object: any, schema: table)
+--- Checks that {object} sutisfied to the {schema} or raises error.
+--- You can use safe version `call_validate` to avoid error and use returned status
+--- instead.
 M.validate = function(object, schema, path)
     local path = path or ''
-    local typ, type_schema
+    local type_name, type_schema, type_value
     if type(schema) == 'function' then
         return M.validate(object, schema(), path)
     elseif type(schema) == 'table' then
-        typ, type_schema = next(schema)
+        type_name, type_schema = next(schema)
+        type_value = type_name == 'const' and type_schema or nil
     elseif M.is_const(schema) then
-        typ = 'const'
-        type_schema = schema
+        type_name = 'const'
+        type_value = schema
     else
-        typ = schema
+        type_name = schema
     end
-    if typ == 'table' then
+    if type_name == 'table' then
         assert(type(type_schema) == 'table', wrong_schema('table', type_schema, path))
         return validate_table(object, type_schema, path .. 'table')
     end
-    if typ == 'oneof' then
+    if type_name == 'oneof' then
         assert(type(type_schema) == 'table', wrong_schema('oneof', type_schema, path))
         return validate_oneof(object, type_schema, path .. 'oneof')
     end
-    if typ == 'list' then
+    if type_name == 'list' then
         return validate_list(object, type_schema, path .. 'list')
     end
-    if typ == 'const' then
-        assert(object == type_schema, wrong_value(type_schema, object, path .. tostring(object)))
+    if type_name == 'const' then
+        assert(object == type_value, wrong_value(type_value, object, path .. tostring(object)))
         return true
     end
-    if typ == 'any' then
+    if type_name == 'any' then
         return true
     end
     return assert(
-        type(object) == typ or object == typ,
-        wrong_type(typ, object, path .. vim.inspect(object))
+        type(object) == type_name or object == type_name,
+        wrong_type(type_name, object, path .. vim.inspect(object))
     )
 end
 
+---@type fun(object: any, schema: table)
+--- Wraps invocation of the `validate` to the `pcall`.
 M.call_validate = function(object, schema, path)
     return pcall(M.validate, object, schema, path)
 end

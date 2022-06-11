@@ -1,6 +1,3 @@
-local u = require('compline.utils')
-local h = require('compline.highlights')
-
 local Cosmosline = require('compline.statusline'):new('cosmosline', {
     active = {
         left = {
