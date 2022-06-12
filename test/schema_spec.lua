@@ -2,11 +2,11 @@ local s = require('compline.schema')
 
 describe('validation the schema', function()
     it('should be passed for every type', function()
-        assert(s.call_validate(s.list(), s.type()), 'Wrong schema for the list')
-        assert(s.call_validate(s.oneof(), s.type()), 'Wrong schema for the oneof')
-        assert(s.call_validate(s.const(), s.type()), 'Wrong schema for the const')
-        assert(s.call_validate(s.table(), s.type()), 'Wrong schema for the table')
-        assert(s.call_validate(s.type(), s.type()), 'Wrong schema for the type')
+        assert(s.validate(s.const, s.type()), 'Wrong schema for the const')
+        assert(s.validate(s.list(), s.type()), 'Wrong schema for the list')
+        assert(s.validate(s.oneof(), s.type()), 'Wrong schema for the oneof')
+        assert(s.validate(s.table(), s.type()), 'Wrong schema for the table')
+        assert(s.validate(s.type(), s.type()), 'Wrong schema for the type')
     end)
 
     it('should be passed for "any" type', function()
@@ -14,19 +14,19 @@ describe('validation the schema', function()
         local schema = 'any'
 
         -- then:
-        assert(s.call_validate(nil, schema))
-        assert(s.call_validate({ a = 'a' }, schema))
-        assert(s.call_validate({ 1, 2, 3 }, schema))
-        assert(s.call_validate(true, schema))
-        assert(s.call_validate(123, schema))
-        assert(s.call_validate('str', schema))
+        assert(s.validate(nil, schema))
+        assert(s.validate({ a = 'a' }, schema))
+        assert(s.validate({ 1, 2, 3 }, schema))
+        assert(s.validate(true, schema))
+        assert(s.validate(123, schema))
+        assert(s.validate('str', schema))
     end)
 
     describe('of the constants', function()
         it('should be passed for both syntax of constants', function()
             -- when:
-            s.validate('123', s.const())
-            s.validate({ const = '123' }, s.const())
+            s.validate('123', s.const)
+            s.validate({ const = '123' }, s.const)
         end)
 
         it('should validate particular value', function()
@@ -34,9 +34,9 @@ describe('validation the schema', function()
             local schema = { const = '123' }
 
             -- then:
-            assert(s.call_validate('123', schema))
-            assert(not s.call_validate('12', schema))
-            assert(not s.call_validate(123, schema))
+            assert(s.validate('123', schema))
+            assert(not s.validate('12', schema))
+            assert(not s.validate(123, schema))
         end)
     end)
 
@@ -54,7 +54,12 @@ describe('validation the schema', function()
             local schema = { list = 'number' }
 
             -- when:
-            assert(not s.call_validate({ 1, 2, '3' }, schema))
+            local ok, err = s.validate({ 1, 2, '3' }, schema)
+
+            -- then:
+            assert(not ok)
+            assert.are.same({}, err.object)
+            assert.are.same({ schema }, err.schema)
         end)
     end)
 
@@ -64,23 +69,23 @@ describe('validation the schema', function()
             local schema = { table = { key = 'string', value = 'string' } }
 
             -- when:
-            local result = s.validate({ a = 'b' }, schema)
+            local ok, err = s.validate({ a = 'b' }, schema)
 
             -- then:
-            assert.are.True(result)
+            assert(ok, tostring(err))
         end)
 
         it('should validate type of keys', function()
             -- given:
             local schema = { table = { key = 'string', value = 'number' } }
-            local table = { 1, 2 }
 
             -- when:
-            local ok, reason = s.call_validate(table, schema)
+            local ok, err = s.validate({ 1, 2 }, schema)
 
             -- then:
             assert(not ok)
-            assert(#reason > 0)
+            assert.are.same({ 1 }, err.object)
+            assert.are.same({ { table = { { key = 'string' } } } }, err.schema)
         end)
 
         it('should validate type of values', function()
@@ -89,7 +94,7 @@ describe('validation the schema', function()
             local table = { a = 'str' }
 
             -- when:
-            local ok, reason = s.call_validate(table, schema)
+            local ok, reason = s.validate(table, schema)
 
             -- then:
             assert(not ok)
@@ -101,31 +106,35 @@ describe('validation the schema', function()
             local schema = { table = { key = { oneof = { 'a', 'b' } }, value = 'string' } }
 
             -- them:
-            assert(s.call_validate({ a = 'a' }, schema))
-            assert(s.call_validate({ b = 'b' }, schema))
-            assert(not s.call_validate({ c = 'c' }, schema))
+            assert(s.validate({ a = 'a' }, schema))
+            assert(s.validate({ b = 'b' }, schema))
+            assert(not s.validate({ c = 'c' }, schema))
         end)
 
         it('should check other key options if oneof failed', function()
             -- given:
-            local schema = { table = {
-                { key = { oneof = { 'a', 'b' } }, value = 'string' },
-                { key = 'string', value = 'boolean' }
-            } }
+            local schema = {
+                table = {
+                    { key = { oneof = { 'a', 'b' } }, value = 'string' },
+                    { key = 'string', value = 'boolean' },
+                },
+            }
 
             -- them:
-            assert(s.call_validate({ c = true }, schema))
+            assert(s.validate({ c = true }, schema))
         end)
 
         it('should not be passed when required oneof not passed', function()
             -- given:
-            local schema = { table = {
-                { key = { oneof = { 'a', 'b' } }, value = 'string', required = true },
-                { key = 'string', value = 'boolean' }
-            } }
+            local schema = {
+                table = {
+                    { key = { oneof = { 'a', 'b' } }, value = 'string', required = true },
+                    { key = 'string', value = 'boolean' },
+                },
+            }
 
             -- them:
-            assert(not s.call_validate({ c = true }, schema))
+            assert(not s.validate({ c = true }, schema))
         end)
 
         it('should support oneof as a type of values', function()
@@ -133,9 +142,9 @@ describe('validation the schema', function()
             local schema = { table = { key = 'string', value = { oneof = { 'a', 'b' } } } }
 
             -- them:
-            assert(s.call_validate({ a = 'a' }, schema))
-            assert(s.call_validate({ a = 'b' }, schema))
-            assert(not s.call_validate({ a = 'c' }, schema))
+            assert(s.validate({ a = 'a' }, schema))
+            assert(s.validate({ a = 'b' }, schema))
+            assert(not s.validate({ a = 'c' }, schema))
         end)
 
         it('should support const as a type of keys', function()
@@ -145,9 +154,9 @@ describe('validation the schema', function()
             }
 
             -- then:
-            assert(s.call_validate({ a = 1, b = true }, schema))
-            assert(not s.call_validate({ a = 'str', b = true }, schema))
-            assert(not s.call_validate({ a = 1, b = 1 }, schema))
+            assert(s.validate({ a = 1, b = true }, schema))
+            assert(not s.validate({ a = 'str', b = true }, schema))
+            assert(not s.validate({ a = 1, b = 1 }, schema))
         end)
 
         it('should be passed for missed optional keys', function()
@@ -155,25 +164,25 @@ describe('validation the schema', function()
             local schema = {
                 table = {
                     { key = 'a', value = 'number' },
-                    { key = 'b', value = 'boolean', required = true  },
+                    { key = 'b', value = 'boolean', required = true },
                 },
             }
 
             -- then:
-            assert(s.call_validate({ b = true }, schema))
+            assert(s.validate({ b = true }, schema))
         end)
 
         it('should be failed for missed required keys', function()
             -- given:
             local schema = {
                 table = {
-                    { key = 'a', value = 'number'},
+                    { key = 'a', value = 'number' },
                     { key = 'b', value = 'boolean', required = true },
                 },
             }
 
             -- then:
-            assert(not s.call_validate({ a = 1 }, schema))
+            assert(not s.validate({ a = 1 }, schema))
         end)
 
         it('should support mix of const and other types', function()
@@ -188,5 +197,11 @@ describe('validation the schema', function()
             -- when:
             s.validate({ a = 1, str = true }, schema)
         end)
+    end)
+end)
+
+describe('statusline schema validation', function()
+    it('should be passed', function()
+        s.validate(s.statusline, s.type)
     end)
 end)
