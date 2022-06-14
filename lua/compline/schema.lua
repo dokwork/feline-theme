@@ -238,11 +238,15 @@ local function validate_table(orig_tbl, kvs_schema, path)
 
         for k, v in pairs(unvalidated_tbl) do
             _, err = M.validate(k, kv_types.key, path)
-            if err then
+            if err and is_strict then
                 return false, err
+            elseif err then
+                break
             end
 
             _, err = M.validate(v, kv_types.value, path)
+            -- validation must be failed regadles of is_strict
+            -- if key is valid, but value is not
             if err then
                 return false, err
             end

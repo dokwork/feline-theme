@@ -59,7 +59,7 @@ describe('validation the schema', function()
             -- then:
             assert(not ok)
             assert.are.same({}, err.object)
-            assert.are.same({ schema }, err.schema)
+            assert.are.same(schema, err.schema)
         end)
     end)
 
@@ -84,8 +84,8 @@ describe('validation the schema', function()
 
             -- then:
             assert(not ok)
-            assert.are.same({ { 1 } }, err.object)
-            assert.are.same({ { table = { { key = 'string' } } } }, err.schema)
+            assert.are.same({ { '?' } }, err.object)
+            assert.are.same({ table = { { key = 'string' } } }, err.schema)
         end)
 
         it('should validate type of values', function()
@@ -98,7 +98,7 @@ describe('validation the schema', function()
             -- then:
             assert(not ok)
             assert.are.same({ { a = 'str' } }, err.object)
-            assert.are.same({ { table = { { key = 'string', value = 'number' } } } }, err.schema)
+            assert.are.same({ table = { { key = 'string', value = 'number' } } }, err.schema)
         end)
 
         it('should support oneof as a type of keys', function()
@@ -120,8 +120,11 @@ describe('validation the schema', function()
                 },
             }
 
+            -- when:
+            local ok, err = s.validate({ c = true }, schema)
+
             -- then:
-            assert(s.validate({ c = true }, schema))
+            assert(ok, tostring(err))
         end)
 
         it('should not be passed when required oneof was not satisfied', function()
@@ -158,7 +161,10 @@ describe('validation the schema', function()
         it('should support const as a type of keys', function()
             -- given:
             local schema = {
-                table = { { key = 'a', value = 'number' }, { key = 'b', value = 'boolean' } },
+                table = {
+                    { key = 'a', value = 'number' },
+                    { key = 'b', value = 'boolean' },
+                },
             }
 
             -- then:
