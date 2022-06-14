@@ -82,7 +82,6 @@ function PathToError:new()
     }
     -- pointer to the current validated position in the object
     x.object_head = self.object_head
-    x.object_head_key = self.object_head_key
     -- pointer to the current validated position in the schema
     x.schema_head = self.schema_head
     setmetatable(x, {
@@ -191,13 +190,12 @@ function PathToError:add(value, schema)
         local kv = self.schema_head.table[#self.schema_head.table]
         -- should be initialized a key of the table
         if not kv.key then
-            self.object_head_key = value
-            self.object_head[self.object_head_key] = '?'
+            self.object_head[value] = '?'
             kv.key = schema
             -- should be added a value for the key
         else
-            self.object_head[self.object_head_key] = value
-            self.object_head_key = nil
+            local key = next(self.object_head)
+            self.object_head[key] = value
             kv.value = schema
         end
     elseif self.schema_head.list then
@@ -367,7 +365,7 @@ end
 --- You can use safe version `call_validate` to avoid error and use returned status
 --- instead.
 M.validate = function(object, schema, path)
-    local path = path and path:new() or PathToError:new()
+    local path = path or PathToError:new()
 
     local type_name, type_schema, type_value
     if type(schema) == 'function' then
@@ -397,16 +395,13 @@ M.validate = function(object, schema, path)
     if type_name == 'any' then
         return true
     end
+    -- flat constants or primitives
     path:add(object, schema)
     local ok = type(object) == type_name or object == type_name
-    local error_path = not ok and path:wrong_type(type_name, object)
-    return ok, error_path
-end
-
----@type fun(object: any, schema: table)
---- Wraps invocation of the `validate` to the `pcall`.
-M.call_validate = function(object, schema, path)
-    return pcall(M.validate, object, schema, path)
+    if not ok then
+        return false, path:wrong_type(type_name, object)
+    end
+    return true
 end
 
 M.color = 'string'

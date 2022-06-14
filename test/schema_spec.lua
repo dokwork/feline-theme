@@ -25,8 +25,8 @@ describe('validation the schema', function()
     describe('of the constants', function()
         it('should be passed for both syntax of constants', function()
             -- when:
-            s.validate('123', s.const)
-            s.validate({ const = '123' }, s.const)
+            assert(s.validate('123', s.const))
+            assert(s.validate({ const = '123' }, s.const))
         end)
 
         it('should validate particular value', function()
