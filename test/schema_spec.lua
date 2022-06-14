@@ -84,28 +84,28 @@ describe('validation the schema', function()
 
             -- then:
             assert(not ok)
-            assert.are.same({ 1 }, err.object)
+            assert.are.same({ { 1 } }, err.object)
             assert.are.same({ { table = { { key = 'string' } } } }, err.schema)
         end)
 
         it('should validate type of values', function()
             -- given:
             local schema = { table = { key = 'string', value = 'number' } }
-            local table = { a = 'str' }
 
             -- when:
-            local ok, reason = s.validate(table, schema)
+            local ok, err = s.validate({ a = 'str' }, schema)
 
             -- then:
             assert(not ok)
-            assert(#reason > 0)
+            assert.are.same({ { a = 'str' } }, err.object)
+            assert.are.same({ { table = { { key = 'string', value = 'number' } } } }, err.schema)
         end)
 
         it('should support oneof as a type of keys', function()
             -- given:
             local schema = { table = { key = { oneof = { 'a', 'b' } }, value = 'string' } }
 
-            -- them:
+            -- then:
             assert(s.validate({ a = 'a' }, schema))
             assert(s.validate({ b = 'b' }, schema))
             assert(not s.validate({ c = 'c' }, schema))
@@ -120,11 +120,11 @@ describe('validation the schema', function()
                 },
             }
 
-            -- them:
+            -- then:
             assert(s.validate({ c = true }, schema))
         end)
 
-        it('should not be passed when required oneof not passed', function()
+        it('should not be passed when required oneof was not satisfied', function()
             -- given:
             local schema = {
                 table = {
@@ -133,15 +133,23 @@ describe('validation the schema', function()
                 },
             }
 
-            -- them:
-            assert(not s.validate({ c = true }, schema))
+            -- when:
+            local ok, err = s.validate({ c = true }, schema)
+
+            -- then:
+            assert(not ok)
+
+            assert.are.same({ { c = '?' } }, err.object)
+            assert.are.same({
+                table = { { key = { oneof = { 'a', 'b' } } } },
+            }, err.schema)
         end)
 
         it('should support oneof as a type of values', function()
             -- given:
             local schema = { table = { key = 'string', value = { oneof = { 'a', 'b' } } } }
 
-            -- them:
+            -- then:
             assert(s.validate({ a = 'a' }, schema))
             assert(s.validate({ a = 'b' }, schema))
             assert(not s.validate({ a = 'c' }, schema))
