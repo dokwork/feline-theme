@@ -74,12 +74,7 @@ end
 local PathToError = {}
 
 function PathToError:new()
-    local x = {
-        -- validated object's path
-        object = self.object,
-        -- validated schema's path
-        schema = self.schema,
-    }
+    local x = {}
     -- pointer to the current validated position in the object
     x.object_head = self.object_head
     -- pointer to the current validated position in the schema

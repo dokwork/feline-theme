@@ -170,8 +170,11 @@ describe('validation the schema', function()
                 },
             }
 
+            -- when:
+            local ok, err = s.validate({ a = 1, b = true }, schema)
+
             -- then:
-            assert(s.validate({ a = 1, b = true }, schema))
+            assert(ok, tostring(err))
             assert(not s.validate({ a = 'str', b = true }, schema))
             assert(not s.validate({ a = 1, b = 1 }, schema))
         end)
