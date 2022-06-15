@@ -46,7 +46,10 @@ describe('validation the schema', function()
             local schema = { list = 'number' }
 
             -- when:
-            s.validate({ 1, 2, 3 }, schema)
+            local ok, err = s.validate({ 1, 2, 3 }, schema)
+
+            -- then:
+            assert(ok, tostring(err))
         end)
 
         it('should be failed for list with element with wrong type', function()
@@ -58,7 +61,7 @@ describe('validation the schema', function()
 
             -- then:
             assert(not ok)
-            assert.are.same({}, err.object)
+            assert.are.same({ 1, 2, '3' }, err.object)
             assert.are.same(schema, err.schema)
         end)
     end)
@@ -209,13 +212,20 @@ describe('validation the schema', function()
             }
 
             -- when:
-            s.validate({ a = 1, str = true }, schema)
+            local ok, err = s.validate({ a = 1, str = true }, schema)
+
+            -- then:
+            assert(ok, tostring(err))
         end)
     end)
 end)
 
 describe('statusline schema validation', function()
     it('should be passed', function()
-        s.validate(s.statusline, s.type)
+        -- when:
+        local ok, err = s.validate(s.statusline, s.type)
+
+        -- then:
+        assert(ok, tostring(err))
     end)
 end)

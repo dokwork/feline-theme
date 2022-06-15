@@ -110,11 +110,7 @@ end
 function PathToError:new_list(schema)
     local path = self:new()
     path:add({}, { list = schema })
-    if type(schema) ~= 'table' then
-        return nil, path:wrong_schema_of('list', schema)
-    else
-        return path
-    end
+    return path
 end
 
 local function validate_list(list, el_type, path)
@@ -124,9 +120,12 @@ local function validate_list(list, el_type, path)
     end
 
     for _, el in ipairs(list) do
-        path:add(el, el_type)
-        M.validate(el, el_type, path)
+        _, err = M.validate(el, el_type, path)
+        if err then
+            return false, err
+        end
     end
+    return true
 end
 
 function PathToError:new_oneof(value, options)
@@ -200,7 +199,6 @@ function PathToError:add(value, schema)
         end
     elseif self.schema_head.list then
         table.insert(self.object_head, value)
-        table.insert(self.schema_head.list, schema)
     elseif self.schema_head.oneof then
         self.object_head = value
     else
