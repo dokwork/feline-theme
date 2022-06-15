@@ -36,7 +36,9 @@ function Statusline:validate()
     if not ok then
         error('To validate statusline schema, "compline.schema" module should be installed.')
     end
-    schema.validate(self, schema.statusline)
+    local ok, err = schema.validate(self, schema.statusline)
+
+    assert(ok, tostring(err))
 end
 
 local get_sep = function(theme, state_name, zone, side)

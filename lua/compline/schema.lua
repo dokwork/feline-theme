@@ -167,10 +167,6 @@ function PathToError:new_schema_kv(schema)
 
     table.insert(path.schema_head.table, {})
 
-    local kv = {}
-    table.insert(path.object_head, kv)
-    path.object_head = kv
-
     return path
 end
 
@@ -191,6 +187,9 @@ function PathToError:add(value, schema)
             local key = next(self.object_head)
             self.object_head[key] = value
             kv.value = schema
+
+            self.object_head = value
+            self.schema_head = schema
         end
     elseif self.schema_head.list then
         table.insert(self.object_head, value)
@@ -231,32 +230,28 @@ local function validate_table(orig_tbl, kvs_schema, path)
 
         for k, v in pairs(unvalidated_tbl) do
             _, err = M.validate(k, kv_types.key, path)
-            if err and is_strict then
-                return false, err
-            elseif err then
-                break
-            end
+            if not err then
+                _, err = M.validate(v, kv_types.value, path)
+                -- validation must be failed regadles of is_strict
+                -- if key is valid, but value is not
+                if err then
+                    return false, err
+                end
 
-            _, err = M.validate(v, kv_types.value, path)
-            -- validation must be failed regadles of is_strict
-            -- if key is valid, but value is not
-            if err then
-                return false, err
-            end
+                at_least_one_passed = true
 
-            at_least_one_passed = true
+                -- remove validated key
+                unvalidated_tbl[k] = nil
 
-            -- remove validated key
-            unvalidated_tbl[k] = nil
-
-            -- constant can be checked only once
-            if M.is_const(kv_types.key) then
-                return true
+                -- constant can be checked only once
+                if M.is_const(kv_types.key) then
+                    return true
+                end
             end
         end
 
         if is_strict and not at_least_one_passed then
-            return false, path:required_key_not_found(kv_types)
+            return false, path:required_key_not_found(kv_types, unvalidated_tbl)
         end
 
         return true
@@ -324,7 +319,7 @@ end
 
 function PathToError:wrong_kv_types_schema(kv_types)
     self.error_message = string.format(
-        "Wrong schema. It should have description for 'key' and 'value', but it doesn't: %s",
+        "Wrong schema. It should have description for 'key' and 'value', but it doesn't: `%s`",
         vim.inspect(kv_types)
     )
     return self
@@ -339,11 +334,12 @@ function PathToError:wrong_schema_of(typ, type_schema)
     return self
 end
 
-function PathToError:required_key_not_found(kv_types)
+function PathToError:required_key_not_found(kv_types, orig_table)
     self.error_message = string.format(
-        'Required key %s was not found, or had type of the value distinguished from %s',
-        kv_types.key,
-        kv_types.value
+        'Required key `%s` was not found, or had a type of the value distinguished from `%s`\nOriginal table was:\n%s',
+        vim.inspect(kv_types.key),
+        vim.inspect(kv_types.value),
+        vim.inspect(orig_table)
     )
     return self
 end

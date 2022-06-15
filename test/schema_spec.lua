@@ -82,13 +82,8 @@ describe('validation the schema', function()
             -- given:
             local schema = { table = { key = 'string', value = 'number' } }
 
-            -- when:
-            local ok, err = s.validate({ 1, 2 }, schema)
-
             -- then:
-            assert(not ok)
-            assert.are.same({ { '?' } }, err.object)
-            assert.are.same({ table = { { key = 'string' } } }, err.schema)
+            assert(not s.validate({ 1, 2 }, schema))
         end)
 
         it('should validate type of values', function()
@@ -100,7 +95,7 @@ describe('validation the schema', function()
 
             -- then:
             assert(not ok)
-            assert.are.same({ { a = 'str' } }, err.object)
+            assert.are.same({ a = 'str' }, err.object)
             assert.are.same({ table = { { key = 'string', value = 'number' } } }, err.schema)
         end)
 
@@ -145,7 +140,7 @@ describe('validation the schema', function()
             -- then:
             assert(not ok)
 
-            assert.are.same({ { c = '?' } }, err.object)
+            assert.are.same({ c = '?' }, err.object)
             assert.are.same({
                 table = { { key = { oneof = { 'a', 'b' } } } },
             }, err.schema)
@@ -219,6 +214,51 @@ describe('validation the schema', function()
 
             -- then:
             assert(ok, tostring(err))
+        end)
+
+        it('should support table as a value', function()
+            -- given:
+            local schema = {
+                table = {
+                    {
+                        key = 'a',
+                        value = {
+                            table = { key = 'b', value = 'number' },
+                        },
+                    },
+                },
+            }
+
+            -- when:
+            local ok, err = s.validate({ a = { b = 1 } }, schema)
+
+            -- then:
+            assert(ok, tostring(err))
+        end)
+
+        it('should correctly compose error for nested tables', function()
+            -- given:
+            local schema = {
+                table = {
+                    {
+                        key = 'a',
+                        value = {
+                            table = { key = 'b', value = 'number' },
+                        },
+                    },
+                },
+            }
+
+            -- when:
+            local ok, err = s.validate({ a = { c = 1 } }, schema)
+
+            -- then:
+            assert(not ok)
+            assert.are.same({ a = { c = '?' } }, err.object)
+            assert.are.same(
+                { table = { { key = 'a', value = { table = { { key = 'b' } } } } } },
+                err.schema
+            )
         end)
     end)
 end)
