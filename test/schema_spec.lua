@@ -9,17 +9,14 @@ describe('validation the schema', function()
         assert(s.validate(s.type(), s.type()), 'Wrong schema for the type')
     end)
 
-    it('should be passed for "any" type', function()
-        -- given:
-        local schema = 'any'
-
-        -- then:
-        assert(s.validate(nil, schema))
-        assert(s.validate({ a = 'a' }, schema))
-        assert(s.validate({ 1, 2, 3 }, schema))
-        assert(s.validate(true, schema))
-        assert(s.validate(123, schema))
-        assert(s.validate('str', schema))
+    it('should be failed for invalide schema', function()
+        assert(not s.validate({ oNNeof = { 1, 2, 3 } }, s.type()))
+        assert(not s.validate({ lst = 'string' }, s.type()))
+        assert(not s.validate({ tbl = { key = true, value = true } }, s.type()))
+        assert(not s.validate({ table = { ky = true, value = true } }, s.type()))
+        assert(not s.validate({ table = { key = true, val = true } }, s.type()))
+        assert(not s.validate({ table = { key = true } }, s.type()))
+        assert(not s.validate({ cnst = 123 }, s.type()))
     end)
 
     describe('of the constants', function()
@@ -82,6 +79,27 @@ describe('validation the schema', function()
 
             -- then:
             assert(ok, tostring(err))
+        end)
+
+        it('should be passed for empty list', function()
+            -- given:
+            local schema = { list = 'number' }
+
+            -- then:
+            assert(s.validate({}, schema))
+        end)
+
+        it('should not be passed for empty list', function()
+            -- given:
+            local schema = { list = 'number', non_empty = true }
+
+            -- when:
+            local ok, err = s.validate({}, schema)
+
+            -- then:
+            assert(not ok)
+            assert.are.same({}, err.object)
+            assert.are.same(schema, err.schema)
         end)
 
         it('should be failed for list with element with wrong type', function()

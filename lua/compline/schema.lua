@@ -10,32 +10,45 @@ M.const = { oneof = { 'string', { table = { key = 'const', value = 'string' } } 
 
 M.list = function()
     return {
-        table = { key = 'list', value = M.type },
+        table = {
+            { key = 'list', value = M.type, required = true },
+            { key = 'non_empty', value = 'boolean' },
+        },
     }
 end
 
 M.oneof = function()
     return {
-        table = { key = 'oneof', value = { table = { keys = 'number', values = M.type } } },
+        table = { key = 'oneof', value = { list = M.type } },
     }
 end
 
-M.key_type = { oneof = { 'string', M.const } }
-
--- stylua: ignore start
 M.table = function()
     return {
         table = {
-            { key = 'table', value = {
+            key = 'table',
+            value = {
                 oneof = {
-                    { table = { { key = 'key', value = M.key_type }, { key = 'value', value = M.type } } },
-                    { list = { table = { { key = 'key', value = M.key_type },  { key = 'value', value = M.type } } } },
-                } }
-            }
-        }
+                    {
+                        table = {
+                            { key = 'key', value = M.type, required = true },
+                            { key = 'value', value = M.type, required = true },
+                        },
+                    },
+                    {
+                        list = {
+                            table = {
+                                { key = 'key', value = M.type, required = true },
+                                { key = 'value', value = M.type, required = true },
+                            },
+                        },
+                        non_empty = true,
+                    },
+                },
+            },
+        },
     }
 end
--- stylua: ignore end
 
 M.primirives = {
     'boolean',
@@ -43,7 +56,6 @@ M.primirives = {
     'number',
     'function',
     'nil',
-    'any',
 }
 
 M.type = function()
@@ -58,8 +70,12 @@ M.type = function()
     }
 end
 
+M.is_primitive = function(object)
+    return vim.tbl_contains(M.primirives, object)
+end
+
 M.is_const = function(object)
-    if vim.tbl_contains(M.primirives, object) then
+    if M.is_primitive(object) then
         return false
     end
     if type(object) == 'table' then
@@ -161,6 +177,15 @@ function PathToError:wrong_type(expected_type, obj)
     return self
 end
 
+function PathToError:wrong_type_in_schema(type_name, schema)
+    self.error_message = string.format(
+        'Unknown type `%s` in the schema: %s',
+        type_name,
+        vim.inspect(schema)
+    )
+    return self
+end
+
 function PathToError:wrong_value(expected, actual)
     self.error_message = string.format(
         'Wrong value "%s". Expected "%s".',
@@ -175,6 +200,14 @@ function PathToError:wrong_oneof(value, options)
         'Wrong oneof value: %s. Expected values %s.',
         vim.inspect(value),
         vim.inspect(options)
+    )
+    return self
+end
+
+function PathToError:empty_list_of(el_type)
+    self.error_message = string.format(
+        'No one element in the none empty list of %s',
+        M.name_of_type(el_type)
     )
     return self
 end
@@ -223,10 +256,14 @@ local function validate_const(value, schema, path)
     return true
 end
 
-local function validate_list(list, el_type, path)
-    local path = path:new({}, { list = el_type })
+local function validate_list(list, el_type, non_empty, path)
+    local path = path:new({}, { list = el_type, non_empty = non_empty })
     if type(list) ~= 'table' then
         return false, path:wrong_type('table', list)
+    end
+
+    if non_empty and #list == 0 then
+        return false, path:empty_list_of(el_type)
     end
 
     for i, el in ipairs(list) do
@@ -372,19 +409,19 @@ M.validate = function(object, schema, path)
     if type_name == 'oneof' then
         return validate_oneof(object, type_schema, path)
     end
-    if type_name == 'list' then
-        return validate_list(object, type_schema, path)
+    if type_name == 'list' or type_name == 'non_empty' then
+        return validate_list(object, schema.list, schema.non_empty, path)
     end
     if type_name == 'const' then
         return validate_const(object, type_value, path)
     end
-    if type_name == 'any' then
-        path:new(object, schema)
-        return true
+
+    if not M.is_primitive(type_name) then
+        return false, path:wrong_type_in_schema(type_name, schema)
     end
     -- flat constants or primitives
     path = path:new(object, schema)
-    local ok = type(object) == type_name or object == type_name
+    local ok = type(object) == type_name or object == type_value
     if not ok then
         return false, path:wrong_type(type_name, object)
     end
