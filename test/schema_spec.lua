@@ -29,7 +29,17 @@ describe('validation the schema', function()
             assert(s.validate({ const = '123' }, s.const))
         end)
 
-        it('should validate particular value', function()
+        it('should be passed for particular value by the short schema', function()
+            -- given:
+            local schema = '123'
+
+            -- then:
+            assert(s.validate('123', schema))
+            assert(not s.validate('12', schema))
+            assert(not s.validate(123, schema))
+        end)
+
+        it('should be passed for particular value by the full schema', function()
             -- given:
             local schema = { const = '123' }
 
@@ -37,6 +47,28 @@ describe('validation the schema', function()
             assert(s.validate('123', schema))
             assert(not s.validate('12', schema))
             assert(not s.validate(123, schema))
+        end)
+    end)
+
+    describe('of the oneof', function()
+        it('should be passed for every option', function()
+            -- given:
+            local schema = { oneof = { '123', 456, true, { table = { key = 'a', value = 1 } } } }
+
+            -- then:
+            assert(s.validate('123', schema))
+            assert(s.validate(456, schema))
+            assert(s.validate(true, schema))
+            assert(s.validate({ a = 1 }, schema))
+        end)
+
+        it('should be failed when value is not in the list, or has wwrong type', function()
+            -- given:
+            local schema = { oneof = { '123', 456, true, { table = { key = 'a', value = 1 } } } }
+
+            -- then:
+            assert(not s.validate('!123', schema))
+            assert(not s.validate('true', schema))
         end)
     end)
 
@@ -267,6 +299,34 @@ describe('statusline schema validation', function()
     it('should be passed', function()
         -- when:
         local ok, err = s.validate(s.statusline, s.type)
+
+        -- then:
+        assert(ok, tostring(err))
+    end)
+
+    it('should be passed for the zone', function()
+        -- given:
+        local zone = {
+            a = { 'str' },
+        }
+
+        -- when
+        local ok, err = s.validate(zone, s.zone)
+
+        -- then:
+        assert(ok, tostring(err))
+    end)
+
+    it('should be passed for the line', function()
+        -- given:
+        local line = {
+            left = {
+                a = { 'str' },
+            },
+        }
+
+        -- when
+        local ok, err = s.validate(line, s.line)
 
         -- then:
         assert(ok, tostring(err))

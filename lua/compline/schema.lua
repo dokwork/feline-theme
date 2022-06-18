@@ -37,19 +37,17 @@ M.table = function()
 end
 -- stylua: ignore end
 
-M.primirives = function()
-    return {
-        'boolean',
-        'string',
-        'number',
-        'function',
-        'nil',
-        'any',
-    }
-end
+M.primirives = {
+    'boolean',
+    'string',
+    'number',
+    'function',
+    'nil',
+    'any',
+}
 
 M.type = function()
-    local oneof = M.primirives()
+    local oneof = vim.tbl_extend('keep', {}, M.primirives)
     table.insert(oneof, M.const)
     table.insert(oneof, M.list())
     table.insert(oneof, M.table())
@@ -60,6 +58,16 @@ M.type = function()
     }
 end
 
+M.is_const = function(object)
+    if vim.tbl_contains(M.primirives, object) then
+        return false
+    end
+    if type(object) == 'table' then
+        return object[1] == 'const'
+    end
+    return true
+end
+
 M.name_of_type = function(typ)
     if type(typ) == 'string' then
         return typ
@@ -67,6 +75,9 @@ M.name_of_type = function(typ)
     if type(typ) == 'table' then
         local typ = next(typ)
         return typ
+    end
+    if M.is_const(typ) then
+        return string.format('const `%s`', typ)
     end
     error('Unsupported type ' .. vim.inspect(typ))
 end
@@ -85,7 +96,7 @@ function PathToError:new(object, schema)
         __index = self,
         __tostring = function(t)
             return string.format(
-                '%s\nValidated value: %s\n\nValidated schema: %s',
+                '%s\n\nValidated value: %s\n\nValidated schema: %s',
                 t.error_message or '',
                 vim.inspect(t.object),
                 vim.inspect(t.schema)
@@ -187,7 +198,16 @@ end
 
 function PathToError:required_key_not_found(kv_types, orig_table)
     self.error_message = string.format(
-        'Required key `%s` was not found, or had a type of the value distinguished from `%s`\nOriginal table was:\n%s',
+        'Required key `%s` was not found.\nKeys in the original table were:\n%s',
+        vim.inspect(kv_types.key),
+        vim.inspect(vim.tbl_keys(orig_table))
+    )
+    return self
+end
+
+function PathToError:required_pair_not_found(kv_types, orig_table)
+    self.error_message = string.format(
+        'Required pair with key = `%s` and value = `%s` was not found.\nOriginal table was:\n%s',
         vim.inspect(kv_types.key),
         vim.inspect(kv_types.value),
         vim.inspect(orig_table)
@@ -200,7 +220,7 @@ local function validate_const(value, schema, path)
     if value ~= schema then
         return false, path:wrong_value(schema, value)
     end
-    return path
+    return true
 end
 
 local function validate_list(list, el_type, path)
@@ -261,12 +281,15 @@ local function validate_table(orig_tbl, kvs_schema, path)
             return false, path:wrong_kv_types_schema(kv_types)
         end
 
-        local at_least_one_passed = false
+        local at_least_one_key_passed = false
+        local at_least_one_pair_passed = false
 
         for k, v in pairs(unvalidated_tbl) do
             path.current_object_key = k
             local _, err = M.validate(k, kv_types.key, path)
             if not err then
+                at_least_one_key_passed = true
+
                 _, err = M.validate(v, kv_types.value, path)
                 -- if key is valid, but value is not,
                 -- then validation must be failed regadles of is_strict
@@ -274,7 +297,7 @@ local function validate_table(orig_tbl, kvs_schema, path)
                     return false, err
                 end
 
-                at_least_one_passed = true
+                at_least_one_pair_passed = true
 
                 -- remove validated key
                 unvalidated_tbl[k] = nil
@@ -286,8 +309,12 @@ local function validate_table(orig_tbl, kvs_schema, path)
             end
         end
 
-        if is_strict and not at_least_one_passed then
+        if is_strict and not at_least_one_key_passed then
             return false, path:required_key_not_found(kv_types, unvalidated_tbl)
+        end
+
+        if is_strict and not at_least_one_pair_passed then
+            return false, path:required_pair_not_found(kv_types, unvalidated_tbl)
         end
 
         return true
@@ -316,15 +343,6 @@ local function validate_table(orig_tbl, kvs_schema, path)
             return false, err
         end
         return validate_keys(unvalidated_tbl, optional, false)
-    end
-end
-
-M.is_const = function(object)
-    if type(object) == 'string' and not vim.tbl_contains(M.primirives(), object) then
-        return true
-    end
-    if type(object) == 'table' then
-        return object[1] == 'const'
     end
 end
 
@@ -458,7 +476,7 @@ M.zone = {
 
 M.line = {
     table = {
-        key = { onneof = { 'left', 'middle', 'right' } },
+        key = { oneof = { 'left', 'middle', 'right' } },
         value = M.zone,
     },
 }
