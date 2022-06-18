@@ -1,4 +1,44 @@
+local schema = require('compline.schema')
+local feline_schema = require('compline.schema.feline')
 local Statusline = require('compline.statusline')
+
+describe('statusline schema validation', function()
+    it('should be passed', function()
+        -- when:
+        local ok, err = schema.validate(feline_schema.statusline, schema.type)
+
+        -- then:
+        assert(ok, tostring(err))
+    end)
+
+    it('should be passed for the zone', function()
+        -- given:
+        local zone = {
+            a = { 'str' },
+        }
+
+        -- when
+        local ok, err = schema.validate(zone, feline_schema.zone)
+
+        -- then:
+        assert(ok, tostring(err))
+    end)
+
+    it('should be passed for the line', function()
+        -- given:
+        local line = {
+            left = {
+                a = { 'str' },
+            },
+        }
+
+        -- when
+        local ok, err = schema.validate(line, feline_schema.line)
+
+        -- then:
+        assert(ok, tostring(err))
+    end)
+end)
 
 describe('Building componentns', function()
     it('should build components and sections in correct order', function()
