@@ -32,11 +32,12 @@ function Statusline:select_theme()
 end
 
 function Statusline:validate()
+    local feline_schema = require('compline.schema.feline')
     local ok, schema = pcall(require, 'compline.schema')
     if not ok then
         error('To validate statusline schema, "compline.schema" module should be installed.')
     end
-    local ok, err = schema.validate(self, schema.statusline)
+    local ok, err = schema.validate(self, feline_schema.statusline)
 
     assert(ok, tostring(err))
 end
