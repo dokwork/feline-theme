@@ -11,6 +11,13 @@ describe('statusline schema validation', function()
         assert(ok, tostring(err))
     end)
 
+    it('should be passed for highlight', function()
+        -- when:
+        assert(schema.validate('red', feline_schema.highlight))
+        assert(schema.validate(it, feline_schema.highlight))
+        assert(schema.validate({ fg = 'red', bg = 'green' }, feline_schema.highlight))
+    end)
+
     it('should be passed for the zone', function()
         -- given:
         local zone = {
