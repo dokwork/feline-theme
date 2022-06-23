@@ -1,6 +1,98 @@
 local u = require('compline.utils')
 local feline = u.lazy_load('feline')
 
+local resolve_component = function(components, component_name)
+    return components[component_name] or { provider = component_name }
+end
+
+local add_highlight = function(component, theme_hl)
+    component.hl = component.hl or theme_hl
+end
+
+local add_separator = function(component, sep, side)
+    if type(sep) == 'table' then
+        component[side .. '_sep'] = {
+            always_visible = true,
+            str = sep[1],
+            hl = sep.hl,
+        }
+    elseif type(sep) == 'string' then
+        component[side .. '_sep'] = {
+            always_visible = true,
+            str = sep,
+        }
+    end
+end
+
+local separator_as_component = function(sep)
+    if type(sep) == 'string' then
+        return { provider = sep }
+    elseif type(sep) == 'table' then
+        return { provider = sep[1], hl = sep.hl }
+    else
+        error('Unexpected separator: ' .. vim.inspect(sep))
+    end
+end
+
+---@param line table
+---@param line_name string
+---@param zone_name string
+---@param theme table
+---@param components table
+local build_zone = function(line, line_name, zone_name, theme, components)
+    local result = {}
+    local theme_sections = vim.tbl_get(theme, line_name, zone_name, 'sections') or {}
+    local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'separators') or {}
+    local sections = line[zone_name]
+    sections = sections ~= 'nil' and sections or {}
+
+    local j = 0
+    -- add a left separator to the zone
+    if zone_separators.left then
+        j = j + 1
+        result[j] = separator_as_component(zone_separators.left)
+    end
+    -- now, resolve components in the every section a, b, c, etc...
+    for section_name, section in u.sorted_by_keys(sections) do
+        -- 'nil' is an option to remove existed section when extends existed Statusline
+        if section ~= 'nil' then
+            local theme_section = theme_sections[section_name] or {}
+            -- resolve components
+            for n, component_name in ipairs(section) do
+                j = j + 1
+                local component = resolve_component(components, component_name)
+                add_highlight(component, theme_section.hl)
+                if n == 1 then
+                    add_separator(component, theme_section.ls, 'left')
+                end
+                if n == #section then
+                    add_separator(component, theme_section.rs, 'right')
+                end
+                result[j] = component
+            end
+        end
+    end
+    -- add a right separator to the zone
+    if zone_separators.right then
+        j = j + 1
+        result[j] = separator_as_component(zone_separators.right)
+    end
+    return result
+end
+
+local build_line = function(statusline, line_name, theme)
+    local result = {}
+    local theme = theme or {}
+    local components = statusline.components or {}
+    local line = statusline[line_name]
+    local i = 0
+    for _, zone_name in pairs({ 'left', 'middle', 'right' }) do
+        i = i + 1
+        result[i] = build_zone(line, line_name, zone_name, theme, components)
+    end
+    return result
+end
+
 local Statusline = {
     -- user should be able to not specify components in some case at all
     active = nil,
@@ -42,91 +134,14 @@ function Statusline:validate()
     assert(ok, tostring(err))
 end
 
-local get_sep = function(theme, state_name, zone, side)
-    local sep = side and vim.tbl_get(theme, state_name, zone, 'separators', side)
-        or vim.tbl_get(theme, state_name, 'separators', zone)
-
-    if not sep then
-        return nil
-    elseif type(sep) == 'string' then
-        return { provider = sep }
-    elseif type(sep) == 'table' then
-        return sep
-    else
-        return error(
-            string.format(
-                'Illegal type [%s] of the separator for the %s %s zone.',
-                type(sep),
-                state_name,
-                zone
-            )
-        )
-    end
-end
-
-local build_line = function(self, state_name)
-    local result = {}
-    local theme = self.theme or {}
-    local components = self.components or {}
-    local line = self[state_name]
-    local i = 0
-    for _, zone in pairs({ 'left', 'middle', 'right' }) do
-        local sections = line[zone]
-        local zone_sep = get_sep(theme, state_name, zone)
-        sections = sections ~= 'nil' and sections or {}
-        i = i + 1
-        result[i] = {}
-        local j = 0
-        -- add separator to the right zone
-        if zone == 'right' and zone_sep then
-            j = j + 1
-            result[i][j] = zone_sep
-        end
-        -- now, resolve components in the every section a, b, c, etc...
-        for char, section in u.sorted_by_keys(sections) do
-            -- 'nil' is an option to remove existed section when extends existed Statusline
-            if section ~= 'nil' then
-                -- getting optional separators
-                local section_left_sep = get_sep(theme, state_name, zone, 'left')
-                local section_right_sep = get_sep(theme, state_name, zone, 'right')
-
-                -- add a new component as the left section's separator
-                if section_left_sep then
-                    j = j + 1
-                    result[i][j] = section_left_sep
-                end
-
-                -- resolve components
-                for _, component_name in ipairs(section) do
-                    j = j + 1
-                    local component = components[component_name] or { provider = component_name }
-                    component.hl = component.hl or vim.tbl_get(theme, state_name, zone, char)
-                    result[i][j] = component
-                end
-
-                -- add a new component as the right section's separator
-                if section_right_sep then
-                    j = j + 1
-                    result[i][j] = section_right_sep
-                end
-            end
-        end
-        -- add separator to the left zone
-        if zone == 'left' and zone_sep then
-            result[i][j + 1] = zone_sep
-        end
-    end
-    return result
-end
-
 function Statusline:build_components()
-    self.theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
+    local theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
 
     local result = {}
-    for _, state_name in ipairs({ 'active', 'inactive' }) do
-        local line = self[state_name]
+    for _, line_name in ipairs({ 'active', 'inactive' }) do
+        local line = self[line_name]
         if line and line ~= 'nil' then
-            result[state_name] = build_line(self, state_name)
+            result[line_name] = build_line(self, line_name, theme)
         end
     end
     return result

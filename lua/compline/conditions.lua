@@ -1,6 +1,6 @@
 local u = require('compline.utils')
 
-vim.cmd('augroup compile_git_status')
+vim.cmd('augroup compline_git_status')
 vim.cmd('autocmd!')
 vim.cmd(
     'autocmd BufEnter,FocusGained,BufWritePost * let b:git_status = systemlist("git status --porcelain")'
