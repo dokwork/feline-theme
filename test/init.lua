@@ -41,10 +41,10 @@ else
     if vim.env.COSMOSLINE then
         ---@diagnostic disable-next-line: unused-local
         local config = require('compline.cosmosline')
-            :new('my_line', {
-                active = { left = { a = { [1] = 'test' } } },
-            })
-        vim.pretty_print(config:build_components())
+            -- :new('my_line', {
+            --     active = { left = { a = { [1] = 'test' } } },
+            -- })
+        -- vim.pretty_print(config:build_components())
         config:setup()
         -- vim.pretty_print(config)
     else

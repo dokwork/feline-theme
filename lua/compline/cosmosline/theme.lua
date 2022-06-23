@@ -1,28 +1,29 @@
 local h = require('compline.highlights')
 
 return {
-
+ -- TODO right zone should be rendered from the right to the left
     active = {
         left = {
+            separators = { right = { ' ', hl = { fg = 'bg', bg = 'NONE' } } },
             sections = {
                 a = { hl = h.vi_mode },
                 b = { hl = { fg = 'fg', bg = 'bg' } },
             },
         },
         middle = {
-            separators = { left = ' ', right = ' ' },
             sections = {
                 a = { fg = 'bg', bg = 'NONE' },
             },
         },
         right = {
+            separators = { left = { ' ', hl = { fg = 'bg', bg = 'NONE' } } },
             sections = {
-                a = { hl = { fg = 'fg', bg = 'bg' }, rs = { '|', hl = { fg = 'blue' } } },
-                b = { hl = { fg = 'fg', bg = 'bg' }, rs = { '|', hl = { fg = 'blue' } } },
-                c = { hl = { fg = 'fg', bg = 'bg' }, rs = { '|', hl = { fg = 'blue' } } },
-                d = { hl = { fg = 'fg', bg = 'bg' }, rs = { '|', hl = { fg = 'blue' } } },
-                e = { hl = { fg = 'fg', bg = 'bg' }, rs = { '|', hl = { fg = 'blue' } } },
-                f = { hl = h.vi_mode, rs = { '|', hl = { fg = 'blue' } } },
+                a = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                b = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                c = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                d = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                e = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                f = { hl = h.vi_mode },
             },
         },
     },

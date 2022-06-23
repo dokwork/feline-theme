@@ -12,13 +12,11 @@ end
 local add_separator = function(component, sep, side)
     if type(sep) == 'table' then
         component[side .. '_sep'] = {
-            always_visible = true,
             str = sep[1],
             hl = sep.hl,
         }
     elseif type(sep) == 'string' then
         component[side .. '_sep'] = {
-            always_visible = true,
             str = sep,
         }
     end
@@ -80,9 +78,9 @@ local build_zone = function(line, line_name, zone_name, theme, components)
     return result
 end
 
-local build_line = function(statusline, line_name, theme)
+local build_line = function(statusline, line_name)
     local result = {}
-    local theme = theme or {}
+    local theme = statusline.theme or {}
     local components = statusline.components or {}
     local line = statusline[line_name]
     local i = 0
@@ -124,24 +122,24 @@ function Statusline:select_theme()
 end
 
 function Statusline:validate()
-    local feline_schema = require('compline.schema.feline')
+    local statusline_schema = require('compline.schema.statusline').statusline
     local ok, schema = pcall(require, 'compline.schema')
     if not ok then
         error('To validate statusline schema, "compline.schema" module should be installed.')
     end
-    local ok, err = schema.validate(self, feline_schema.statusline)
+    local ok, err = schema.validate(self, statusline_schema)
 
     assert(ok, tostring(err))
 end
 
 function Statusline:build_components()
-    local theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
+    self.theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
 
     local result = {}
     for _, line_name in ipairs({ 'active', 'inactive' }) do
         local line = self[line_name]
         if line and line ~= 'nil' then
-            result[line_name] = build_line(self, line_name, theme)
+            result[line_name] = build_line(self, line_name)
         end
     end
     return result

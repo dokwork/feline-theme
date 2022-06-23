@@ -4,7 +4,7 @@ local u = require('compline.utils')
 
 local M = {}
 
----@type fun(c: Component): Highlight
+---@type fun(hls: table<string, Highlight>): Highlight
 ---Returns highlight according to the current vi mode.
 M.vi_mode = function(cmp)
     local hls = cmp and cmp.hls or {}
@@ -61,13 +61,13 @@ end
 
 ---@type fun(hls: table<string, Highlight>): Highlight
 ---Returns a highlight according to the first attached lsp client.
----The color will be taken from the 'nvim-web-devicons' or 'fg' will be used. If no one
----client is attached, then 'inactive' will be used as foreground color.
+---The color will be taken from the 'nvim-web-devicons' or 'hls.fg' will be used. If no one
+---client is attached, then 'hls.client_off' will be used as foreground color.
 ---
 ---@param hls table<string, Highlight> # custom highlights with possible properties:
---- * `default: Highlight` a highlight which will be used if a color for the attached lsp
----    client is not found;
---- * `inactive: Highlight` a highlight which will be used if no one lsp client is attached;
+--- * `unknown` a highlight which will be used if a color for the attached lsp
+---             client is not found;
+--- * `client_off` a highlight which will be used if no one lsp client is attached;
 ---
 ---@return Highlight # highlight for the first attached lsp client.
 M.lsp_client = function(cmp)
@@ -77,11 +77,10 @@ M.lsp_client = function(cmp)
     })
     local client = u.lsp_client()
     local icon = u.lsp_client_icon({}, client)
-    if u.is_lsp_client_ready(client) then
-        return {
-            fg = (icon and icon.color) or (icon and hls.unknown) or hls.client_off,
-        }
-    end
+    return {
+        fg = (u.is_lsp_client_ready(client) and (icon and icon.color) or (icon and hls.unknown))
+            or hls.client_off,
+    }
 end
 
 M.treesitter_parser = function(cmp)

@@ -234,8 +234,8 @@ describe('Building componentns', function()
                 {
                     {
                         provider = 'test',
-                        left_sep = { str = '<', always_visible = true },
-                        right_sep = { str = '>', hl = 'green', always_visible = true},
+                        left_sep = { str = '<' },
+                        right_sep = { str = '>', hl = 'green' },
                     },
                 },
                 {},

@@ -6,9 +6,9 @@ local Cosmosline = require('compline.statusline'):new('cosmosline', {
         },
         right = {
             a = { 'diagnostic_warnings', 'diagnostic_errors' },
-            b = { 'git_branch' },
+            b = { 'git_icon', 'git_branch' },
             c = { 'lsp_client_icon', 'treesitter_parser_icon' },
-            d = { 'spellcheck' },
+            d = { 'spellcheck_icon' },
             e = { 'position' },
             f = { 'scroll_bar' },
         },
