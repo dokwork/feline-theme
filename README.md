@@ -47,17 +47,19 @@ end
 local theme = {
     active = {
         left = {
-            separators = { right = { '', hl = vi_mode_fg } },
+            zone_separators = { right = { '', hl = vi_mode_fg } },
+            sections_separators = { right = ' ' },
             sections = {
-                a = { hl = vi_mode_bg, rs = ' ' },
-                b = { hl = vi_mode_fg, rs = ' ' }
+                a = { hl = vi_mode_bg },
+                b = { hl = vi_mode_fg }
             },
         },
         right = {
-            separators = { left = { '', hl = vi_mode_fg } },
+            zone_separators = { left = { '', hl = vi_mode_fg } },
+            sections_separators = { left = ' ' },
             sections = {
-                c = { hl = vi_mode_fg, ls = ' ' },
-                d = { hl = vi_mode_bg, ls = ' ' },
+                c = { hl = vi_mode_fg },
+                d = { hl = vi_mode_bg },
             },
         },
     },
