@@ -3,67 +3,98 @@
 ![light_example](light_example.png)
 ![dark_example](dark_example.png)
 
-This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim). 
-It follows the idea of reusing providers and makes it possible to reuse other main properties 
-of components, such as highlighting or icons. Moreover, with `compline` you can reuse 
-the whole component, or the whole statusline!
+This plugin is an extension for the [feline.nvim](https://github.com/feline-nvim/feline.nvim), which
+combines advantages of the templating similar to the
+[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) with powerful syntax for description
+components of the statusline from the `feline.nvim`.
 
-For example, assume you have a lua script, where all your components are described:
+## Configuration example
+
+Let's see how to create a simple statusline:
 
 ```lua
--- my_components.lua
 
-return {
-  progress = {
-    provider = 'scroll_bar', -- default provider from the feline
-    hl = 'vi_mode' -- highlight according to the current vi mode
-  },
+-- Prepare needed components --
 
-  file = {
-    provider = 'file_info', -- default provider from the feline
-    hl = 'file_status' -- highlight depends on the current state of the file (readonly, modified or nothing)
+local components = {
+  mode = {
+      provider = require('feline.providers.vi_mode').get_vim_mode,
+  }
+
+  file_name = {
+      provider = function()
+          return vim.fn.expand('%:t')
+      end,
   }
 }
-```
 
-Now, you can describe your status line just referring to appropriate components in the same way 
-as the original `feline` plugin:
+-- Describe how the statusline should look like --
 
-```lua
--- my_statusline.lua
+local vi_mode_fg = function()
+    return {
+        fg = require('feline.providers.vi_mode').get_mode_color(),
+        bg = 'bg',
+    }
+end
 
-require('compline.statusline').new('myline', {
-  active_components = {
-    { component = 'progress' },
-    { component = 'file' }
-  },
-  inactive_components = {
-    -- in an inactive window we want always to show a file_info in grey
-    { component = 'file', hl = { fg = 'grey' } }
-  },
-  -- you should specify a table where used components are declared:
-  lib = {
-    components = require('my_components')
-  }
+local vi_mode_bg = function()
+    return {
+        fg = 'fg',
+        bg = require('feline.providers.vi_mode').get_mode_color(),
+    }
+end
+
+local theme = {
+    active = {
+        left = {
+            zone_separators = { right = { '', hl = vi_mode_fg } },
+            sections_separators = { right = ' ' },
+            sections = {
+                a = { hl = vi_mode_bg },
+                b = { hl = vi_mode_fg }
+            },
+        },
+        right = {
+            zone_separators = { left = { '', hl = vi_mode_fg } },
+            sections_separators = { left = ' ' },
+            sections = {
+                c = { hl = vi_mode_fg },
+                d = { hl = vi_mode_bg },
+            },
+        },
+    },
+
+    dark = {
+        bg = '#282c34'
+    }
+}
+
+-- Create your oun statusline --
+
+local statusline = require('compline.statusline'):new('example', {
+    active = {
+        left = {
+            a = { 'mode' },
+            c = { 'file_name' },
+        },
+        right = {
+            e = { 'file_type' },
+            g = { 'position' },
+        },
+    },
+    inactive = {
+        left = {
+            a = { 'file_name' },
+        },
+    },
+    themes = {
+        default = theme,
+    },
+    components = components
 })
 ```
 
-And finally, set up your status line:
-
-```lua
-require('my_statusline'):setup()
-```
-
-Or much better, you can override existed statusline to reuse a liked one:
-
-```lua
-require('compline.cosmosline'):new('my_personal_cosmosline', {
-  -- do not change statusline for inactive window
-  inactive_components = 'nil'
-}):setup()
-```
-
-More details you can find here: [Guide.md](Guide.md).
+More details about configuration you can find here: [Guide.md](Guide.md).
 
 ## How to install
 
@@ -87,24 +118,9 @@ use({
 ## Motivation
 
 I'm glad to use the [feline.nvim](https://github.com/feline-nvim/feline.nvim) plugin. This is a very
-powerful and useful plugin for configuring the neovim status line. But for my taste, the final
+powerful and useful plugin for configuring the neovim statusline. But for my taste, the final
 configuration usually looks a little bit cumbersome and messy. I prefer to separate an
-implementation of the components and their composition. Also, I think that not only providers deserve
-being reusable, but icons and highlights too. 
-
-For example, `feline` has the provider of the git branch. That provider can also return an icon
-depending on the state of the current git working directory. But how about highlighting, which can
-depend on the git state too? Unfortunately, you have to specified it additionally and can't inherit
-it. So, my idea is being able to share between users reusable libraries of the components or their
-properties, such as providers, icons, or highlights, and apply the most interesting or helpful of
-them to your own configuration. Or share a complete status line configuration with customization,
-instead of copy-past it from the different sources.
+implementation of the components and their composition. 
 
 This project is more the proof of concept, instead of the final solution, and currently **is under
 develop**.
-
-
-## TODO
-
- - Add more documentation
-

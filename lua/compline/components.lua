@@ -41,7 +41,6 @@ M.git_branch = {
 ---@type Component
 M.working_directory = {
     provider = p.working_path,
-    hl = h.vi_mode,
 }
 
 ---Returns a list of languages used for spellchecking. If spellchecking is off and component
@@ -53,7 +52,6 @@ M.working_directory = {
 ---@type Component
 M.spellcheck = {
     provider = p.spellcheck_langs,
-    hl = h.spellcheck,
     icon = i.spellcheck_icon,
 }
 

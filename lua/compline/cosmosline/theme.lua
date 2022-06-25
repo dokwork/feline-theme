@@ -1,16 +1,35 @@
+local h = require('compline.highlights')
+
 return {
-    sections = {
+    -- TODO right zone should be rendered from the right to the left
+    active = {
         left = {
-            a = 'vi_mode',
-            b = { fg = 'fg', bg = 'bg' },
+            separators = { right = { ' ', hl = { fg = 'bg', bg = 'NONE' } } },
+            sections = {
+                a = { hl = h.vi_mode },
+                b = { hl = { fg = 'fg', bg = 'bg' } },
+            },
         },
         middle = {
-            a = { fg = 'bg', bg = 'NONE' },
+            sections = {
+                a = { fg = 'bg', bg = 'NONE' },
+            },
         },
         right = {
-            a = { fg = 'fg', bg = 'bg' },
-            b = 'vi_mode',
+            separators = { left = { ' ', hl = { fg = 'bg', bg = 'NONE' } } },
+            sections = {
+                a = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                b = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                c = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                d = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                e = { hl = { fg = 'fg', bg = 'bg' }, rs = { ' | ', hl = { fg = 'blue' } } },
+                f = { hl = h.vi_mode },
+            },
         },
+    },
+
+    inactive = {
+        left = { a = { fg = 'fg', bg = 'bg' } },
     },
 
     vi_mode = {
