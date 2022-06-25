@@ -13,27 +13,36 @@ components of the statusline from the `feline.nvim`.
 Let's see how to create a simple statusline:
 
 ```lua
-local statusline = require('compline.statusline'):new('example', {
-    active = {
-        left = {
-            a = { 'mode' },
-            c = { 'file_name' },
-        },
-        right = {
-            e = { 'file_type' },
-            g = { 'position' },
-        },
-    },
-    inactive = {
-        left = {
-            a = { 'file_name' },
-        },
-    },
-    themes = {
-        default = require('compline.example.theme'),
-    },
-    components = require('compline.example.components')
-})
+
+-- Prepare needed components --
+
+local components = {
+  mode = {
+      provider = require('feline.providers.vi_mode').get_vim_mode,
+  }
+
+  file_name = {
+      provider = function()
+          return vim.fn.expand('%:t')
+      end,
+  }
+}
+
+-- Describe how the statusline should look like --
+
+local vi_mode_fg = function()
+    return {
+        fg = require('feline.providers.vi_mode').get_mode_color(),
+        bg = 'bg',
+    }
+end
+
+local vi_mode_bg = function()
+    return {
+        fg = 'fg',
+        bg = require('feline.providers.vi_mode').get_mode_color(),
+    }
+end
 
 local theme = {
     active = {
@@ -57,6 +66,30 @@ local theme = {
         bg = '#282c34'
     }
 }
+
+-- Create your oun statusline --
+
+local statusline = require('compline.statusline'):new('example', {
+    active = {
+        left = {
+            a = { 'mode' },
+            c = { 'file_name' },
+        },
+        right = {
+            e = { 'file_type' },
+            g = { 'position' },
+        },
+    },
+    inactive = {
+        left = {
+            a = { 'file_name' },
+        },
+    },
+    themes = {
+        default = theme,
+    },
+    components = components
+})
 ```
 
 More details about configuration you can find here: [Guide.md](Guide.md).

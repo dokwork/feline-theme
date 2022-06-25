@@ -1,6 +1,6 @@
-local vi_mode = require('feline.providers.vi_mode')
 local c = require('compline.conditions')
 local u = require('compline.utils')
+local vi_mode = u.lazy_load('feline.providers.vi_mode')
 
 local M = {}
 
