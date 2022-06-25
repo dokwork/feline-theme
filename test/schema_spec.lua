@@ -50,7 +50,9 @@ describe('validation the schema', function()
     describe('of the oneof', function()
         it('should be passed for every option', function()
             -- given:
-            local schema = { oneof = { '123', 456, 'function', true, { table = { key = 'a', value = 1 } } } }
+            local schema = {
+                oneof = { '123', 456, 'function', true, { table = { key = 'a', value = 1 } } },
+            }
 
             -- then:
             assert(s.validate('123', schema))

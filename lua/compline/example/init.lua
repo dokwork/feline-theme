@@ -17,7 +17,7 @@ local example = require('compline.statusline'):new('example', {
     themes = {
         default = require('compline.example.theme'),
     },
-    components = require('compline.example.components')
+    components = require('compline.example.components'),
 })
 
 return example

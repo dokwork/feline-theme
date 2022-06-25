@@ -13,7 +13,6 @@ describe('feline schema validation', function()
 end)
 
 describe('theme schema validation', function()
-
     it('should be passed for colors', function()
         -- when:
         local ok, err = s.validate(st.colors, s.type)
@@ -107,5 +106,4 @@ describe('statusline schema validation', function()
         -- then:
         assert(ok, tostring(err))
     end)
-
 end)

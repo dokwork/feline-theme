@@ -19,7 +19,7 @@ local theme = {
             sections_separators = { right = ' ' },
             sections = {
                 a = { hl = vi_mode_bg },
-                b = { hl = vi_mode_fg }
+                b = { hl = vi_mode_fg },
             },
         },
         right = {
@@ -33,8 +33,8 @@ local theme = {
     },
 
     colors = {
-        bg = '#282c34'
-    }
+        bg = '#282c34',
+    },
 }
 
 return theme

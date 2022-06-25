@@ -41,7 +41,8 @@ end
 local build_zone = function(line, line_name, zone_name, theme, components)
     local result = {}
     local theme_sections = vim.tbl_get(theme, line_name, zone_name, 'sections') or {}
-    local sections_separators = vim.tbl_get(theme, line_name, zone_name, 'sections_separators') or {}
+    local sections_separators = vim.tbl_get(theme, line_name, zone_name, 'sections_separators')
+        or {}
     local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'zone_separators') or {}
     local sections = line[zone_name]
     sections = sections ~= 'nil' and sections or {}

@@ -1,7 +1,7 @@
 local h = require('compline.highlights')
 
 return {
- -- TODO right zone should be rendered from the right to the left
+    -- TODO right zone should be rendered from the right to the left
     active = {
         left = {
             separators = { right = { ' ', hl = { fg = 'bg', bg = 'NONE' } } },
