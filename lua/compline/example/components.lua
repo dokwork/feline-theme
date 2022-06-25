@@ -10,15 +10,4 @@ M.file_name = {
     end,
 }
 
-M.file_type = {
-    provider = 'file_type',
-}
-
-M.position = {
-    provider = {
-        name = 'position',
-        opts = { format = 'Ln {line}, Col {col}' },
-    },
-}
-
 return M

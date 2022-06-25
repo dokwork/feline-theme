@@ -14,6 +14,13 @@ M.separator = {
     },
 }
 
+M.separators = {
+    table = {
+        { key = 'left', value = M.separator },
+        { key = 'right', value = M.separator },
+    },
+}
+
 M.sections = {
     table = {
         key = 'string',
@@ -29,18 +36,17 @@ M.sections = {
 M.zone = {
     table = {
         {
-            key = 'separators',
-            value = {
-                table = {
-                    { key = 'left', value = M.separator },
-                    { key = 'right', value = M.separator },
-                },
-            },
+            key = 'zone_separators',
+            value = M.separators,
+        },
+        {
+            key = 'sections_separators',
+            value = M.separators,
         },
         {
             key = 'sections',
             value = M.sections,
-            required = true
+            required = true,
         },
     },
 }
@@ -57,7 +63,25 @@ M.colors = {
 
 M.vi_mode = {
     table = {
-        key = { oneof = { 'NORMAL', 'OP', 'INSERT', 'VISUAL', 'LINES', 'BLOCK', 'REPLACE' } },
+        key = {
+            oneof = {
+                'NORMAL',
+                'OP',
+                'INSERT',
+                'VISUAL',
+                'LINES',
+                'BLOCK',
+                'REPLACE',
+                'V-REPLACE',
+                'ENTER',
+                'MORE',
+                'SELECT',
+                'COMMAND',
+                'SHELL',
+                'TERM',
+                'NONE',
+            },
+        },
         value = 'string',
     },
 }
@@ -65,8 +89,7 @@ M.vi_mode = {
 M.theme = {
     table = {
         { key = { oneof = { 'active', 'inactive' } }, value = M.line },
-        { key = 'dark', value = M.colors, required = true },
-        { key = 'light', value = M.colors, required = true },
+        { key = { oneof = { 'colors', 'dark', 'light' } }, value = M.colors, required = true },
         { key = 'vi_mode', value = M.vi_mode, reqired = true },
     },
 }

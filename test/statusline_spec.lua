@@ -169,7 +169,7 @@ describe('Building componentns', function()
         local theme = {
             active = {
                 left = {
-                    separators = { left = '<', right = { '>', hl = 'red' } },
+                    zone_separators = { left = '<', right = { '>', hl = 'red' } },
                 },
             },
         }

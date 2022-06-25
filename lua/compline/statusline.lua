@@ -9,7 +9,8 @@ local add_highlight = function(component, theme_hl)
     component.hl = component.hl or theme_hl
 end
 
-local add_separator = function(component, sep, side)
+local add_separator = function(component, sections_seps, separator, side)
+    local sep = separator or sections_seps[side]
     if type(sep) == 'table' then
         component[side .. '_sep'] = {
             str = sep[1],
@@ -40,7 +41,8 @@ end
 local build_zone = function(line, line_name, zone_name, theme, components)
     local result = {}
     local theme_sections = vim.tbl_get(theme, line_name, zone_name, 'sections') or {}
-    local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'separators') or {}
+    local sections_separators = vim.tbl_get(theme, line_name, zone_name, 'sections_separators') or {}
+    local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'zone_separators') or {}
     local sections = line[zone_name]
     sections = sections ~= 'nil' and sections or {}
 
@@ -61,10 +63,12 @@ local build_zone = function(line, line_name, zone_name, theme, components)
                 local component = resolve_component(components, component_name)
                 add_highlight(component, theme_section.hl)
                 if n == 1 then
-                    add_separator(component, theme_section.ls, 'left')
+                    -- add left section's separator
+                    add_separator(component, sections_separators, theme_section.ls, 'left')
                 end
                 if n == #section then
-                    add_separator(component, theme_section.rs, 'right')
+                    -- add right section's separator
+                    add_separator(component, sections_separators, theme_section.rs, 'right')
                 end
                 result[j] = component
             end
@@ -108,19 +112,6 @@ function Statusline:new(name, customization)
     return x
 end
 
-function Statusline:select_theme()
-    local feline_themes = require('feline.themes')
-    local background = vim.o.background or 'dark'
-    local theme = string.format('%s_%s_%s', self.name, vim.g.colors_name, background)
-    local default = string.format('%s_%s_%s', self.name, 'default', background)
-
-    theme = feline_themes[theme] or feline_themes[default]
-    if theme then
-        feline.use_theme(theme)
-        return
-    end
-end
-
 function Statusline:validate()
     local statusline_schema = require('compline.schema.statusline').statusline
     local ok, schema = pcall(require, 'compline.schema')
@@ -145,6 +136,19 @@ function Statusline:build_components()
     return result
 end
 
+function Statusline:select_theme()
+    local feline_themes = require('feline.themes')
+    local background = vim.o.background or 'colors'
+    local theme = string.format('%s_%s_%s', self.name, vim.g.colors_name, background)
+    local default = string.format('%s_%s_%s', self.name, 'default', background)
+
+    theme = feline_themes[theme] or feline_themes[default]
+    if theme then
+        feline.use_theme(theme)
+        return
+    end
+end
+
 ---@return FelineSetup # table which were used to setup feline.
 function Statusline:setup()
     local config = {}
@@ -155,6 +159,7 @@ function Statusline:setup()
 
     local feline_themes = require('feline.themes')
     for theme_name, theme in pairs(self.themes) do
+        feline_themes[self.name .. '_' .. theme_name .. '_colors'] = theme.colors
         feline_themes[self.name .. '_' .. theme_name .. '_dark'] = theme.dark
         feline_themes[self.name .. '_' .. theme_name .. '_light'] = theme.light
     end
