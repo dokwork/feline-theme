@@ -9,16 +9,15 @@ local add_highlight = function(component, theme_hl)
     component.hl = component.hl or theme_hl
 end
 
-local add_separator = function(component, sections_seps, separator, side)
-    local sep = separator or sections_seps[side]
-    if type(sep) == 'table' then
+local add_separator = function(component, separator, side)
+    if type(separator) == 'table' then
         component[side .. '_sep'] = {
-            str = sep[1],
-            hl = sep.hl,
+            str = separator[1],
+            hl = separator.hl,
         }
-    elseif type(sep) == 'string' then
+    elseif type(separator) == 'string' then
         component[side .. '_sep'] = {
-            str = sep,
+            str = separator,
         }
     end
 end
@@ -33,17 +32,17 @@ local separator_as_component = function(sep)
     end
 end
 
----@param line table
----@param line_name string
----@param zone_name string
----@param theme table
----@param components table
+---Builds zone with sections and components.
+---@param line table description of the full line.
+---@param line_name string active or inactive.
+---@param zone_name string left or middle or right.
+---@param theme table theme description.
+---@param components table components library.
 local build_zone = function(line, line_name, zone_name, theme, components)
     local result = {}
+    local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'separators') or {}
     local theme_sections = vim.tbl_get(theme, line_name, zone_name, 'sections') or {}
-    local sections_separators = vim.tbl_get(theme, line_name, zone_name, 'sections_separators')
-        or {}
-    local zone_separators = vim.tbl_get(theme, line_name, zone_name, 'zone_separators') or {}
+    local sections_separators = theme_sections.separators or {}
     local sections = line[zone_name]
     sections = sections ~= 'nil' and sections or {}
 
@@ -58,18 +57,26 @@ local build_zone = function(line, line_name, zone_name, theme, components)
         -- 'nil' is an option to remove existed section when extends existed Statusline
         if section ~= 'nil' then
             local theme_section = theme_sections[section_name] or {}
+            local components_separators = theme_section.separators or {}
             -- resolve components
             for n, component_name in ipairs(section) do
                 j = j + 1
                 local component = resolve_component(components, component_name)
                 add_highlight(component, theme_section.hl)
-                if n == 1 then
-                    -- add left section's separator
-                    add_separator(component, sections_separators, theme_section.ls, 'left')
+                -- add components separators
+                add_separator(component, components_separators.left, 'left')
+                add_separator(component, components_separators.right, 'right')
+                -- override the left separator by the section's separator
+                if n == 1 and sections_separators.left and not zone_separators.left then
+                    add_separator(component, sections_separators.left, 'left')
                 end
-                if n == #section then
-                    -- add right section's separator
-                    add_separator(component, sections_separators, theme_section.rs, 'right')
+                -- override the right separator by the section's separator
+                if
+                    n == #section
+                    and sections_separators.right
+                    and not zone_separators.right
+                then
+                    add_separator(component, sections_separators.right, 'right')
                 end
                 result[j] = component
             end

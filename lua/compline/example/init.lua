@@ -2,11 +2,12 @@ local example = require('compline.statusline'):new('example', {
     active = {
         left = {
             a = { 'mode' },
-            b = { 'file_name' },
+            b = { 'git_branch' },
+            c = { 'file_name' },
         },
         right = {
-            c = { 'file_type' },
-            d = { 'position' },
+            d = { 'file_encoding', 'file_format' },
+            e = { 'position' },
         },
     },
     inactive = {

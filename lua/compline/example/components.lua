@@ -10,4 +10,14 @@ M.file_name = {
     end,
 }
 
+M.file_format = {
+    provider = {
+        name = 'file_type',
+        opts = {
+            filetype_icon = true,
+            case = 'lowercase'
+        }
+    }
+}
+
 return M

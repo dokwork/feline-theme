@@ -169,7 +169,7 @@ describe('Building componentns', function()
         local theme = {
             active = {
                 left = {
-                    zone_separators = { left = '<', right = { '>', hl = 'red' } },
+                    separators = { left = '<', right = { '>', hl = 'red' } },
                 },
             },
         }
@@ -203,13 +203,54 @@ describe('Building componentns', function()
         assert.are.same(expected, result, msg)
     end)
 
+    it("zone's separators must override sections separators", function()
+        -- given:
+        local theme = {
+            active = {
+                left = {
+                    separators = { right = ' ' },
+                    sections = {
+                        separators = { left = '<', right = { '>' } },
+                    },
+                },
+            },
+        }
+        local statusline = Statusline:new('test', {
+            active = { left = { a = { 'test' } } },
+            themes = {
+                default = theme,
+            },
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    { provider = 'test', left_sep = { str = '<' } },
+                    { provider = ' ' },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
     it("should add section's separators to the outside components", function()
         -- given:
         local theme = {
             active = {
                 left = {
                     sections = {
-                        a = { ls = '<', rs = { '>', hl = 'green' } },
+                        a = { separators = { left = { '<' }, right = { '>', hl = 'green' } } },
                     },
                 },
             },
@@ -236,6 +277,54 @@ describe('Building componentns', function()
                         provider = 'test',
                         left_sep = { str = '<' },
                         right_sep = { str = '>', hl = 'green' },
+                    },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it("section's separators must override component's separators", function()
+        -- given:
+        local theme = {
+            active = {
+                left = {
+                    sections = {
+                        separators = { right = ' ' },
+                        a = { separators = { left = { '<' }, right = { '>' } } },
+                    },
+                },
+            },
+        }
+        local statusline = Statusline:new('test', {
+            themes = {
+                default = theme,
+            },
+            active = {
+                left = {
+                    a = { 'test' },
+                },
+            },
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    {
+                        provider = 'test',
+                        left_sep = { str = '<' },
+                        right_sep = { str = ' ' },
                     },
                 },
                 {},

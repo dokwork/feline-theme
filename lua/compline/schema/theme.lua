@@ -23,30 +23,28 @@ M.separators = {
 
 M.sections = {
     table = {
-        key = 'string',
-        value = {
-            table = {
-                { key = 'hl', value = f.highlight, required = true },
-                { key = { oneof = { 'sr', 'sl' } }, value = M.separator },
+        {
+            key = 'string',
+            value = {
+                table = {
+                    { key = 'hl', value = f.highlight },
+                    { key = 'separators', value = M.separators },
+                },
             },
         },
+        { key = 'separators', value = M.separators },
     },
 }
 
 M.zone = {
     table = {
         {
-            key = 'zone_separators',
-            value = M.separators,
-        },
-        {
-            key = 'sections_separators',
+            key = 'separators',
             value = M.separators,
         },
         {
             key = 'sections',
             value = M.sections,
-            required = true,
         },
     },
 }
