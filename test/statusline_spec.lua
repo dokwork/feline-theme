@@ -169,7 +169,7 @@ describe('Building componentns', function()
         local theme = {
             active = {
                 left = {
-                    separators = { left = '<', right = { '>', hl = 'red' } },
+                    separators = { left = '<', right = { '>', hl = { fg = 'red' } } },
                 },
             },
         }
@@ -189,7 +189,7 @@ describe('Building componentns', function()
                 {
                     { provider = '<' },
                     { provider = 'test' },
-                    { provider = '>', hl = 'red' },
+                    { provider = '>', hl = { fg = 'red' } },
                 },
                 {},
                 {},
@@ -203,13 +203,13 @@ describe('Building componentns', function()
         assert.are.same(expected, result, msg)
     end)
 
-    it("should create components for section's separators", function()
+    it("should add section's separators to the first and last components", function()
         -- given:
         local theme = {
             active = {
                 left = {
                     sections = {
-                        separators = { left = '<', right = { '>', hl = 'red' } },
+                        separators = { left = '<', right = { '>', hl = { fg = 'red' } } },
                     },
                 },
             },
@@ -228,9 +228,11 @@ describe('Building componentns', function()
         local expected = {
             active = {
                 {
-                    { provider = '<' },
-                    { provider = 'test' },
-                    { provider = '>', hl = 'red' },
+                    {
+                        provider = 'test',
+                        left_sep = '<',
+                        right_sep = { str = '>', hl = { fg = 'red' } },
+                    },
                 },
                 {},
                 {},
@@ -249,7 +251,7 @@ describe('Building componentns', function()
         local theme = {
             active = {
                 left = {
-                    separators = { right = ' ' },
+                    separators = { left = ' ', right = ' ' },
                     sections = {
                         separators = { left = '<', right = '>' },
                     },
@@ -257,10 +259,12 @@ describe('Building componentns', function()
             },
         }
         local statusline = Statusline.new('test', {
-            active = { left = { 
-                a = { 'test 1' },
-                b = { 'test 2' }
-            } },
+            active = {
+                left = {
+                    a = { 'test 1' },
+                    b = { 'test 2' },
+                },
+            },
             themes = {
                 default = theme,
             },
@@ -273,11 +277,9 @@ describe('Building componentns', function()
         local expected = {
             active = {
                 {
-                    { provider = '<' },
-                    { provider = 'test 1' },
-                    { provider = '>' },
-                    { provider = '<' },
-                    { provider = 'test 2' },
+                    { provider = ' ' },
+                    { provider = 'test 1', right_sep = '>' },
+                    { provider = 'test 2', left_sep = '<' },
                     { provider = ' ' },
                 },
                 {},
@@ -298,7 +300,9 @@ describe('Building componentns', function()
             active = {
                 left = {
                     sections = {
-                        a = { separators = { left = { '<' }, right = { '>', hl = 'green' } } },
+                        a = {
+                            separators = { left = { '<' }, right = { '>', hl = { fg = 'red' } } },
+                        },
                     },
                 },
             },
@@ -324,7 +328,7 @@ describe('Building componentns', function()
                     {
                         provider = 'test',
                         left_sep = { str = '<' },
-                        right_sep = { str = '>', hl = 'green' },
+                        right_sep = { str = '>', hl = { fg = 'red' } },
                     },
                 },
                 {},
@@ -345,8 +349,8 @@ describe('Building componentns', function()
             active = {
                 left = {
                     sections = {
-                        separators = { right = ' ' },
-                        a = { separators = { left = { '<' }, right = { '>' } } },
+                        separators = { left = ' ', right = ' ' },
+                        a = { separators = { left = '<', right = '>' } },
                     },
                 },
             },
@@ -357,7 +361,7 @@ describe('Building componentns', function()
             },
             active = {
                 left = {
-                    a = { 'test' },
+                    a = { 'test1', 'test2' },
                 },
             },
         })
@@ -370,10 +374,15 @@ describe('Building componentns', function()
             active = {
                 {
                     {
-                        provider = 'test',
-                        left_sep = { str = '<' },
+                        provider = 'test1',
+                        left_sep = ' ',
+                        right_sep = '>',
                     },
-                    { provider = ' ' },
+                    {
+                        provider = 'test2',
+                        left_sep = '<',
+                        right_sep = ' ',
+                    },
                 },
                 {},
                 {},
@@ -387,4 +396,3 @@ describe('Building componentns', function()
         assert.are.same(expected, result, msg)
     end)
 end)
-

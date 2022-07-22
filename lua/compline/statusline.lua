@@ -16,9 +16,7 @@ local add_separator_to_component = function(component, separator, side)
             hl = separator.hl,
         }
     elseif type(separator) == 'string' then
-        component[side .. '_sep'] = {
-            str = separator,
-        }
+        component[side .. '_sep'] = separator
     end
 end
 
@@ -41,30 +39,24 @@ local build_section = function(section, section_theme, section_separators, compo
     if vim.tbl_isempty(section) then
         return
     end
+    local first_component = #result + 1
     local components_separators = section_theme.separators or {}
-    if section_separators.left then
-        table.insert(result, separator_as_component(section_separators.left))
-    end
-    for n, component_name in ipairs(section) do
+    for _, component_name in ipairs(section) do
         local component = resolve_component(components, component_name)
         add_highlight(component, section_theme.hl)
-        -- we should not add component separator to the leftmost component
-        -- if a left sections separator exists
-        if not section_separators.left or n > 1 then
-            add_separator_to_component(component, components_separators.left, 'left')
-        end
-        -- we should not add component separator to the rightmost component
-        -- if a right sections separator exists
-        if not section_separators.right or n < #section then
-            add_separator_to_component(component, components_separators.right, 'right')
-        end
+        add_separator_to_component(component, components_separators.left, 'left')
+        add_separator_to_component(component, components_separators.right, 'right')
         table.insert(result, component)
     end
-    if section_separators.right then
-        table.insert(result, separator_as_component(section_separators.right))
-    end
+    local last_component = #result
+    -- render section separators
+    add_separator_to_component(result[first_component], section_separators.left, 'left')
+    add_separator_to_component(result[last_component], section_separators.right, 'right')
 end
 
+---@param zone table list of sections.
+---@param zone_theme table description of this zone from the theme.
+---@param components table components library.
 local build_zone = function(zone, zone_theme, components)
     local result = {}
     local zone_separators = zone_theme.separators or {}
@@ -77,23 +69,21 @@ local build_zone = function(zone, zone_theme, components)
     -- add left zone separator
     if zone_separators.left then
         local sep = separator_as_component(zone_separators.left)
-        if sections_separators.left then
-            -- we should override added previously section separator
-            result[1] = sep
-        else
-            result = { sep, unpack(result) }
+        result = { sep, unpack(result) }
+        if #result > 1 and sections_separators.left then
+            -- we should remove added previously section separator
+            result[2].left_sep = nil
         end
     end
 
     -- add right zone separator
     if zone_separators.right then
-        local sep = separator_as_component(zone_separators.right)
-        if sections_separators.right then
-            -- we should override added previously section separator
-            result[#result] = sep
-        else
-            table.insert(result, sep)
+        if #result > 1 and sections_separators.right then
+            -- we should remove added previously section separator
+            result[#result].right_sep = nil
         end
+        local sep = separator_as_component(zone_separators.right)
+        table.insert(result, sep)
     end
 
     return result
