@@ -1,4 +1,4 @@
-local Cosmosline = require('compline.statusline'):new('cosmosline', {
+local Cosmosline = require('compline.statusline').new('cosmosline', {
     active = {
         left = {
             a = { '▊', 'file_status_icon', 'working_directory' },

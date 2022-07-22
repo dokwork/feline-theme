@@ -1,19 +1,6 @@
-local vi_mode_fg = function()
-    return {
-        fg = require('feline.providers.vi_mode').get_mode_color(),
-        bg = 'bg',
-    }
-end
-
 local vi_mode_bg = function()
     return {
         bg = require('feline.providers.vi_mode').get_mode_color(),
-    }
-end
-
-local git_state_bg = function()
-    return {
-        bg = 'yellow',
     }
 end
 
@@ -22,17 +9,17 @@ local theme = {
         left = {
             separators = { right = ' ' },
             sections = {
-                separators = { right = { '', hl = vi_mode_fg } },
+                separators = { right = '' },
                 a = { hl = vi_mode_bg },
-                b = { hl = git_state_bg },
+                b = {},
             },
         },
         right = {
             separators = { left = ' ' },
             sections = {
-                separators = { left = { '' } },
-                d = {},
-                e = { hl = vi_mode_bg, separators = { left = { '', hl = vi_mode_fg } } },
+                separators = { left = '' },
+                a = {},
+                b = { hl = vi_mode_bg },
             },
         },
     },

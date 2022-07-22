@@ -3,7 +3,7 @@ local Statusline = require('compline.statusline')
 describe('Building componentns', function()
     it('should build components and sections in correct order', function()
         -- given:
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             active = {
                 left = {
                     b = { 'b', 'c' },
@@ -40,7 +40,7 @@ describe('Building componentns', function()
         local components = {
             some_component = { provider = 'example' },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             active = {
                 left = {
                     a = { 'some_component' },
@@ -84,7 +84,7 @@ describe('Building componentns', function()
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             active = {
                 left = {
                     a = { 'some_component' },
@@ -131,7 +131,7 @@ describe('Building componentns', function()
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             active = {
                 left = {
                     a = { 'some_component' },
@@ -173,7 +173,48 @@ describe('Building componentns', function()
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
+            active = { left = { a = { 'test' } } },
+            themes = {
+                default = theme,
+            },
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    { provider = '<' },
+                    { provider = 'test' },
+                    { provider = '>', hl = 'red' },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it("should create components for section's separators", function()
+        -- given:
+        local theme = {
+            active = {
+                left = {
+                    sections = {
+                        separators = { left = '<', right = { '>', hl = 'red' } },
+                    },
+                },
+            },
+        }
+        local statusline = Statusline.new('test', {
             active = { left = { a = { 'test' } } },
             themes = {
                 default = theme,
@@ -210,13 +251,16 @@ describe('Building componentns', function()
                 left = {
                     separators = { right = ' ' },
                     sections = {
-                        separators = { left = '<', right = { '>' } },
+                        separators = { left = '<', right = '>' },
                     },
                 },
             },
         }
-        local statusline = Statusline:new('test', {
-            active = { left = { a = { 'test' } } },
+        local statusline = Statusline.new('test', {
+            active = { left = { 
+                a = { 'test 1' },
+                b = { 'test 2' }
+            } },
             themes = {
                 default = theme,
             },
@@ -229,7 +273,11 @@ describe('Building componentns', function()
         local expected = {
             active = {
                 {
-                    { provider = 'test', left_sep = { str = '<' } },
+                    { provider = '<' },
+                    { provider = 'test 1' },
+                    { provider = '>' },
+                    { provider = '<' },
+                    { provider = 'test 2' },
                     { provider = ' ' },
                 },
                 {},
@@ -244,7 +292,7 @@ describe('Building componentns', function()
         assert.are.same(expected, result, msg)
     end)
 
-    it("should add section's separators to the outside components", function()
+    it('should add separators to the components', function()
         -- given:
         local theme = {
             active = {
@@ -255,7 +303,7 @@ describe('Building componentns', function()
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             themes = {
                 default = theme,
             },
@@ -303,7 +351,7 @@ describe('Building componentns', function()
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = Statusline.new('test', {
             themes = {
                 default = theme,
             },
@@ -324,8 +372,8 @@ describe('Building componentns', function()
                     {
                         provider = 'test',
                         left_sep = { str = '<' },
-                        right_sep = { str = ' ' },
                     },
+                    { provider = ' ' },
                 },
                 {},
                 {},
@@ -340,108 +388,3 @@ describe('Building componentns', function()
     end)
 end)
 
-describe('Extending an existing statusline', function()
-    local existed_statusline = Statusline:new('existed', {
-        active = {
-            left = {
-                a = { 'component 1', 'component 2' },
-                b = { 'component 3' },
-            },
-        },
-    })
-
-    it('should override the section', function()
-        -- given:
-        local new_statusline = existed_statusline:new('new', {
-            active = {
-                left = {
-                    a = { 'component 1', 'new' },
-                },
-            },
-        })
-
-        -- when:
-        local result = new_statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'component 1' },
-                    { provider = 'new' },
-                    { provider = 'component 3' },
-                },
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
-    it('should remove the section', function()
-        -- given:
-        local new_statusline = existed_statusline:new('new', {
-            active = {
-                left = {
-                    a = 'nil',
-                    b = 'nil',
-                },
-            },
-        })
-
-        -- when:
-        local result = new_statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {},
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
-    it('should remove active components and add inactive', function()
-        -- given:
-        local new_statusline = existed_statusline:new('new', {
-            active = 'nil',
-            inactive = {
-                right = {
-                    a = { 'new' },
-                },
-            },
-        })
-
-        -- when:
-        local result = new_statusline:build_components()
-
-        -- then:
-        local expected = {
-            inactive = {
-                {},
-                {},
-                {
-                    { provider = 'new' },
-                },
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-end)

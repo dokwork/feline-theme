@@ -1,4 +1,4 @@
-local example = require('compline.statusline'):new('example', {
+local example = require('compline.statusline').new('example', {
     active = {
         left = {
             a = { 'mode' },
@@ -6,8 +6,8 @@ local example = require('compline.statusline'):new('example', {
             c = { 'file_name' },
         },
         right = {
-            d = { 'file_encoding', 'file_format' },
-            e = { 'position' },
+            a = { 'file_encoding', 'file_format' },
+            b = { 'position' },
         },
     },
     inactive = {
