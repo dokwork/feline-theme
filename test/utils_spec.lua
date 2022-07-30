@@ -29,6 +29,57 @@ describe('iterate with sorted keys', function()
     end)
 end)
 
+describe('colors utilities', function()
+    describe('create a color', function()
+        it('should create string with color', function()
+            -- given:
+            local r, g, b = 0, 0, 0
+
+            -- then:
+            assert.are.equal('#000000', u.create_color(r, g, b))
+        end)
+    end)
+
+    describe('parse RGB color', function()
+        it('should return numbers for every part of the color', function()
+            -- given:
+            local color = '#11AA4B'
+
+            -- when:
+            local r, g, b = u.parse_rgb_color(color)
+
+            -- then:
+            assert.are.equal(17, r)
+            assert.are.equal(170, g)
+            assert.are.equal(75, b)
+        end)
+    end)
+
+    describe('changing a brightness of a color', function()
+        it('should make a color lighter', function()
+            -- given:
+            local color = '#9e6f11'
+
+            -- when:
+            local light_color = u.ligthening_color(color)
+
+            -- then:
+            assert.are.equal('#bb9a58', light_color)
+        end)
+
+        it('should make a color darker', function()
+            -- given:
+            local color = '#9e6f11'
+
+            -- when:
+            local light_color = u.darkening_color(color)
+
+            -- then:
+            assert.are.equal('#6e4d0b', light_color)
+        end)
+    end)
+end)
+
 describe('lsp_client', function()
     it('should return the first attached to the current buffer client', function()
         -- given:
