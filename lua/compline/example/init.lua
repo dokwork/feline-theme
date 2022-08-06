@@ -2,12 +2,15 @@ local example = require('compline.statusline').new('example', {
     active = {
         left = {
             a = { 'mode' },
-            b = { 'git_branch' },
+            b = { 'short_working_directory' },
             c = { 'file_name' },
         },
+        middle = {
+            a = { 'time' }
+        },
         right = {
-            a = { 'file_encoding', 'file_format' },
-            b = { 'position' },
+            y = { 'file_encoding', 'file_format' },
+            z = { 'position' },
         },
     },
     inactive = {
@@ -15,10 +18,9 @@ local example = require('compline.statusline').new('example', {
             a = { 'file_name' },
         },
     },
-    themes = {
-        default = require('compline.example.theme'),
-    },
+    theme = require('compline.example.theme'),
     components = require('compline.example.components'),
+
 })
 
 return example

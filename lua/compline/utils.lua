@@ -120,6 +120,23 @@ M.lazy_load = function(module_name)
     return module
 end
 
+M.get_hl_attr = function(hl, what)
+    local result = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(hl)), what)
+    if result == '' then
+        return nil
+    else
+        return result
+    end
+end
+
+M.get_hl_fg = function(hl)
+    return M.get_hl_attr(hl, 'fg#')
+end
+
+M.get_hl_bg = function(hl)
+    return M.get_hl_attr(hl, 'bg#')
+end
+
 ---@type fun(color: string): number, number, number
 --- Parses a color in the format '#RRGGBB', where
 --- RR is a number for red part in the hex format,
@@ -149,7 +166,7 @@ M.create_color = function(r, g, b)
 end
 
 M.darkening_color = function(color, factor)
-    local factor = factor or 0.3
+    local factor = factor or 0.1
     local r, g, b = M.parse_rgb_color(color)
     r = r * (1 - factor)
     g = g * (1 - factor)
@@ -158,7 +175,7 @@ M.darkening_color = function(color, factor)
 end
 
 M.ligthening_color = function(color, factor)
-    local factor = factor or 0.3
+    local factor = factor or 0.1
     local r, g, b = M.parse_rgb_color(color)
     r = r + (255 - r) * factor
     g = g + (255 - g) * factor

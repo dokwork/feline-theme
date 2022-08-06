@@ -64,7 +64,7 @@ describe('colors utilities', function()
             local light_color = u.ligthening_color(color)
 
             -- then:
-            assert.are.equal('#bb9a58', light_color)
+            assert.are.equal('#a77d28', light_color)
         end)
 
         it('should make a color darker', function()
@@ -75,7 +75,7 @@ describe('colors utilities', function()
             local light_color = u.darkening_color(color)
 
             -- then:
-            assert.are.equal('#6e4d0b', light_color)
+            assert.are.equal('#8e630f', light_color)
         end)
     end)
 end)

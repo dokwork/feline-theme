@@ -1,105 +1,111 @@
 local u = require('compline.utils')
 local feline = u.lazy_load('feline')
 
-local resolve_component = function(components, component_name)
-    return components[component_name] or { provider = component_name }
-end
-
-local add_highlight = function(component, theme_hl)
-    component.hl = component.hl or theme_hl
-end
-
-local add_separator_to_component = function(component, separator, side)
-    if type(separator) == 'table' then
-        component[side .. '_sep'] = {
-            str = separator[1],
-            hl = separator.hl,
-        }
-    elseif type(separator) == 'string' then
-        component[side .. '_sep'] = separator
-    end
-end
-
-local separator_as_component = function(sep)
-    if type(sep) == 'string' then
-        return { provider = sep }
-    elseif type(sep) == 'table' then
-        return { provider = sep[1], hl = sep.hl }
-    else
-        error('Unexpected separator: ' .. vim.inspect(sep))
-    end
-end
-
----@param section table list of the components names.
----@param section_theme table description of this section in the theme.
----@param section_separators table sections separators.
----@param components table components library.
+---@param statusline table a full description of the statusline
+---@param line_name string active or inactive.
+---@param zone_name string left or middle or right.
+---@param section_name string the name of the section: a or b or c and etc.
 ---@param result table container for built components.
-local build_section = function(section, section_theme, section_separators, components, result)
+local build_section = function(statusline, line_name, zone_name, section_name, result)
+    local zone = vim.tbl_get(statusline, line_name, zone_name)
+    local section = zone and zone[section_name]
+    -- empty section. Skip build
     if vim.tbl_isempty(section) then
         return
     end
+
+    local zone_theme = vim.tbl_get(statusline, 'theme', line_name, zone_name) or {}
+    local section_theme = zone_theme[section_name] or {}
+    local section_separators = section_theme.separators or {}
+
+    local add_highlight = function(component)
+        if section_theme.hl then
+            component.hl = section_theme.hl
+        else
+            component.hl = string.format(
+                'Cl%s%s%s',
+                line_name:gsub('^%l', string.upper),
+                zone_name:gsub('^%l', string.upper),
+                section_name:gsub('^%l', string.upper)
+            )
+            if not pcall(vim.api.nvim_get_hl_by_name, component.hl, false) then
+                vim.api.nvim_set_hl(0, component.hl, { link = 'Statusline' })
+            end
+        end
+    end
+
     local first_component = #result + 1
-    local components_separators = section_theme.separators or {}
+    -- here we're building components stubs, which will be partially overrided later
     for _, component_name in ipairs(section) do
-        local component = resolve_component(components, component_name)
-        add_highlight(component, section_theme.hl)
-        add_separator_to_component(component, components_separators.left, 'left')
-        add_separator_to_component(component, components_separators.right, 'right')
+        local component = { name = component_name }
+        add_highlight(component)
         table.insert(result, component)
     end
     local last_component = #result
     -- render section separators
-    add_separator_to_component(result[first_component], section_separators.left, 'left')
-    add_separator_to_component(result[last_component], section_separators.right, 'right')
+    if #result >= first_component then
+        result[first_component]['left_sep'] = section_separators.left
+        result[last_component]['right_sep'] = section_separators.right
+    end
 end
 
----@param zone table list of sections.
----@param zone_theme table description of this zone from the theme.
----@param components table components library.
-local build_zone = function(zone, zone_theme, components)
+---@param statusline table a full description of the statusline
+---@param line_name string active or inactive.
+---@param zone_name string left or middle or right.
+---@return table[] # resolved components inside zone.
+local build_zone = function(statusline, line_name, zone_name)
     local result = {}
+    local zone = vim.tbl_get(statusline, line_name, zone_name)
+    local zone_theme = vim.tbl_get(statusline, 'theme', line_name, zone_name) or {}
     local zone_separators = zone_theme.separators or {}
-    local sections_separators = zone_theme.sections and zone_theme.sections.separators or {}
-    for section_name, section in u.sorted_by_keys(zone) do
-        local section_theme = zone_theme.sections and zone_theme.sections[section_name] or {}
-        build_section(section, section_theme, sections_separators, components, result)
+
+    -- adds `always_visible` property to the separator
+    local function always_visible(sep)
+        if type(sep) == 'table' then
+            sep.always_visible = true
+            return sep
+        else
+            return { str = sep, always_visible = true }
+        end
+    end
+
+    -- build component stubs for every section
+    for section_name in u.sorted_by_keys(zone) do
+        build_section(statusline, line_name, zone_name, section_name, result)
     end
 
     -- add left zone separator
-    if zone_separators.left then
-        local sep = separator_as_component(zone_separators.left)
-        result = { sep, unpack(result) }
-        if #result > 1 and sections_separators.left then
-            -- we should remove added previously section separator
-            result[2].left_sep = nil
-        end
+    if #result > 0 and zone_separators.left then
+        result[1].left_sep = always_visible(zone_separators.left)
     end
 
     -- add right zone separator
-    if zone_separators.right then
-        if #result > 1 and sections_separators.right then
-            -- we should remove added previously section separator
-            result[#result].right_sep = nil
+    if #result > 0 and zone_separators.right then
+        result[#result].right_sep = always_visible(zone_separators.right)
+    end
+
+    -- finally resolve components
+    local components = statusline.components or {}
+    for i, stub in ipairs(result) do
+        local component = components[stub.name]
+        if component then
+            result[i] = vim.tbl_extend('force', stub, component)
+        else
+            stub.provider = stub.name
         end
-        local sep = separator_as_component(zone_separators.right)
-        table.insert(result, sep)
     end
 
     return result
 end
 
+---@param statusline table a full description of the statusline.
 ---@param line_name string active or inactive.
+---@return table[] # description of the statusline in term of feline.
 local build_line = function(statusline, line_name)
     local result = {}
-    local theme = statusline.theme and statusline.theme[line_name] or {}
-    local components = statusline.components or {}
-    local line = statusline[line_name]
-    local i = 0
-    for _, zone_name in pairs({ 'left', 'middle', 'right' }) do
-        i = i + 1
-        if line[zone_name] then
-            result[i] = build_zone(line[zone_name], theme[zone_name] or {}, components)
+    for i, zone_name in ipairs({ 'left', 'middle', 'right' }) do
+        if statusline[line_name][zone_name] then
+            result[i] = build_zone(statusline, line_name, zone_name)
         else
             result[i] = {}
         end
@@ -112,7 +118,8 @@ local Statusline = {
     active = nil,
     inactive = nil,
     components = {},
-    themes = {},
+    theme = {},
+    colors = { default = {} }
 }
 
 function Statusline:validate()
@@ -127,27 +134,28 @@ function Statusline:validate()
 end
 
 function Statusline:build_components()
-    self.theme = self.themes and (self.themes[vim.g.colors_name] or self.themes.default)
-
     local result = {}
     for _, line_name in ipairs({ 'active', 'inactive' }) do
-        local line = self[line_name]
-        if line and line ~= 'nil' then
+        if self[line_name] then
             result[line_name] = build_line(self, line_name)
         end
     end
     return result
 end
 
+function Statusline:show_components()
+    vim.pretty_print(self:build_components())
+end
+
 function Statusline:select_theme()
     local feline_themes = require('feline.themes')
-    local background = vim.o.background or 'colors'
-    local theme = string.format('%s_%s_%s', self.name, vim.g.colors_name, background)
-    local default = string.format('%s_%s_%s', self.name, 'default', background)
+    local colorscheme = string.format('%s_%s', self.name, vim.g.colors_name)
+    local background = string.format('%s_%s', self.name, vim.o.background)
+    local default = string.format('%s_%s', self.name, 'default')
 
-    theme = feline_themes[theme] or feline_themes[default]
-    if theme then
-        feline.use_theme(theme)
+    colorscheme = feline_themes[colorscheme] or feline_themes[background] or feline_themes[default]
+    if colorscheme then
+        feline.use_theme(colorscheme)
         return
     end
 end
@@ -156,15 +164,13 @@ end
 function Statusline:setup()
     local config = {}
     config.components = self:build_components()
-    config.vi_mode_colors = self.theme.vi_mode
+    config.vi_mode_colors = self.colors.default.vi_mode
 
     feline.setup(config)
 
     local feline_themes = require('feline.themes')
-    for theme_name, theme in pairs(self.themes) do
-        feline_themes[self.name .. '_' .. theme_name .. '_colors'] = theme.colors
-        feline_themes[self.name .. '_' .. theme_name .. '_dark'] = theme.dark
-        feline_themes[self.name .. '_' .. theme_name .. '_light'] = theme.light
+    for colors_name, colors in pairs(self.colors) do
+        feline_themes[self.name .. '_' .. colors_name] = colors
     end
 
     self:select_theme()
@@ -186,8 +192,10 @@ return {
     new = function(name, statusline)
         assert(type(name) == 'string', 'Statusline must have a name.')
 
-        local x = vim.tbl_extend('keep', statusline, Statusline)
-        x.name = name
-        return x
+        statusline.name = name
+        setmetatable(statusline, {
+            __index = Statusline,
+        })
+        return statusline
     end,
 }
