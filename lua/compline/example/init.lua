@@ -1,4 +1,4 @@
-local example = require('compline.statusline').new('example', {
+return {
     active = {
         left = {
             a = { 'mode' },
@@ -22,6 +22,4 @@ local example = require('compline.statusline').new('example', {
     components = require('compline.example.components'),
     colors = require('compline.example.colors')
 
-})
-
-return example
+}
