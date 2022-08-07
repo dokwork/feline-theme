@@ -58,14 +58,14 @@ describe('Building componentns', function()
         local expected = {
             active = {
                 {
-                    { name = 'a', provider = 'a', hl = 'ClActiveLeftA' },
-                    { name = 'b', provider = 'b', hl = 'ClActiveLeftB' },
-                    { name = 'c', provider = 'c', hl = 'ClActiveLeftB' },
+                    { name = 'a', provider = 'a' },
+                    { name = 'b', provider = 'b' },
+                    { name = 'c', provider = 'c' },
                 },
                 {},
                 {
-                    { name = 'w', provider = 'w', hl = 'ClActiveRightW' },
-                    { name = 'z', provider = 'z', hl = 'ClActiveRightZ' },
+                    { name = 'w', provider = 'w' },
+                    { name = 'z', provider = 'z' },
                 },
             },
         }
@@ -100,7 +100,6 @@ describe('Resolving highlights', function()
                     {
                         name = 'some_component',
                         provider = 'some_component',
-                        hl = 'ClActiveLeftA',
                     },
                 },
                 {},
@@ -198,18 +197,17 @@ describe('Resolving separators', function()
                     {
                         name = 'first',
                         provider = 'first',
-                        hl = 'ClActiveLeftA',
+
                         left_sep = { str = '<', always_visible = true },
                     },
                     {
                         name = 'other',
                         provider = 'other',
-                        hl = 'ClActiveLeftB',
                     },
                     {
                         name = 'last',
                         provider = 'last',
-                        hl = 'ClActiveLeftB',
+
                         right_sep = { str = '>', hl = { fg = 'red' }, always_visible = true },
                     },
                 },
@@ -256,18 +254,15 @@ describe('Resolving separators', function()
                         name = 'first',
                         provider = 'first',
                         left_sep = '<',
-                        hl = 'ClActiveLeftA',
                     },
                     {
                         name = 'test',
                         provider = 'test',
-                        hl = 'ClActiveLeftA',
                     },
                     {
                         name = 'last',
                         provider = 'last',
                         right_sep = '>',
-                        hl = 'ClActiveLeftA',
                     },
                 },
                 {},
@@ -314,13 +309,11 @@ describe('Resolving separators', function()
                         name = 'test 1',
                         provider = 'test 1',
                         left_sep = '[',
-                        hl = 'ClActiveLeftA',
                     },
                     {
                         name = 'test 2',
                         provider = 'test 2',
                         right_sep = { str = '>', always_visible = true },
-                        hl = 'ClActiveLeftB',
                     },
                 },
                 {},
@@ -365,7 +358,6 @@ describe('Resolving separators', function()
                         provider = 'test',
                         left_sep = '<',
                         right_sep = { str = '>' },
-                        hl = 'ClActiveLeftA',
                     },
                 },
                 {},
@@ -399,7 +391,7 @@ describe('Resolving separators', function()
         local statusline = Statusline.new('test', {
             active = {
                 left = {
-                    a = { 'test'},
+                    a = { 'test' },
                 },
             },
             theme = theme,
@@ -418,7 +410,6 @@ describe('Resolving separators', function()
                         provider = 'test',
                         left_sep = '<',
                         right_sep = '>',
-                        hl = 'ClActiveLeftA',
                     },
                 },
                 {},
@@ -437,7 +428,7 @@ describe('Resolving separators', function()
         -- given:
         local theme = {
             active = {
-                separators = { left = '[', right = ']' } ,
+                separators = { left = '[', right = ']' },
             },
         }
         local components = {
@@ -450,7 +441,7 @@ describe('Resolving separators', function()
         local statusline = Statusline.new('test', {
             active = {
                 left = {
-                    a = { 'test'},
+                    a = { 'test' },
                 },
             },
             theme = theme,
@@ -469,7 +460,6 @@ describe('Resolving separators', function()
                         provider = 'test',
                         left_sep = '<',
                         right_sep = '>',
-                        hl = 'ClActiveLeftA',
                     },
                 },
                 {},

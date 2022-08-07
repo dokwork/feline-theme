@@ -1,5 +1,4 @@
 local u = require('compline.utils')
-local feline = u.lazy_load('feline')
 
 ---@param statusline table a full description of the statusline
 ---@param line_name string active or inactive.
@@ -18,27 +17,10 @@ local build_section = function(statusline, line_name, zone_name, section_name, r
     local section_theme = zone_theme[section_name] or {}
     local section_separators = section_theme.separators or {}
 
-    local add_highlight = function(component)
-        if section_theme.hl then
-            component.hl = section_theme.hl
-        else
-            component.hl = string.format(
-                'Cl%s%s%s',
-                line_name:gsub('^%l', string.upper),
-                zone_name:gsub('^%l', string.upper),
-                section_name:gsub('^%l', string.upper)
-            )
-            if not pcall(vim.api.nvim_get_hl_by_name, component.hl, false) then
-                vim.api.nvim_set_hl(0, component.hl, { link = 'Statusline' })
-            end
-        end
-    end
-
     local first_component = #result + 1
     -- here we're building components stubs, which will be partially overrided later
     for _, component_name in ipairs(section) do
-        local component = { name = component_name }
-        add_highlight(component)
+        local component = { name = component_name, hl = section_theme.hl }
         table.insert(result, component)
     end
     local last_component = #result
@@ -119,7 +101,7 @@ local Statusline = {
     inactive = nil,
     components = {},
     theme = {},
-    colors = { default = {} }
+    colors = {},
 }
 
 function Statusline:validate()
@@ -130,7 +112,7 @@ function Statusline:validate()
     end
     local ok, err = schema.validate(self, statusline_schema)
 
-    assert(ok, tostring(err))
+    assert(ok, err)
 end
 
 function Statusline:build_components()
@@ -147,33 +129,28 @@ function Statusline:show_components()
     vim.pretty_print(self:build_components())
 end
 
-function Statusline:select_theme()
-    local feline_themes = require('feline.themes')
-    local colorscheme = string.format('%s_%s', self.name, vim.g.colors_name)
-    local background = string.format('%s_%s', self.name, vim.o.background)
-    local default = string.format('%s_%s', self.name, 'default')
+function Statusline:actual_colors()
+    local colors = self.colors or {}
+    return colors[vim.g.colors_name] or colors[vim.go.background] or colors['default']
+end
 
-    colorscheme = feline_themes[colorscheme] or feline_themes[background] or feline_themes[default]
-    if colorscheme then
-        feline.use_theme(colorscheme)
-        return
+function Statusline:refresh_highlights()
+    local colors = self:actual_colors()
+    if colors then
+        require('feline.themes').use_theme(colors)
+        require('feline').reset_highlights()
     end
+    return colors
 end
 
 ---@return FelineSetup # table which were used to setup feline.
 function Statusline:setup()
     local config = {}
     config.components = self:build_components()
-    config.vi_mode_colors = self.colors.default.vi_mode
+    config.theme = self:actual_colors()
+    config.vi_mode_colors = config.theme and config.theme.vi_mode
 
-    feline.setup(config)
-
-    local feline_themes = require('feline.themes')
-    for colors_name, colors in pairs(self.colors) do
-        feline_themes[self.name .. '_' .. colors_name] = colors
-    end
-
-    self:select_theme()
+    require('feline').setup(config)
 
     -- change the theme on every changes colorscheme or background
     local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })
@@ -181,7 +158,7 @@ function Statusline:setup()
         pattern = '*',
         group = group,
         callback = function()
-            self:select_theme()
+            self:refresh_highlights()
         end,
     })
 
