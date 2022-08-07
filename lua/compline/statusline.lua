@@ -131,13 +131,18 @@ end
 
 function Statusline:actual_colors()
     local colors = self.colors or {}
-    return colors[vim.g.colors_name] or colors[vim.go.background] or colors['default']
+    colors = colors[vim.g.colors_name] or colors[vim.go.background] or colors['default']
+    if type(colors) == 'function' then
+        return colors()
+    else
+        return colors
+    end
 end
 
 function Statusline:refresh_highlights()
     local colors = self:actual_colors()
     if colors then
-        require('feline.themes').use_theme(colors)
+        require('feline').use_theme(colors)
         require('feline').reset_highlights()
     end
     return colors

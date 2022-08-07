@@ -7,13 +7,14 @@ local u = require('compline.utils')
 local gradient_colors = function()
     local function change(color)
         if vim.go.background == 'light' then
-            return u.darkening_color(color)
+            return u.darkening_color(color, 0.4)
         else
-            return u.ligthening_color(color)
+            return u.ligthening_color(color, 0.4)
         end
     end
     local colors = {}
-    colors.bg = u.get_hl_bg('Statusline') or '#5f5f5f'
+    colors.fg = vim.go.background == 'light' and 'White' or 'Black'
+    colors.bg = u.get_hl_bg('Statusline') or '#675969'
     colors.d = change(colors.bg)
     colors.c = change(colors.d)
     colors.b = change(colors.c)

@@ -20,6 +20,7 @@ local example = require('compline.statusline').new('example', {
     },
     theme = require('compline.example.theme'),
     components = require('compline.example.components'),
+    colors = require('compline.example.colors')
 
 })
 

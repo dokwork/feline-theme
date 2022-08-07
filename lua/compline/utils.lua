@@ -145,6 +145,9 @@ end
 --- For example: '#000000' for 'black' color, or '#AAAAAA' for white color.
 --- In case of wrong format of the color the error will be thrown.
 M.parse_rgb_color = function(color)
+    if type(color) ~= 'string' then
+        error(string.format('Illegal color type %s. It must be string.', type(color)))
+    end
     local _, _, r, g, b = string.find(color, '#(%x%x)(%x%x)(%x%x)')
     r = tonumber(r, 16)
     g = tonumber(g, 16)
