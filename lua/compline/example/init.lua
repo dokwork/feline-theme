@@ -21,5 +21,4 @@ return {
     theme = require('compline.example.theme'),
     components = require('compline.example.components'),
     colors = require('compline.example.colors')
-
 }

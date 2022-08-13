@@ -1,4 +1,16 @@
+local feline = require('feline')
 local u = require('compline.utils')
+
+-- global variable:
+Compline = {}
+-- private global state:
+local __state = {}
+setmetatable(Compline, {
+    __index = __state,
+    __newindex = function()
+        error('Attempt to update a read-only table')
+    end,
+})
 
 ---@param statusline table a full description of the statusline
 ---@param line_name string active or inactive.
@@ -106,13 +118,13 @@ local Statusline = {
 
 function Statusline:validate()
     local statusline_schema = require('compline.schema.statusline').statusline
-    local ok, schema = pcall(require, 'compline.schema')
-    if not ok then
-        error('To validate statusline schema, "compline.schema" module should be installed.')
+    local ok, schema = pcall(require, 'lua-schema')
+    if ok then
+        local ok, err = schema.validate(self, statusline_schema)
+        assert(ok, tostring(err))
+    else
+        error('To validate statusline schema module "dokwork/lua-schema.nvim" should be installed.')
     end
-    local ok, err = schema.validate(self, statusline_schema)
-
-    assert(ok, err)
 end
 
 function Statusline:build_components()
@@ -142,8 +154,8 @@ end
 function Statusline:refresh_highlights()
     local colors = self:actual_colors()
     if colors then
-        require('feline').use_theme(colors)
-        require('feline').reset_highlights()
+        feline.use_theme(colors)
+        feline.reset_highlights()
     end
     return colors
 end
@@ -157,9 +169,9 @@ return {
         local config = {}
         config.components = statusline:build_components()
         config.theme = statusline:actual_colors()
-        config.vi_mode_colors = config.theme and config.theme.vi_mode
+        config.vi_mode_colors = statusline.theme and statusline.theme.vi_mode
 
-        require('feline').setup(config)
+        feline.setup(config)
 
         -- change the theme on every changes colorscheme or background
         local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })
@@ -170,6 +182,8 @@ return {
                 statusline:refresh_highlights()
             end,
         })
+
+        __state.statusline = statusline
 
         return statusline
     end,
