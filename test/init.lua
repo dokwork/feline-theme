@@ -39,9 +39,5 @@ if packer_bootstrap then
 else
     -- Configuration for test:
 
-    if vim.env.COSMOSLINE then
-        require('compline').setup_statusline(require('compline.cosmosline'))
-    else
-        require('compline').setup_statusline(require('compline.example'))
-    end
+    require('compline').setup_statusline(require('compline.example'))
 end

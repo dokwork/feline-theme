@@ -1,5 +1,36 @@
-local test = require('compline.test')
 local u = require('compline.utils')
+
+---@type fun(table: table, prop: string | number, mock: any, test: function): any
+-- Replaces a value in the {table} with a key {prop} by the {mock], and run the {test}.
+-- Then restores an original value of the {table}, when the {test} is completed
+-- (despite of errors), and returns thr result of the {test}.
+local use_mocked_table = function(table, prop, mock, test)
+    local orig = table[prop]
+    table[prop] = mock
+    local ok, result = pcall(test)
+    table[prop] = orig
+    if ok then
+        return result
+    else
+        error(result)
+    end
+end
+
+---@type fun(module: string, prop: string | number, mock: any, test: function): any
+-- Replace a value in the {module} with a key {prop} by the {mock}, and run the {test}.
+-- Then unload {module}, when test is completed (despite errors in the {test}).
+local use_mocked_module = function(module, prop, mock, test)
+    package.loaded[table] = nil
+    local m = require(module)
+    m[prop] = mock
+    local ok, result = pcall(test)
+    package.loaded[table] = nil
+    if ok then
+        return result
+    else
+        error(result)
+    end
+end
 
 describe('is_empty', function()
     it('should return true for nil', function()
@@ -87,7 +118,7 @@ describe('lsp_client', function()
         local mock = function()
             return clients
         end
-        test.use_mocked_table(vim.lsp, 'buf_get_clients', mock, function()
+        use_mocked_table(vim.lsp, 'buf_get_clients', mock, function()
             -- when:
             local result = u.lsp_client()
 
@@ -117,7 +148,7 @@ describe('lsp_client_icon', function()
         local mock = function()
             return { client }
         end
-        test.use_mocked_table(vim.lsp, 'buf_get_clients', mock, function()
+        use_mocked_table(vim.lsp, 'buf_get_clients', mock, function()
             -- when:
             local result = u.lsp_client_icon({ test = icon })
 
@@ -133,7 +164,7 @@ describe('lsp_client_icon', function()
         local mock = function()
             return { test = icon }
         end
-        test.use_mocked_module('nvim-web-devicons', 'get_icons', mock, function()
+        use_mocked_module('nvim-web-devicons', 'get_icons', mock, function()
             -- when:
             local result = u.lsp_client_icon({}, client)
 
