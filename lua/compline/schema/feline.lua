@@ -1,5 +1,6 @@
 local M = {}
 
+-- #RRBBGG
 M.color = 'string'
 
 M.highlight = {
@@ -15,17 +16,38 @@ M.highlight = {
     },
 }
 
-local provider = {
-    table = {
-        { key = 'name', value = 'string' },
-        { key = 'opts', value = { table = { key = 'string', value = 'any' } } },
+M.provider = {
+    oneof = {
+        'string',
+        'function',
+        {
+            table = {
+                { key = 'name', value = 'string' },
+                { key = 'opts', value = { table = { key = 'string', value = 'any' } } },
+            },
+        },
+    },
+}
+
+M.separator = {
+    oneof = {
+        'string',
+        'function',
+        {
+            table = {
+                { key = 'str', value = 'string' },
+                { key = 'hl', value = M.highlight },
+                { key = 'always_visible', value = 'boolean' },
+            },
+        },
     },
 }
 
 M.component = {
     table = {
-        { key = 'provider', value = { oneof = { 'function', 'string', provider } } },
+        { key = 'provider', value = M.provider },
         { key = 'hl', value = M.highlight },
+        { key = { oneof = { 'left_sep', 'right_sep' } }, value = M.separator  },
     },
 }
 

@@ -1,18 +1,8 @@
-local f = require('compline.schema.feline')
+local feline = require('compline.schema.feline')
 
 local M = {}
 
-M.separator = {
-    oneof = {
-        'string',
-        {
-            table = {
-                { key = 1, value = 'string', required = true },
-                { key = 'hl', value = f.highlight },
-            },
-        },
-    },
-}
+M.separator = feline.separator
 
 M.separators = {
     table = {
@@ -21,42 +11,26 @@ M.separators = {
     },
 }
 
-M.sections = {
+M.section = {
     table = {
-        {
-            key = 'string',
-            value = {
-                table = {
-                    { key = 'hl', value = f.highlight },
-                    { key = 'separators', value = M.separators },
-                },
-            },
-        },
+        { key = 'hl', value = feline.highlight },
         { key = 'separators', value = M.separators },
     },
 }
 
 M.zone = {
     table = {
-        {
-            key = 'separators',
-            value = M.separators,
-        },
-        {
-            key = 'sections',
-            value = M.sections,
-        },
+        { key = 'separators', value = M.separators },
+        { key = 'string', value = M.section },
     },
 }
 
 M.line = {
     table = {
-        { key = { oneof = { 'left, middle', 'right' } }, value = M.zone },
+        { key = 'left', value = M.zone },
+        { key = 'middle', value = M.zone },
+        { key = 'right', value = M.zone },
     },
-}
-
-M.colors = {
-    table = { key = 'string', value = 'string' },
 }
 
 M.vi_mode = {
@@ -80,15 +54,14 @@ M.vi_mode = {
                 'NONE',
             },
         },
-        value = 'string',
+        value = feline.color,
     },
 }
 
 M.theme = {
     table = {
         { key = { oneof = { 'active', 'inactive' } }, value = M.line },
-        { key = { oneof = { 'colors', 'dark', 'light' } }, value = M.colors, required = true },
-        { key = 'vi_mode', value = M.vi_mode, reqired = true },
+        { key = 'vi_mode', value = M.vi_mode },
     },
 }
 

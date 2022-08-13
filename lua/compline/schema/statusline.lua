@@ -1,12 +1,14 @@
-local f = require('compline.schema.feline')
-local t = require('compline.schema.theme')
+local feline = require('compline.schema.feline')
 
 local M = {}
 
-M.section = { list = 'string' }
+M.component = 'string'
+
+M.section = { list = M.component }
 
 M.zone = {
     table = {
+        -- usually chars are used as name of the section
         key = 'string',
         value = M.section,
     },
@@ -14,31 +16,21 @@ M.zone = {
 
 M.line = {
     table = {
-        key = { oneof = { 'left', 'middle', 'right' } },
-        value = M.zone,
+        { key = 'left', value = M.zone },
+        { key = 'middle', value = M.zone },
+        { key = 'right', value = M.zone },
     },
 }
 
 M.statusline = {
     table = {
-        {
-            key = { oneof = { 'active', 'inactive' } },
-            value = M.line,
-        },
-        {
-            key = 'themes',
-            value = {
-                table = {
-                    { key = 'default', value = t.theme, required = true },
-                    { key = 'string', value = t.theme },
-                },
-            },
-            required = true,
-        },
+        { key = 'active', value = M.line },
+        { key = 'inactive', value = M.line },
+        { key = 'theme', value = require('compline.schema.theme').theme },
+        { key = 'colors', value = require('compline.schema.colors').colors },
         {
             key = 'components',
-            value = { table = { key = 'string', value = f.component } },
-            required = true,
+            value = { table = { key = 'string', value = feline.component } },
         },
     },
 }

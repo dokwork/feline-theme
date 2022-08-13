@@ -106,13 +106,13 @@ local Statusline = {
 
 function Statusline:validate()
     local statusline_schema = require('compline.schema.statusline').statusline
-    local ok, schema = pcall(require, 'compline.schema')
-    if not ok then
-        error('To validate statusline schema, "compline.schema" module should be installed.')
+    local ok, schema = pcall(require, 'lua-schema')
+    if ok then
+        return schema.validate(self, statusline_schema)
+    else
+        return false,
+            'To validate statusline schema module "dokwork/lua-schema.nvim" should be installed.'
     end
-    local ok, err = schema.validate(self, statusline_schema)
-
-    assert(ok, err)
 end
 
 function Statusline:build_components()

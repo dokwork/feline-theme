@@ -28,7 +28,7 @@ require('packer').startup(function(use)
         requires = {
             'kyazdani42/nvim-web-devicons',
             'famiu/feline.nvim',
-            'tpope/vim-fugitive',
+            'dokwork/lua-schema.nvim',
         },
     })
 end)
