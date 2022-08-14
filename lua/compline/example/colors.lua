@@ -29,5 +29,5 @@ local gradient_colors = function()
 end
 
 return {
-    default = gradient_colors
+    default = gradient_colors,
 }

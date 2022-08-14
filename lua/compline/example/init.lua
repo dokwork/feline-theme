@@ -6,7 +6,7 @@ return {
             c = { 'file_name' },
         },
         middle = {
-            a = { 'time' }
+            a = { 'time' },
         },
         right = {
             y = { 'file_encoding', 'file_format' },
@@ -20,5 +20,5 @@ return {
     },
     theme = require('compline.example.theme'),
     components = require('compline.example.components'),
-    colors = require('compline.example.colors')
+    colors = require('compline.example.colors'),
 }

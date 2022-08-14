@@ -47,7 +47,7 @@ M.component = {
     table = {
         { key = 'provider', value = M.provider },
         { key = 'hl', value = M.highlight },
-        { key = { oneof = { 'left_sep', 'right_sep' } }, value = M.separator  },
+        { key = { oneof = { 'left_sep', 'right_sep' } }, value = M.separator },
     },
 }
 

@@ -54,4 +54,22 @@ return {
             },
         },
     },
+
+    vi_mode = {
+        NORMAL = 'green',
+        OP = 'magenta',
+        INSERT = 'blue',
+        VISUAL = 'magenta',
+        LINES = 'magenta',
+        BLOCK = 'magenta',
+        REPLACE = 'violet',
+        ['V-REPLACE'] = 'pink',
+        ENTER = 'cyan',
+        MORE = 'cyan',
+        SELECT = 'yellow',
+        COMMAND = 'orange',
+        SHELL = 'yellow',
+        TERM = 'orange',
+        NONE = 'yellow',
+    },
 }
