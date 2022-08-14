@@ -14,7 +14,8 @@ local gradient_colors = function()
     end
     local colors = {}
     colors.fg = vim.go.background == 'light' and 'White' or 'Black'
-    colors.bg = u.get_hl_bg('Statusline') or (vim.go.background == 'light' and '#c8c8cd' or '#505050')
+    colors.bg = u.get_hl_bg('Statusline')
+        or (vim.go.background == 'light' and '#c8c8cd' or '#505050')
     colors.d = change(colors.bg)
     colors.c = change(colors.d)
     colors.b = change(colors.c)

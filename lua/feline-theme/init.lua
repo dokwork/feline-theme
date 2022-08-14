@@ -151,13 +151,21 @@ function Statusline:actual_colors()
     end
 end
 
-function Statusline:refresh_highlights()
+function Statusline:show_actual_colors()
+    vim.pretty_print(self:actual_colors())
+end
+
+function Statusline:refresh_colors()
     local colors = self:actual_colors()
     if colors then
         feline.use_theme(colors)
         feline.reset_highlights()
     end
     return colors
+end
+
+function Statusline:show_all()
+    vim.pretty_print(self)
 end
 
 return {
@@ -179,7 +187,7 @@ return {
             pattern = '*',
             group = group,
             callback = function()
-                statusline:refresh_highlights()
+                statusline:refresh_colors()
             end,
         })
 

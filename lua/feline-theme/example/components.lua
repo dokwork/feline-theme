@@ -1,7 +1,9 @@
 local M = {}
 
-M.mode = {
-    provider = require('feline.providers.vi_mode').get_vim_mode,
+M.vi_mode = {
+    provider = 'vi_mode',
+    -- turn icon off and use full name of the mode
+    icon = '',
 }
 
 M.short_working_directory = {

@@ -102,9 +102,9 @@ M.create_color = function(r, g, b)
 end
 
 M.darkening_color = function(color, rf, gf, bf)
-    local rf  = rf or 0.1
-    local gf  = gf or 0.1
-    local bf  = bf or 0.1
+    local rf = rf or 0.1
+    local gf = gf or 0.1
+    local bf = bf or 0.1
     local r, g, b = M.parse_rgb_color(color)
     r = r * (1 - rf)
     g = g * (1 - gf)
@@ -113,9 +113,9 @@ M.darkening_color = function(color, rf, gf, bf)
 end
 
 M.ligthening_color = function(color, rf, gf, bf)
-    local rf  = rf or 0.1
-    local gf  = gf or 0.1
-    local bf  = bf or 0.1
+    local rf = rf or 0.1
+    local gf = gf or 0.1
+    local bf = bf or 0.1
     local r, g, b = M.parse_rgb_color(color)
     r = r + (255 - r) * rf
     g = g + (255 - g) * gf
