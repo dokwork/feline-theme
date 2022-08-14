@@ -101,21 +101,25 @@ M.create_color = function(r, g, b)
     return string.format('#%02x%02x%02x', r, g, b)
 end
 
-M.darkening_color = function(color, factor)
-    local factor = factor or 0.1
+M.darkening_color = function(color, rf, gf, bf)
+    local rf  = rf or 0.1
+    local gf  = gf or 0.1
+    local bf  = bf or 0.1
     local r, g, b = M.parse_rgb_color(color)
-    r = r * (1 - factor)
-    g = g * (1 - factor)
-    b = b * (1 - factor)
+    r = r * (1 - rf)
+    g = g * (1 - gf)
+    b = b * (1 - bf)
     return M.create_color(r, g, b)
 end
 
-M.ligthening_color = function(color, factor)
-    local factor = factor or 0.1
+M.ligthening_color = function(color, rf, gf, bf)
+    local rf  = rf or 0.1
+    local gf  = gf or 0.1
+    local bf  = bf or 0.1
     local r, g, b = M.parse_rgb_color(color)
-    r = r + (255 - r) * factor
-    g = g + (255 - g) * factor
-    b = b + (255 - b) * factor
+    r = r + (255 - r) * rf
+    g = g + (255 - g) * gf
+    b = b + (255 - b) * bf
     return M.create_color(r, g, b)
 end
 
