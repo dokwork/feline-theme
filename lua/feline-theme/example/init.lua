@@ -18,7 +18,7 @@ return {
             a = { 'file_name' },
         },
     },
-    theme = require('compline.example.theme'),
-    components = require('compline.example.components'),
-    colors = require('compline.example.colors'),
+    theme = require('feline-theme.example.theme'),
+    components = require('feline-theme.example.components'),
+    colors = require('feline-theme.example.colors'),
 }

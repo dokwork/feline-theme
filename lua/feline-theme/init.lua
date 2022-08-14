@@ -1,11 +1,11 @@
 local feline = require('feline')
-local u = require('compline.utils')
+local u = require('feline-theme.utils')
 
 -- global variable:
-Compline = {}
+FelineTheme = {}
 -- private global state:
 local __state = {}
-setmetatable(Compline, {
+setmetatable(FelineTheme, {
     __index = __state,
     __newindex = function()
         error('Attempt to update a read-only table')
@@ -117,7 +117,7 @@ local Statusline = {
 }
 
 function Statusline:validate()
-    local statusline_schema = require('compline.schema.statusline').statusline
+    local statusline_schema = require('feline-theme.schema.statusline').statusline
     local ok, schema = pcall(require, 'lua-schema')
     if ok then
         local ok, err = schema.validate(self, statusline_schema)
@@ -174,7 +174,7 @@ return {
         feline.setup(config)
 
         -- change the theme on every changes colorscheme or background
-        local group = vim.api.nvim_create_augroup('compline_select_theme', { clear = true })
+        local group = vim.api.nvim_create_augroup('feline_select_theme', { clear = true })
         vim.api.nvim_create_autocmd('ColorScheme', {
             pattern = '*',
             group = group,

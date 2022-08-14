@@ -6,8 +6,8 @@
 # got to the directory with this script (./test/):
 cd $(dirname ${BASH_SOURCE[0]})
 
-export XDG_CONFIG_HOME='/tmp/compline.nvim/conf'
-export XDG_DATA_HOME='/tmp/compline.nvim/data'
+export XDG_CONFIG_HOME='/tmp/feline-theme/conf'
+export XDG_DATA_HOME='/tmp/feline-theme/data'
 
 ARG=$1
 

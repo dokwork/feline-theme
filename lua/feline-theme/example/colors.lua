@@ -1,4 +1,4 @@
-local u = require('compline.utils')
+local u = require('feline-theme.utils')
 
 -- Prepare colors for sections:
 -- We begin from the default background for Statusline

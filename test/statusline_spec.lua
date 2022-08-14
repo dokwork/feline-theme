@@ -1,4 +1,4 @@
-local Compline = require('compline')
+local FelineTheme = require('feline-theme')
 
 describe('Building componentns', function()
     it('should resolve components by their names', function()
@@ -6,7 +6,7 @@ describe('Building componentns', function()
         local components = {
             some_component = { provider = 'example', hl = 'ComponentHighlight' },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'some_component' },
@@ -38,7 +38,7 @@ describe('Building componentns', function()
 
     it('should build components and sections in correct order', function()
         -- given:
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     b = { 'b', 'c' },
@@ -81,7 +81,7 @@ end)
 describe('Resolving highlights', function()
     it('should use default hl if nothing specified in the theme', function()
         -- given:
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'some_component' },
@@ -125,7 +125,7 @@ describe('Resolving highlights', function()
                 },
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'some_component_1' },
@@ -177,7 +177,7 @@ describe('Resolving separators', function()
                 },
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'first' },
@@ -234,7 +234,7 @@ describe('Resolving separators', function()
                 },
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'first', 'test', 'last' },
@@ -288,7 +288,7 @@ describe('Resolving separators', function()
                 },
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'test 1' },
@@ -337,7 +337,7 @@ describe('Resolving separators', function()
                 right_sep = { str = '>' },
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'test' },
@@ -388,7 +388,7 @@ describe('Resolving separators', function()
                 right_sep = '>',
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'test' },
@@ -438,7 +438,7 @@ describe('Resolving separators', function()
                 right_sep = '>',
             },
         }
-        local statusline = Compline.setup_statusline({
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'test' },

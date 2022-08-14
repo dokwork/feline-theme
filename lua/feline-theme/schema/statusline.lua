@@ -1,4 +1,4 @@
-local feline = require('compline.schema.feline')
+local feline = require('feline-theme.schema.feline')
 
 local M = {}
 
@@ -26,8 +26,8 @@ M.statusline = {
     table = {
         { key = 'active', value = M.line },
         { key = 'inactive', value = M.line },
-        { key = 'theme', value = require('compline.schema.theme').theme },
-        { key = 'colors', value = require('compline.schema.colors').colors },
+        { key = 'theme', value = require('feline-theme.schema.theme').theme },
+        { key = 'colors', value = require('feline-theme.schema.colors').colors },
         {
             key = 'components',
             value = { table = { key = 'string', value = feline.component } },

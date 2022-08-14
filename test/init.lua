@@ -24,7 +24,7 @@ vim.cmd([[packadd packer.nvim]])
 require('packer').startup(function(use)
     use('wbthomason/packer.nvim')
     use({
-        'compline',
+        'feline-theme',
         requires = {
             'kyazdani42/nvim-web-devicons',
             'famiu/feline.nvim',
@@ -39,5 +39,5 @@ if packer_bootstrap then
 else
     -- Configuration for test:
 
-    require('compline').setup_statusline(require('compline.example'))
+    require('feline-theme').setup_statusline(require('feline-theme.example'))
 end

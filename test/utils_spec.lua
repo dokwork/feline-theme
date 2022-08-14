@@ -1,4 +1,4 @@
-local u = require('compline.utils')
+local u = require('feline-theme.utils')
 
 describe('is_empty', function()
     it('should return true for nil', function()

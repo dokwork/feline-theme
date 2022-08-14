@@ -1,8 +1,8 @@
 local s = require('lua-schema')
-local c = require('compline.schema.colors')
-local t = require('compline.schema.theme')
-local st = require('compline.schema.statusline')
-local feline = require('compline.schema.feline')
+local c = require('feline-theme.schema.colors')
+local t = require('feline-theme.schema.theme')
+local st = require('feline-theme.schema.statusline')
+local feline = require('feline-theme.schema.feline')
 
 describe('feline schema validation', function()
     it('should be passed for every object', function()

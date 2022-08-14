@@ -1,4 +1,4 @@
-local feline = require('compline.schema.feline')
+local feline = require('feline-theme.schema.feline')
 
 local M = {}
 
