@@ -50,6 +50,8 @@ jobs:
         run:  |
           git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/vendor/start/plenary.nvim
           git clone --depth 1 https://github.com/kyazdani42/nvim-web-devicons ~/.local/share/nvim/site/pack/vendor/start/nvim-web-devicons
+          git clone --depth 1 https://github.com/feline-nvim/feline.nvim ~/.local/share/nvim/site/pack/vendor/start/feline.nvim
+          git clone --depth 1 https://github.com/dokwork/lua-schema.nvim ~/.local/share/nvim/site/pack/vendor/start/lua-schema.nvim
           ln -s $(pwd) ~/.local/share/nvim/site/pack/vendor/start
 
       - name: Run tests
