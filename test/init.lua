@@ -24,11 +24,11 @@ vim.cmd([[packadd packer.nvim]])
 require('packer').startup(function(use)
     use('wbthomason/packer.nvim')
     use({
-        'compline',
+        'feline-theme',
         requires = {
             'kyazdani42/nvim-web-devicons',
             'famiu/feline.nvim',
-            'tpope/vim-fugitive',
+            'dokwork/lua-schema.nvim',
         },
     })
 end)
@@ -39,16 +39,5 @@ if packer_bootstrap then
 else
     -- Configuration for test:
 
-    if vim.env.COSMOSLINE then
-        ---@diagnostic disable-next-line: unused-local
-        local config = require('compline.cosmosline')
-        -- :new('my_line', {
-        --     active = { left = { a = { [1] = 'test' } } },
-        -- })
-        -- vim.pretty_print(config:build_components())
-        config:setup()
-        -- vim.pretty_print(config)
-    else
-        require('compline.example'):setup()
-    end
+    require('feline-theme').setup_statusline(require('feline-theme.example'))
 end

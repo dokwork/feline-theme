@@ -1,46 +1,12 @@
-local Statusline = require('compline.statusline')
+local FelineTheme = require('feline-theme')
 
 describe('Building componentns', function()
-    it('should build components and sections in correct order', function()
-        -- given:
-        local statusline = Statusline:new('test', {
-            active = {
-                left = {
-                    b = { 'b', 'c' },
-                    a = { 'a' },
-                },
-            },
-        })
-
-        -- when:
-        local result = statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'a' },
-                    { provider = 'b' },
-                    { provider = 'c' },
-                },
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
     it('should resolve components by their names', function()
         -- given:
         local components = {
-            some_component = { provider = 'example' },
+            some_component = { provider = 'example', hl = 'ComponentHighlight' },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
                     a = { 'some_component' },
@@ -56,7 +22,85 @@ describe('Building componentns', function()
         local expected = {
             active = {
                 {
-                    { provider = 'example' },
+                    { name = 'some_component', provider = 'example', hl = 'ComponentHighlight' },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it('should build components and sections in correct order', function()
+        -- given:
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    b = { 'b', 'c' },
+                    a = { 'a' },
+                },
+                right = {
+                    z = { 'z' },
+                    w = { 'w' },
+                },
+            },
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    { name = 'a', provider = 'a' },
+                    { name = 'b', provider = 'b' },
+                    { name = 'c', provider = 'c' },
+                },
+                {},
+                {
+                    { name = 'w', provider = 'w' },
+                    { name = 'z', provider = 'z' },
+                },
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+end)
+
+describe('Resolving highlights', function()
+    it('should use default hl if nothing specified in the theme', function()
+        -- given:
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'some_component' },
+                },
+            },
+            theme = {},
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    {
+                        name = 'some_component',
+                        provider = 'some_component',
+                    },
                 },
                 {},
                 {},
@@ -72,157 +116,24 @@ describe('Building componentns', function()
 
     it('should add hl to components from the theme', function()
         -- given:
-        local components = {
-            some_component = { provider = 'example' },
-        }
+        local components = {}
         local theme = {
             active = {
                 left = {
-                    sections = {
-                        a = { hl = { fg = 'black', bg = 'whignoree' } },
-                    },
+                    a = { hl = 'CustomHighlight' },
+                    b = { hl = { bg = 'white' } },
                 },
             },
         }
-        local statusline = Statusline:new('test', {
+        local statusline = FelineTheme.setup_statusline({
             active = {
                 left = {
-                    a = { 'some_component' },
+                    a = { 'some_component_1' },
+                    b = { 'some_component_2' },
                 },
             },
             components = components,
-            themes = {
-                default = theme,
-            },
-        })
-
-        -- when:
-        local result = statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'example', hl = { fg = 'black', bg = 'whignoree' } },
-                },
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
-    it("should use hl from a component when ignore's specified", function()
-        -- given:
-        local components = {
-            some_component = { provider = 'example', hl = { fg = 'red' } },
-        }
-        local theme = {
-            active = {
-                left = {
-                    sections = {
-                        a = { hl = { fg = 'black', bg = 'whignoree' } },
-                    },
-                },
-            },
-        }
-        local statusline = Statusline:new('test', {
-            active = {
-                left = {
-                    a = { 'some_component' },
-                },
-            },
-            components = components,
-            themes = {
-                default = theme,
-            },
-        })
-
-        -- when:
-        local result = statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = 'example', hl = { fg = 'red' } },
-                },
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
-    it("should create components for zone's separators", function()
-        -- given:
-        local theme = {
-            active = {
-                left = {
-                    zone_separators = { left = '<', right = { '>', hl = 'red' } },
-                },
-            },
-        }
-        local statusline = Statusline:new('test', {
-            active = { left = { a = { 'test' } } },
-            themes = {
-                default = theme,
-            },
-        })
-
-        -- when:
-        local result = statusline:build_components()
-
-        -- then:
-        local expected = {
-            active = {
-                {
-                    { provider = '<' },
-                    { provider = 'test' },
-                    { provider = '>', hl = 'red' },
-                },
-                {},
-                {},
-            },
-        }
-        local msg = string.format(
-            '\nExpected:\n%s\nActual:\n%s',
-            vim.inspect(expected),
-            vim.inspect(result)
-        )
-        assert.are.same(expected, result, msg)
-    end)
-
-    it("should add section's separators to the outside components", function()
-        -- given:
-        local theme = {
-            active = {
-                left = {
-                    sections = {
-                        a = { ls = '<', rs = { '>', hl = 'green' } },
-                    },
-                },
-            },
-        }
-        local statusline = Statusline:new('test', {
-            themes = {
-                default = theme,
-            },
-            active = {
-                left = {
-                    a = { 'test' },
-                },
-            },
+            theme = theme,
         })
 
         -- when:
@@ -233,9 +144,14 @@ describe('Building componentns', function()
             active = {
                 {
                     {
-                        provider = 'test',
-                        left_sep = { str = '<' },
-                        right_sep = { str = '>', hl = 'green' },
+                        name = 'some_component_1',
+                        provider = 'some_component_1',
+                        hl = 'CustomHighlight',
+                    },
+                    {
+                        name = 'some_component_2',
+                        provider = 'some_component_2',
+                        hl = { bg = 'white' },
                     },
                 },
                 {},
@@ -251,36 +167,49 @@ describe('Building componentns', function()
     end)
 end)
 
-describe('Extending an existing statusline', function()
-    local existed_statusline = Statusline:new('existed', {
-        active = {
-            left = {
-                a = { 'component 1', 'component 2' },
-                b = { 'component 3' },
-            },
-        },
-    })
-
-    it('should override the section', function()
+describe('Resolving separators', function()
+    it("should add always visible zone's separators for the first and last components", function()
         -- given:
-        local new_statusline = existed_statusline:new('new', {
+        local theme = {
             active = {
                 left = {
-                    a = { 'component 1', 'new' },
+                    separators = { left = '<', right = { str = '>', hl = { fg = 'red' } } },
                 },
             },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'first' },
+                    b = { 'other', 'last' },
+                },
+            },
+            theme = theme,
         })
 
         -- when:
-        local result = new_statusline:build_components()
+        local result = statusline:build_components()
 
         -- then:
         local expected = {
             active = {
                 {
-                    { provider = 'component 1' },
-                    { provider = 'new' },
-                    { provider = 'component 3' },
+                    {
+                        name = 'first',
+                        provider = 'first',
+
+                        left_sep = { str = '<', always_visible = true },
+                    },
+                    {
+                        name = 'other',
+                        provider = 'other',
+                    },
+                    {
+                        name = 'last',
+                        provider = 'last',
+
+                        right_sep = { str = '>', hl = { fg = 'red' }, always_visible = true },
+                    },
                 },
                 {},
                 {},
@@ -294,24 +223,48 @@ describe('Extending an existing statusline', function()
         assert.are.same(expected, result, msg)
     end)
 
-    it('should remove the section', function()
+    it("should add section's separators to the first and last components", function()
         -- given:
-        local new_statusline = existed_statusline:new('new', {
+        local theme = {
             active = {
                 left = {
-                    a = 'nil',
-                    b = 'nil',
+                    a = {
+                        separators = { left = '<', right = '>' },
+                    },
                 },
             },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'first', 'test', 'last' },
+                },
+            },
+            theme = theme,
         })
 
         -- when:
-        local result = new_statusline:build_components()
+        local result = statusline:build_components()
 
         -- then:
         local expected = {
             active = {
-                {},
+                {
+                    {
+                        name = 'first',
+                        provider = 'first',
+                        left_sep = '<',
+                    },
+                    {
+                        name = 'test',
+                        provider = 'test',
+                    },
+                    {
+                        name = 'last',
+                        provider = 'last',
+                        right_sep = '>',
+                    },
+                },
                 {},
                 {},
             },
@@ -324,28 +277,193 @@ describe('Extending an existing statusline', function()
         assert.are.same(expected, result, msg)
     end)
 
-    it('should remove active components and add inactive', function()
+    it("zone's separators must override sections separators", function()
         -- given:
-        local new_statusline = existed_statusline:new('new', {
-            active = 'nil',
-            inactive = {
-                right = {
-                    a = { 'new' },
+        local theme = {
+            active = {
+                left = {
+                    separators = { right = '>' },
+                    a = { separators = { left = '[' } },
+                    b = { separators = { right = ']' } },
                 },
             },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'test 1' },
+                    b = { 'test 2' },
+                },
+            },
+            theme = theme,
         })
 
         -- when:
-        local result = new_statusline:build_components()
+        local result = statusline:build_components()
 
         -- then:
         local expected = {
-            inactive = {
-                {},
-                {},
+            active = {
                 {
-                    { provider = 'new' },
+                    {
+                        name = 'test 1',
+                        provider = 'test 1',
+                        left_sep = '[',
+                    },
+                    {
+                        name = 'test 2',
+                        provider = 'test 2',
+                        right_sep = { str = '>', always_visible = true },
+                    },
                 },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it('should use separators from the components', function()
+        -- given:
+        local components = {
+            test = {
+                provider = 'test',
+                left_sep = '<',
+                right_sep = { str = '>' },
+            },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'test' },
+                },
+            },
+            components = components,
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    {
+                        name = 'test',
+                        provider = 'test',
+                        left_sep = '<',
+                        right_sep = { str = '>' },
+                    },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it("components's separators must override section's separators", function()
+        -- given:
+        local theme = {
+            active = {
+                left = {
+                    a = { separators = { left = '[', right = ']' } },
+                },
+            },
+        }
+        local components = {
+            test = {
+                provider = 'test',
+                left_sep = '<',
+                right_sep = '>',
+            },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'test' },
+                },
+            },
+            theme = theme,
+            components = components,
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    {
+                        name = 'test',
+                        provider = 'test',
+                        left_sep = '<',
+                        right_sep = '>',
+                    },
+                },
+                {},
+                {},
+            },
+        }
+        local msg = string.format(
+            '\nExpected:\n%s\nActual:\n%s',
+            vim.inspect(expected),
+            vim.inspect(result)
+        )
+        assert.are.same(expected, result, msg)
+    end)
+
+    it("components's separators must override zone's separators", function()
+        -- given:
+        local theme = {
+            active = {
+                separators = { left = '[', right = ']' },
+            },
+        }
+        local components = {
+            test = {
+                provider = 'test',
+                left_sep = '<',
+                right_sep = '>',
+            },
+        }
+        local statusline = FelineTheme.setup_statusline({
+            active = {
+                left = {
+                    a = { 'test' },
+                },
+            },
+            theme = theme,
+            components = components,
+        })
+
+        -- when:
+        local result = statusline:build_components()
+
+        -- then:
+        local expected = {
+            active = {
+                {
+                    {
+                        name = 'test',
+                        provider = 'test',
+                        left_sep = '<',
+                        right_sep = '>',
+                    },
+                },
+                {},
+                {},
             },
         }
         local msg = string.format(

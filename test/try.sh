@@ -6,8 +6,8 @@
 # got to the directory with this script (./test/):
 cd $(dirname ${BASH_SOURCE[0]})
 
-export XDG_CONFIG_HOME='/tmp/compline.nvim/conf'
-export XDG_DATA_HOME='/tmp/compline.nvim/data'
+export XDG_CONFIG_HOME='/tmp/feline-theme/conf'
+export XDG_DATA_HOME='/tmp/feline-theme/data'
 
 ARG=$1
 
@@ -17,12 +17,6 @@ if [ "$ARG" == "--reset" ]; then
   rm -rf $XDG_DATA_HOME
   rm -rf $XDG_CONFIG_HOME
 
-fi
-
-if [ "$ARG" == "--cosmosline" ]; then
-  
-  ARG=''
-  export COSMOSLINE="1"
 fi
 
 mkdir -p $XDG_CONFIG_HOME
